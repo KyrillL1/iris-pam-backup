@@ -1,4 +1,72 @@
-import { GridColDef, GridColumnGroupingModel } from "@mui/x-data-grid";
+import { IconButton } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import {
+    GridColDef,
+    GridColumnGroupHeaderParams,
+    GridColumnGroupingModel,
+    gridColumnVisibilityModelSelector,
+    useGridApiContext,
+    useGridSelector,
+} from "@mui/x-data-grid";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
+const COLLAPSIBLE_COLUMN_GROUPS: Record<string, Array<string>> = {
+    internal: ["updated_at", "created_at"],
+};
+
+const ColumnGroupRoot = styled("div")({
+    overflow: "hidden",
+    display: "flex",
+    alignItems: "center",
+});
+
+const ColumnGroupTitle = styled("span")({
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+});
+
+function CollapsibleHeaderGroup({
+    groupId,
+    headerName,
+}: GridColumnGroupHeaderParams) {
+    const apiRef = useGridApiContext();
+    const columnVisibilityModel = useGridSelector(
+        apiRef,
+        gridColumnVisibilityModelSelector,
+    );
+
+    if (!groupId) {
+        return null;
+    }
+
+    const isCollapsible = Boolean(COLLAPSIBLE_COLUMN_GROUPS[groupId]);
+    const isGroupCollapsed = COLLAPSIBLE_COLUMN_GROUPS[groupId].every(
+        (field) => columnVisibilityModel[field] === false,
+    );
+
+    return (
+        <ColumnGroupRoot>
+            <ColumnGroupTitle>{headerName ?? groupId}</ColumnGroupTitle>{" "}
+            {isCollapsible && (
+                <IconButton
+                    sx={{ ml: 0.5 }}
+                    onClick={() => {
+                        const newModel = { ...columnVisibilityModel };
+                        COLLAPSIBLE_COLUMN_GROUPS[groupId].forEach((field) => {
+                            newModel[field] = !!isGroupCollapsed;
+                        });
+                        apiRef.current.setColumnVisibilityModel(newModel);
+                    }}
+                >
+                    {isGroupCollapsed
+                        ? <KeyboardArrowRightIcon fontSize="small" />
+                        : <KeyboardArrowDownIcon fontSize="small" />}
+                </IconButton>
+            )}
+        </ColumnGroupRoot>
+    );
+}
 
 export function usePayoutProposalShowColumns() {
     const columns: GridColDef[] = [
@@ -107,6 +175,9 @@ export function usePayoutProposalShowColumns() {
             children: [{ field: "item_id" }, { field: "created_at" }, {
                 field: "updated_at",
             }],
+            renderHeaderGroup: (params) => {
+                return <CollapsibleHeaderGroup {...params} />;
+            },
         },
     ];
 
