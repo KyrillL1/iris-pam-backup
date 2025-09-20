@@ -17,12 +17,14 @@ export default function PayoutProposalShow() {
 
   const record = data?.data;
 
-  const { columnGroupingModel, columns } = usePayoutProposalShowColumns();
+  const { columnGroupingModel, columns } = usePayoutProposalShowColumns(
+    record?.items,
+  );
 
   // Safe row computation
   const rows = useMemo(
     () => {
-      if (!record) return undefined;
+      if (!record?.items) return undefined;
       return record?.items.map((item) => {
         return {
           ...item,
@@ -33,13 +35,13 @@ export default function PayoutProposalShow() {
         };
       });
     },
-    [record],
+    [record?.items],
   );
 
   const { chip } = useStatusChip(record?.status);
 
   return (
-    <Card>
+    <Card sx={{ padding: 2 }}>
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Box
           sx={{
@@ -74,6 +76,28 @@ export default function PayoutProposalShow() {
         columnGroupingModel={columnGroupingModel}
         rows={rows}
         loading={isLoading}
+        sx={{
+          "& .header-primary": {
+            backgroundColor: (theme) => theme.palette.primary.main,
+            fontWeight: "bold",
+            color: "white",
+          },
+          "& .header-warning": {
+            backgroundColor: (theme) => theme.palette.warning.main,
+            fontWeight: "bold",
+            color: "white",
+          },
+          "& .header-success": {
+            backgroundColor: (theme) => theme.palette.success.main,
+            fontWeight: "bold",
+            color: "white",
+          },
+          "& .header-error": {
+            backgroundColor: (theme) => theme.palette.error.main,
+            fontWeight: "bold",
+            color: "white",
+          },
+        }}
       />
     </Card>
   );

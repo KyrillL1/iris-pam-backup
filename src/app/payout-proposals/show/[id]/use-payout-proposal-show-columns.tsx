@@ -1,105 +1,107 @@
-import { IconButton } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import {
-    GridColDef,
-    GridColumnGroupHeaderParams,
-    GridColumnGroupingModel,
-    gridColumnVisibilityModelSelector,
-    useGridApiContext,
-    useGridSelector,
-} from "@mui/x-data-grid";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { PayoutProposalItem } from "@app/payout-proposals/payout-proposal-model";
+import { CollapsibleHeaderGroup } from "@components/collapsible-header-group";
+import { GridColDef, GridColumnGroupingModel } from "@mui/x-data-grid";
 
-const COLLAPSIBLE_COLUMN_GROUPS: Record<string, Array<string>> = {
-    internal: ["updated_at", "created_at"],
-};
-
-const ColumnGroupRoot = styled("div")({
-    overflow: "hidden",
-    display: "flex",
-    alignItems: "center",
-});
-
-const ColumnGroupTitle = styled("span")({
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-});
-
-function CollapsibleHeaderGroup({
-    groupId,
-    headerName,
-}: GridColumnGroupHeaderParams) {
-    const apiRef = useGridApiContext();
-    const columnVisibilityModel = useGridSelector(
-        apiRef,
-        gridColumnVisibilityModelSelector,
-    );
-
-    if (!groupId) {
-        return null;
-    }
-
-    const isCollapsible = Boolean(COLLAPSIBLE_COLUMN_GROUPS[groupId]);
-    const isGroupCollapsed = COLLAPSIBLE_COLUMN_GROUPS[groupId].every(
-        (field) => columnVisibilityModel[field] === false,
-    );
-
-    return (
-        <ColumnGroupRoot>
-            <ColumnGroupTitle>{headerName ?? groupId}</ColumnGroupTitle>{" "}
-            {isCollapsible && (
-                <IconButton
-                    sx={{ ml: 0.5 }}
-                    onClick={() => {
-                        const newModel = { ...columnVisibilityModel };
-                        COLLAPSIBLE_COLUMN_GROUPS[groupId].forEach((field) => {
-                            newModel[field] = !!isGroupCollapsed;
-                        });
-                        apiRef.current.setColumnVisibilityModel(newModel);
-                    }}
-                >
-                    {isGroupCollapsed
-                        ? <KeyboardArrowRightIcon fontSize="small" />
-                        : <KeyboardArrowDownIcon fontSize="small" />}
-                </IconButton>
-            )}
-        </ColumnGroupRoot>
-    );
-}
-
-export function usePayoutProposalShowColumns() {
+export function usePayoutProposalShowColumns(items?: PayoutProposalItem[]) {
     const columns: GridColDef[] = [
-        { field: "employee_name", headerName: "Employee Name", minWidth: 150 },
+        {
+            field: "employee_name",
+            headerName: "Employee Name",
+            minWidth: 150,
+        },
+    ];
 
-        // Contract
-        {
-            field: "department_name",
-            headerName: "Department Name",
-            minWidth: 150,
-        },
-        { field: "contract_job_title", headerName: "Job Title" },
-        {
-            field: "contract_base_salary",
-            headerName: "Base Salary",
-            type: "number",
-        },
-        {
-            field: "contract_work_percentage",
-            minWidth: 150,
-            headerName: "Work Percentage",
-            type: "number",
-        },
-        {
-            field: "contract_calculation_basis",
-            minWidth: 150,
-            headerName: "Calculation Basis",
-            type: "number",
-        },
-        // Pay Adjustments
-        // TODO
+    const contractColumns: GridColDef[] = [{
+        field: "department_name",
+        headerName: "Department Name",
+        minWidth: 150,
+    }, {
+        field: "contract_job_title",
+        headerName: "Job Title",
+    }, {
+        field: "contract_base_salary",
+        headerName: "Base Salary",
+        type: "number",
+    }, {
+        field: "contract_work_percentage",
+        minWidth: 150,
+        headerName: "Work Percentage",
+        type: "number",
+    }, {
+        field: "contract_calculation_basis",
+        minWidth: 150,
+        headerName: "Calculation Basis",
+        type: "number",
+    }];
+    columns.push(
+        ...contractColumns.map((c) => ({
+            ...c,
+            headerClassName: "header-warning",
+        })),
+    );
 
-        // Salary
+    // --- Collect unique benefit & deduction names ---
+    const benefitIds = new Set<string>();
+    const deductionIds = new Set<string>();
+
+    (items || []).forEach((item) => {
+        item.benefits?.forEach((b) => benefitIds.add(b.id));
+        item.deductions?.forEach((d) => deductionIds.add(d.id));
+    });
+
+    const mapBenefitIdToName = (id: string): string => {
+        for (const item of items || []) {
+            const match = item.benefits?.find((b) => b.id === id);
+            if (match) return match.name;
+        }
+        return id; // fallback to id if not found
+    };
+
+    const mapDeductionIdToName = (id: string): string => {
+        for (const item of items || []) {
+            const match = item.deductions?.find((d) => d.id === id);
+            if (match) return match.name;
+        }
+        return id; // fallback to id if not found
+    };
+    // --- Build dynamic benefit columns ---
+    const benefitColumns: GridColDef[] = Array.from(benefitIds).map((
+        id,
+    ) => ({
+        field: `benefit_${id}`,
+        headerName: mapBenefitIdToName(id),
+        type: "number",
+        minWidth: 150,
+        valueGetter: (_, item: PayoutProposalItem) => {
+            return item.benefits?.find((b) => b.id === id)?.amount ?? null;
+        },
+    }));
+
+    // --- Build dynamic deduction columns ---
+    const deductionColumns: GridColDef[] = Array.from(deductionIds).map(
+        (id) => ({
+            field: `deduction_${id}`,
+            headerName: mapDeductionIdToName(id),
+            type: "number",
+            minWidth: 150,
+            valueGetter: (_, item: PayoutProposalItem) => {
+                return item.deductions?.find((d) => d.id === id)?.amount ??
+                    null;
+            },
+        }),
+    );
+    columns.push(
+        ...benefitColumns.map((c) => ({
+            ...c,
+            headerClassName: "header-success",
+        })),
+    );
+    columns.push(...deductionColumns.map((c) => ({
+        ...c,
+        headerClassName: "header-error",
+    })));
+
+    const salaryColumns: GridColDef[] = [
         { field: "gross_salary", headerName: "Gross Salary", type: "number" },
         {
             field: "hours_worked",
@@ -114,8 +116,15 @@ export function usePayoutProposalShowColumns() {
             type: "number",
             minWidth: 150,
         },
+    ];
+    columns.push(
+        ...salaryColumns.map((c) => ({
+            ...c,
+            headerClassName: "header-primary",
+        })),
+    );
 
-        // Recipient Payout Info
+    const recipientPayoutInfoColumns = [
         { field: "rpi_name", headerName: "Recipient Name", minWidth: 150 },
         {
             field: "rpi_payment_means",
@@ -129,12 +138,25 @@ export function usePayoutProposalShowColumns() {
             minWidth: 150,
         },
         { field: "rpi_bank_name", headerName: "Bank Name" },
+    ];
+    columns.push(
+        ...recipientPayoutInfoColumns.map((c) => ({
+            ...c,
+            headerClassName: "header-primary",
+        })),
+    );
 
-        // Internal
-        { field: "item_id", headerName: "Item Id" },
+    const internalColumns: GridColDef[] = [
+        { field: "item_id", headerName: "Item Id", minWidth: 150 },
         { field: "created_at", headerName: "Created At", type: "date" },
         { field: "updated_at", headerName: "Updated At", type: "date" },
     ];
+    columns.push(
+        ...internalColumns.map((c) => ({
+            ...c,
+            headerClassName: "header-primary",
+        })),
+    );
 
     const columnGroupingModel: GridColumnGroupingModel = [
         {
@@ -147,6 +169,54 @@ export function usePayoutProposalShowColumns() {
                 { field: "contract_work_percentage" },
                 { field: "contract_calculation_basis" },
             ],
+            headerClassName: "header-warning",
+            renderHeaderGroup: (params) => {
+                return (
+                    <CollapsibleHeaderGroup
+                        {...params}
+                        collapseFields={[
+                            "contract_job_title",
+                            "contract_base_salary",
+                            "contract_work_percentage",
+                            "contract_calculation_basis",
+                        ]}
+                    />
+                );
+            },
+        },
+        {
+            groupId: "Benefits",
+            headerName: "Benefits",
+            children: benefitColumns.map((col) => ({
+                field: col.field,
+            })),
+            headerClassName: "header-success",
+            renderHeaderGroup: (params) => (
+                <CollapsibleHeaderGroup
+                    {...params}
+                    collapseFields={benefitColumns.map((col, ind) => {
+                        if (ind === 0) return "";
+                        return col.field;
+                    })}
+                />
+            ),
+        },
+        {
+            groupId: "deductions",
+            headerName: "Deductions",
+            children: deductionColumns.map((col) => ({
+                field: col.field,
+            })),
+            headerClassName: "header-error",
+            renderHeaderGroup: (params) => (
+                <CollapsibleHeaderGroup
+                    {...params}
+                    collapseFields={deductionColumns.map((col, ind) => {
+                        if (ind === 0) return "";
+                        return col.field;
+                    })}
+                />
+            ),
         },
         {
             groupId: "salary",
@@ -157,6 +227,19 @@ export function usePayoutProposalShowColumns() {
                 { field: "net_salary" },
                 { field: "net_salary_last_month" },
             ],
+            headerClassName: "header-primary",
+            renderHeaderGroup: (params) => {
+                return (
+                    <CollapsibleHeaderGroup
+                        {...params}
+                        collapseFields={[
+                            "hours_worked",
+                            "net_salary",
+                            "net_salary_last_month",
+                        ]}
+                    />
+                );
+            },
         },
         {
             groupId: "recipient",
@@ -168,6 +251,20 @@ export function usePayoutProposalShowColumns() {
                 { field: "rpi_bank_routing" },
                 { field: "rpi_bank_name" },
             ],
+            headerClassName: "header-primary",
+            renderHeaderGroup: (params) => {
+                return (
+                    <CollapsibleHeaderGroup
+                        {...params}
+                        collapseFields={[
+                            "rpi_payment_means",
+                            "rpi_account",
+                            "rpi_bank_routing",
+                            "rpi_bank_name",
+                        ]}
+                    />
+                );
+            },
         },
         {
             groupId: "internal",
@@ -175,8 +272,14 @@ export function usePayoutProposalShowColumns() {
             children: [{ field: "item_id" }, { field: "created_at" }, {
                 field: "updated_at",
             }],
+            headerClassName: "header-primary",
             renderHeaderGroup: (params) => {
-                return <CollapsibleHeaderGroup {...params} />;
+                return (
+                    <CollapsibleHeaderGroup
+                        {...params}
+                        collapseFields={["created_at", "updated_at"]}
+                    />
+                );
             },
         },
     ];
