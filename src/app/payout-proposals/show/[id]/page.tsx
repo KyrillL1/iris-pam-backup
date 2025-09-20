@@ -1,13 +1,22 @@
 "use client";
 
 import { PayoutProposal } from "@app/payout-proposals/payout-proposal-model";
-import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Typography,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useShow } from "@refinedev/core";
 import { useMemo } from "react";
 import { usePayoutProposalShowColumns } from "./use-payout-proposal-show-columns";
 import { useStatusChip } from "./use-status-chip";
 import { truncateId } from "@utils/truncate-id";
+import { Cancel, Check, Pending } from "@mui/icons-material";
+import { useHandleApproveDenyClick } from "./use-handle-approve-deny-click";
 
 export default function PayoutProposalShow() {
   const { query } = useShow<PayoutProposal>({
@@ -39,9 +48,12 @@ export default function PayoutProposalShow() {
   );
 
   const { chip } = useStatusChip(record?.status);
+  const { handleApproveClick, handleDenyClick } = useHandleApproveDenyClick(
+    record?.id,
+  );
 
   return (
-    <Card sx={{ padding: 2 }}>
+    <Card>
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Box
           sx={{
@@ -69,36 +81,59 @@ export default function PayoutProposalShow() {
             </Typography>
           )}
         </Box>
-      </CardContent>
 
-      <DataGrid
-        columns={columns}
-        columnGroupingModel={columnGroupingModel}
-        rows={rows}
-        loading={isLoading}
-        sx={{
-          "& .header-primary": {
-            backgroundColor: (theme) => theme.palette.primary.main,
-            fontWeight: "bold",
-            color: "white",
-          },
-          "& .header-warning": {
-            backgroundColor: (theme) => theme.palette.warning.main,
-            fontWeight: "bold",
-            color: "white",
-          },
-          "& .header-success": {
-            backgroundColor: (theme) => theme.palette.success.main,
-            fontWeight: "bold",
-            color: "white",
-          },
-          "& .header-error": {
-            backgroundColor: (theme) => theme.palette.error.main,
-            fontWeight: "bold",
-            color: "white",
-          },
-        }}
-      />
+        <DataGrid
+          columns={columns}
+          columnGroupingModel={columnGroupingModel}
+          rows={rows}
+          loading={isLoading}
+          sx={{
+            "& .header-primary": {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              fontWeight: "bold",
+              color: "white",
+            },
+            "& .header-warning": {
+              backgroundColor: (theme) => theme.palette.warning.main,
+              fontWeight: "bold",
+              color: "white",
+            },
+            "& .header-success": {
+              backgroundColor: (theme) => theme.palette.success.main,
+              fontWeight: "bold",
+              color: "white",
+            },
+            "& .header-error": {
+              backgroundColor: (theme) => theme.palette.error.main,
+              fontWeight: "bold",
+              color: "white",
+            },
+          }}
+        />
+
+        {record
+          ? (
+            <Box sx={{ display: "flex", justifyContent: "end" }}>
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <Button
+                  startIcon={<Check />}
+                  color="success"
+                  onClick={handleApproveClick}
+                >
+                  Approve
+                </Button>
+                <Button
+                  startIcon={<Cancel />}
+                  color="error"
+                  onClick={handleDenyClick}
+                >
+                  Deny
+                </Button>
+              </Box>
+            </Box>
+          )
+          : null}
+      </CardContent>
     </Card>
   );
 }
