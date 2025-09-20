@@ -15,8 +15,8 @@ import { useMemo } from "react";
 import { usePayoutProposalShowColumns } from "./use-payout-proposal-show-columns";
 import { useStatusChip } from "./use-status-chip";
 import { truncateId } from "@utils/truncate-id";
-import { Cancel, Check, Pending } from "@mui/icons-material";
-import { useHandleApproveDenyClick } from "./use-handle-approve-deny-click";
+import { useButtonRow } from "./use-button-row";
+import { ListButton } from "@refinedev/mui";
 
 export default function PayoutProposalShow() {
   const { query } = useShow<PayoutProposal>({
@@ -48,13 +48,12 @@ export default function PayoutProposalShow() {
   );
 
   const { chip } = useStatusChip(record?.status);
-  const { handleApproveClick, handleDenyClick } = useHandleApproveDenyClick(
-    record?.id,
-  );
+  const { buttonRow } = useButtonRow(record);
 
   return (
     <Card>
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <ListButton />
         <Box
           sx={{
             display: "flex",
@@ -74,7 +73,6 @@ export default function PayoutProposalShow() {
             </Typography>
             {chip}
           </Box>
-
           {record && (
             <Typography sx={{ color: "text.secondary", paddingLeft: 2 }}>
               #{truncateId(record.id, 10)}
@@ -111,28 +109,7 @@ export default function PayoutProposalShow() {
           }}
         />
 
-        {record
-          ? (
-            <Box sx={{ display: "flex", justifyContent: "end" }}>
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <Button
-                  startIcon={<Check />}
-                  color="success"
-                  onClick={handleApproveClick}
-                >
-                  Approve
-                </Button>
-                <Button
-                  startIcon={<Cancel />}
-                  color="error"
-                  onClick={handleDenyClick}
-                >
-                  Deny
-                </Button>
-              </Box>
-            </Box>
-          )
-          : null}
+        {buttonRow}
       </CardContent>
     </Card>
   );

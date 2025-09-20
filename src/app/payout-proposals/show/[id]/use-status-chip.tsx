@@ -11,6 +11,8 @@ export function useStatusChip(status?: PayoutProposal["status"]) {
 
         const color = status === "DRAFT"
             ? "warning"
+            : status === "UNDER_REVIEW"
+            ? "warning"
             : status === "APPROVED"
             ? "success"
             : "error";

@@ -1,8 +1,8 @@
 import { useNavigation, useNotification } from "@refinedev/core";
 import { useCallback, useEffect } from "react";
-import { useApproveDenyProposal } from "./use-approve-deny-proposal";
+import { useChangeProposalStatus } from "./use-change-proposal-status";
 
-export function useHandleApproveDenyClick(payoutProposalId?: string) {
+export function useHandleProposalChangeClick(payoutProposalId?: string) {
     const { open } = useNotification();
     const { list } = useNavigation();
     const {
@@ -13,7 +13,11 @@ export function useHandleApproveDenyClick(payoutProposalId?: string) {
         approveData,
         approveError,
         approveProposal,
-    } = useApproveDenyProposal();
+
+        requestReview,
+        requestReviewData,
+        requestReviewError,
+    } = useChangeProposalStatus();
 
     const handleApproveClick = useCallback(() => {
         if (!payoutProposalId) return;
@@ -25,6 +29,12 @@ export function useHandleApproveDenyClick(payoutProposalId?: string) {
         if (!payoutProposalId) return;
 
         denyProposal(payoutProposalId);
+    }, [payoutProposalId]);
+
+    const handleRequestReviewClick = useCallback(() => {
+        if (!payoutProposalId) return;
+
+        requestReview(payoutProposalId);
     }, [payoutProposalId]);
 
     // ERROR HANDLING
@@ -42,6 +52,13 @@ export function useHandleApproveDenyClick(payoutProposalId?: string) {
         open?.({ message, type: "error" });
         console.error(approveError);
     }, [approveError]);
+    useEffect(() => {
+        if (!requestReviewError) return;
+
+        const message = requestReviewError.message;
+        open?.({ message, type: "error" });
+        console.error(requestReviewError);
+    }, [requestReviewError]);
 
     // SUCCESS HANDLING
 
@@ -61,8 +78,17 @@ export function useHandleApproveDenyClick(payoutProposalId?: string) {
         list("payout_proposals");
     }, [approveData]);
 
+    useEffect(() => {
+        if (!requestReviewData) return;
+
+        const message = "Successfully requested review";
+        open?.({ message, type: "success" });
+        list("payout_proposals");
+    }, [requestReviewData]);
+
     return {
         handleApproveClick,
         handleDenyClick,
+        handleRequestReviewClick,
     };
 }

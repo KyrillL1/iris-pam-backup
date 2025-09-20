@@ -1,7 +1,7 @@
 import { supabaseBrowserClient } from "@utils/supabase/client";
 import { useCallback, useState } from "react";
 
-export function useApproveDenyProposal() {
+export function useChangeProposalStatus() {
     const [approveData, setApproveData] = useState<any[]>();
     const [approveError, setApproveError] = useState<Error>();
 
@@ -49,12 +49,45 @@ export function useApproveDenyProposal() {
         return { data, error: null };
     }, []);
 
+    const [requestReviewData, setRequestReviewData] = useState<any[]>();
+    const [requestReviewError, setRequestReviewError] = useState<Error>();
+
+    const requestReview = useCallback(async (id: string) => {
+        const { data, error } = await supabaseBrowserClient
+            .from(
+                "payout_proposals",
+            ).update({ status: "UNDER_REVIEW" })
+            .eq("id", id)
+            .select();
+
+        if (error || !data) {
+            setRequestReviewError(
+                error ||
+                    new Error(
+                        "Missing data for payout proposal, request review",
+                    ),
+            );
+            return {
+                data: null,
+                error,
+            };
+        }
+
+        setRequestReviewData(data);
+        return { data, error: null };
+    }, []);
+
     return {
         approveData,
         approveError,
         approveProposal,
+
         denyData,
         denyError,
         denyProposal,
+
+        requestReviewData,
+        requestReviewError,
+        requestReview,
     };
 }
