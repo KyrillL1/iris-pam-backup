@@ -10,18 +10,20 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useShow } from "@refinedev/core";
-import { useMemo } from "react";
+import { useNotification, useShow } from "@refinedev/core";
+import { useEffect, useMemo, useState } from "react";
 import { usePayoutProposalShowColumns } from "./use-payout-proposal-show-columns";
 import { useStatusChip } from "./use-status-chip";
 import { truncateId } from "@utils/truncate-id";
 import { useButtonRow } from "./use-button-row";
 import { ListButton } from "@refinedev/mui";
+import { usePayslipFetching } from "./use-payslip-fetching";
 
 export default function PayoutProposalShow() {
   const { query } = useShow<PayoutProposal>({
     meta: { select: `*, items:payout_proposal_items(*)` },
   });
+  const { open } = useNotification();
   const { data, isLoading } = query;
 
   const record = data?.data;
@@ -46,6 +48,14 @@ export default function PayoutProposalShow() {
     },
     [record?.items],
   );
+
+  const { finalRows, payslipFetchingError } = usePayslipFetching(rows);
+  useEffect(() => {
+    if (!payslipFetchingError) return;
+
+    const message = payslipFetchingError.message;
+    open?.({ message, type: "error" });
+  }, [payslipFetchingError]);
 
   const { chip } = useStatusChip(record?.status);
   const { buttonRow } = useButtonRow(record);
@@ -83,7 +93,7 @@ export default function PayoutProposalShow() {
         <DataGrid
           columns={columns}
           columnGroupingModel={columnGroupingModel}
-          rows={rows}
+          rows={finalRows || rows}
           loading={isLoading}
           sx={{
             "& .header-primary": {

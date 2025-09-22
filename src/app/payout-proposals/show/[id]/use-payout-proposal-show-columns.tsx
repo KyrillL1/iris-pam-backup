@@ -1,13 +1,44 @@
 import { PayoutProposalItem } from "@app/payout-proposals/payout-proposal-model";
 import { CollapsibleHeaderGroup } from "@components/collapsible-header-group";
+import { Download, OpenInNew, Pending } from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
 import { GridColDef, GridColumnGroupingModel } from "@mui/x-data-grid";
 
-export function usePayoutProposalShowColumns(items?: PayoutProposalItem[]) {
+export function usePayoutProposalShowColumns(
+    items?: PayoutProposalItem[],
+) {
     const columns: GridColDef[] = [
         {
             field: "employee_name",
             headerName: "Employee Name",
             minWidth: 150,
+        },
+        {
+            field: "payslip_blob",
+            headerName: "Payslip",
+            minWidth: 150,
+            renderCell: (params) => {
+                const blob = params.value;
+                if (!blob) {
+                    return <Pending />;
+                }
+
+                const openInNew = () => {
+                    const url = URL.createObjectURL(blob);
+                    window.open(url, "_blank");
+                };
+
+                return (
+                    <Box>
+                        <IconButton
+                            size="small"
+                            onClick={openInNew}
+                        >
+                            <OpenInNew />
+                        </IconButton>
+                    </Box>
+                );
+            },
         },
     ];
 

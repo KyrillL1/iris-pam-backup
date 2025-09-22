@@ -198,6 +198,7 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                             Worked{" "}
                             {calculationBasis === "MONTHLY" ? "Days" : "Hours"}:
                         </Text>
+                        <Text>Calculation Basis:</Text>
                     </View>
                     <View
                         style={{
@@ -208,6 +209,7 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                         <Text>{date.toDateString()}</Text>
                         <Text>{dateOfJoining.toDateString()}</Text>
                         <Text>{workedQuanitity}</Text>
+                        <Text>{calculationBasis}</Text>
                     </View>
 
                     <View style={{ flexGrow: 1 }}>
@@ -218,6 +220,7 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                         <Text>Employee Name:</Text>
                         <Text>Job Title:</Text>
                         <Text>Department:</Text>
+                        <Text>Work Percentage:</Text>
                     </View>
                     <View
                         style={{
@@ -228,6 +231,7 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                         <Text>{employeeName}</Text>
                         <Text>{jobTitle}</Text>
                         <Text>{department}</Text>
+                        <Text>{workPercentage}</Text>
                     </View>
                 </View>
 
@@ -240,8 +244,7 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                     }}
                 >
                     <Text style={{ fontWeight: 700 }}>
-                        Base Salary: {formatMoney(baseSalary)} on{" "}
-                        {calculationBasis}, {workPercentage}/100%
+                        Base Salary: {formatMoney(baseSalary)}
                     </Text>
 
                     <View style={{ display: "flex", flexDirection: "column" }}>

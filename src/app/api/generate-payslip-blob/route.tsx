@@ -3,7 +3,7 @@ import React from "react";
 import { renderToStream } from "@react-pdf/renderer";
 import { PayslipPdf, PayslipPdfProps } from "@components/payslip-pdf";
 
-export interface GeneratePdfRequestData {
+export interface GeneratePayslipBlobData {
     date: string;
     date_of_joining: string;
     calculation_basis: "MONTHLY" | "HOURLY";
@@ -28,7 +28,7 @@ export interface GeneratePdfRequestData {
 
 export async function POST(req: NextRequest) {
     try {
-        const body: Partial<GeneratePdfRequestData> = await req.json();
+        const body: Partial<GeneratePayslipBlobData> = await req.json();
         const payload: PayslipPdfProps = {
             date: body.date ? new Date(body.date) : new Date(0),
             dateOfJoining: body.date_of_joining
