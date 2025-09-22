@@ -50,7 +50,10 @@ export default function Payout() {
       renderCell: (params) => {
         return (
           <>
-            <PayslipCell path={params.value} />
+            <PayslipCell
+              path={params.value}
+              fileName={`Payslip-${params.row.payout_proposal_item?.employee?.first_name} ${params.row.payout_proposal_item?.employee?.last_name}`}
+            />
           </>
         );
       },
@@ -62,9 +65,6 @@ export default function Payout() {
       <DataTable<PayoutModelWithRelations>
         dataGridProps={dataGridProps}
         columns={columns}
-        hideActions={[
-          DataTableAction.DELETE,
-        ]}
       />
     </List>
   );

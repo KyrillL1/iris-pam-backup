@@ -3,7 +3,9 @@ import { IconButton } from "@mui/material";
 import { Download, OpenInNew } from "@mui/icons-material";
 import { supabaseBrowserClient } from "@utils/supabase/client";
 
-export const PayslipCell: React.FC<{ path: string }> = ({ path }) => {
+export const PayslipCell: React.FC<{ path: string; fileName?: string }> = (
+	{ path, fileName },
+) => {
 	const [url, setUrl] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -17,7 +19,9 @@ export const PayslipCell: React.FC<{ path: string }> = ({ path }) => {
 				.from("payslips")
 				.createSignedUrl(path, 3600);
 
-			console.log({ data, error });
+			if (error) {
+				console.error(error);
+			}
 
 			if (active && data?.signedUrl) {
 				setUrl(data.signedUrl);
@@ -37,15 +41,19 @@ export const PayslipCell: React.FC<{ path: string }> = ({ path }) => {
 			.from("payslips")
 			.download(path);
 
+		if (error) {
+			console.error(error);
+		}
+
 		if (data) {
 			const url = URL.createObjectURL(data);
 			const a = document.createElement("a");
 			a.href = url;
-			a.download = path.split("/").pop() || "file.pdf";
+			a.download = fileName || path.split("/").pop() || "file.pdf";
 			a.click();
 			URL.revokeObjectURL(url);
 		}
-	}, [path]);
+	}, [path, fileName]);
 
 	if (!url) return null;
 

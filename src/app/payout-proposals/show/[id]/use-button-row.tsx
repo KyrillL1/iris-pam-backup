@@ -25,8 +25,7 @@ export function useButtonRow(
         const showRequest = status === "DRAFT";
         const showApprove = status === "UNDER_REVIEW";
         const showDeny = status === "UNDER_REVIEW";
-        // const showPaidOut = status === "APPROVED";
-        const showPaidOut = true; // TODO: Revert
+        const showPaidOut = status === "APPROVED";
 
         return (
             <Box sx={{ display: "flex", justifyContent: "end" }}>

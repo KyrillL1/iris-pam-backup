@@ -66,6 +66,8 @@ export const resources: ResourceProps[] = [
     {
         name: "payouts",
         list: "/payouts",
+        show: "/payouts/show/:id",
+        edit: "/payouts/edit/:id",
         meta: {
             icon: <Paid />,
             canDelete: false,
