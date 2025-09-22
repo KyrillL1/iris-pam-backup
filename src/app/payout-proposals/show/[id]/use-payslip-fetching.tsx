@@ -20,7 +20,10 @@ export function usePayslipFetching(rows?: any[]) {
                             date: new Date().toISOString(),
                             date_of_joining: row.created_at,
                             calculation_basis: row.contract_calculation_basis,
-                            work_quantity: row.hours_worked,
+                            work_quantity:
+                                row.contract_calculation_basis === "HOURLY"
+                                    ? row.hours_worked
+                                    : 30,
                             employee_name: row.employee_name,
                             job_title: row.contract_job_title,
                             base_salary: row.contract_base_salary,

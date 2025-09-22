@@ -138,7 +138,12 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
         };
     })();
 
-    const netPay = baseSalary + totalAmounts.benefits - totalAmounts.deductions;
+    const grossSalary = calculationBasis === "HOURLY"
+        ? baseSalary * (workedQuanitity || 0)
+        : baseSalary * workPercentage / 100;
+
+    const netPay = grossSalary + totalAmounts.benefits -
+        totalAmounts.deductions;
 
     return (
         <Document>
@@ -300,13 +305,14 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                 {/** Net Pay Calculation */}
                 <View style={{ display: "flex", flexDirection: "row" }}>
                     <View style={styles.netPayCol}>
-                        <Text style={{ fontWeight: 700 }}>Net Pay:</Text>
-                        <Text></Text>
-                        <Text></Text>
+                        <Text>Gross Pay</Text>
+                        <Text>Benefits</Text>
+                        <Text>Deductions</Text>
+                        <Text style={{ fontWeight: 700 }}>Net Pay</Text>
                     </View>
 
                     <View style={{ ...styles.netPayCol, textAlign: "right" }}>
-                        <Text>{formatMoney(baseSalary)}</Text>
+                        <Text>{formatMoney(grossSalary)}</Text>
                         <Text>+ {formatMoney(totalAmounts.benefits)}</Text>
                         <Text style={{ borderBottom: "1px solid black" }}>
                             - {formatMoney(totalAmounts.deductions)}
