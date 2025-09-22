@@ -5,27 +5,35 @@ import { useDataGrid } from "@refinedev/mui";
 import { DataTable, DataTableAction } from "@components/data-table";
 import { GridColDef } from "@mui/x-data-grid";
 import { PayslipCell } from "@components/payslip-cell";
-import { PayoutModel } from "./payout.model";
+import { PayoutModel, PayoutModelWithRelations } from "./payout.model";
 
 export default function Payout() {
-  const { dataGridProps } = useDataGrid<PayoutModel>({
+  const { dataGridProps } = useDataGrid<PayoutModelWithRelations>({
     meta: {
       select: `
         *,
-        contract:contracts(id, employee(first_name, last_name))
+        payout_proposal_item:payout_proposal_items(
+          contract_job_title,
+          employee_id, 
+          employee:employees(
+            first_name,
+            last_name
+          )
+        )
         `,
     },
   });
 
-  const columns: GridColDef<PayoutModel>[] = [
+  const columns: GridColDef<PayoutModelWithRelations>[] = [
     {
       field: "contract_id",
       headerName: "Employee + Contract",
-      minWidth: 150,
+      minWidth: 200,
       valueGetter: (_, row) => {
-        const e = row;
-        // TODO
-        return "MISSING";
+        const employeeName =
+          `${row.payout_proposal_item?.employee?.first_name} ${row.payout_proposal_item?.employee?.last_name}`;
+        const jobTitle = row.payout_proposal_item?.contract_job_title;
+        return `${employeeName} (${jobTitle}) `;
       },
     },
     {
@@ -51,13 +59,11 @@ export default function Payout() {
 
   return (
     <List canCreate={false}>
-      <DataTable<PayoutModel>
+      <DataTable<PayoutModelWithRelations>
         dataGridProps={dataGridProps}
         columns={columns}
         hideActions={[
           DataTableAction.DELETE,
-          DataTableAction.EDIT,
-          DataTableAction.SHOW,
         ]}
       />
     </List>

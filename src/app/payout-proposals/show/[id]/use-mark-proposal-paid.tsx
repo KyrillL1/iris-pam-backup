@@ -47,7 +47,7 @@ export function useMarkProposalPaid() {
                         .insert({
                             payout_proposal_item_id: item.payoutProposalItemId,
                             amount: item.amount,
-                            payout_slip_path: `payslips/${fileName}`,
+                            payout_slip_path: `${fileName}`,
                         });
                 if (proposalItemsError) {
                     setMarkProposalPaidError(proposalItemsError);

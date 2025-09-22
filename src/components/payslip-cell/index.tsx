@@ -17,6 +17,8 @@ export const PayslipCell: React.FC<{ path: string }> = ({ path }) => {
 				.from("payslips")
 				.createSignedUrl(path, 3600);
 
+			console.log({ data, error });
+
 			if (active && data?.signedUrl) {
 				setUrl(data.signedUrl);
 			}
@@ -54,15 +56,16 @@ export const PayslipCell: React.FC<{ path: string }> = ({ path }) => {
 				component="a"
 				href={url}
 				target="_blank"
-				rel="noopener noreferrer">
+				rel="noopener noreferrer"
+			>
 				<OpenInNew />
 			</IconButton>
 			<IconButton
 				size="small"
-				onClick={handleDownload}>
-
+				onClick={handleDownload}
+			>
 				<Download />
 			</IconButton>
 		</>
 	);
-}
+};
