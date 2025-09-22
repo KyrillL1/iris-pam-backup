@@ -4,11 +4,19 @@ import { Box, Button } from "@mui/material";
 import { useMemo } from "react";
 import { useHandleProposalChangeClick } from "./use-handle-proposal-change-click";
 
-export function useButtonRow(record?: PayoutProposal) {
-    const { handleApproveClick, handleDenyClick, handleRequestReviewClick } =
-        useHandleProposalChangeClick(
-            record?.id,
-        );
+export function useButtonRow(
+    record?: PayoutProposal,
+    payslipEnrichedRows?: { payslip_blob: Blob & any }[],
+) {
+    const {
+        handleApproveClick,
+        handleDenyClick,
+        handleRequestReviewClick,
+        handleMarkAsPaid,
+    } = useHandleProposalChangeClick(
+        record?.id,
+        payslipEnrichedRows,
+    );
 
     const buttonRow = useMemo(() => {
         const status = record?.status;
@@ -17,7 +25,8 @@ export function useButtonRow(record?: PayoutProposal) {
         const showRequest = status === "DRAFT";
         const showApprove = status === "UNDER_REVIEW";
         const showDeny = status === "UNDER_REVIEW";
-        const showPaidOut = status === "APPROVED";
+        // const showPaidOut = status === "APPROVED";
+        const showPaidOut = true; // TODO: Revert
 
         return (
             <Box sx={{ display: "flex", justifyContent: "end" }}>
@@ -52,11 +61,9 @@ export function useButtonRow(record?: PayoutProposal) {
                         <Button
                             startIcon={<PriceCheck />}
                             color="warning"
-                            onClick={() => {
-                                throw new Error("Please implement");
-                            }}
+                            onClick={handleMarkAsPaid}
                         >
-                            Paid Out
+                            Mark As Paid
                         </Button>
                     )}
                 </Box>

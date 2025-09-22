@@ -49,7 +49,8 @@ export default function PayoutProposalShow() {
     [record?.items],
   );
 
-  const { finalRows, payslipFetchingError } = usePayslipFetching(rows);
+  const { finalRows: payslipEnrichedRows, payslipFetchingError } =
+    usePayslipFetching(rows);
   useEffect(() => {
     if (!payslipFetchingError) return;
 
@@ -58,7 +59,7 @@ export default function PayoutProposalShow() {
   }, [payslipFetchingError]);
 
   const { chip } = useStatusChip(record?.status);
-  const { buttonRow } = useButtonRow(record);
+  const { buttonRow } = useButtonRow(record, payslipEnrichedRows);
 
   return (
     <Card>
@@ -93,7 +94,7 @@ export default function PayoutProposalShow() {
         <DataGrid
           columns={columns}
           columnGroupingModel={columnGroupingModel}
-          rows={finalRows || rows}
+          rows={payslipEnrichedRows || rows}
           loading={isLoading}
           sx={{
             "& .header-primary": {

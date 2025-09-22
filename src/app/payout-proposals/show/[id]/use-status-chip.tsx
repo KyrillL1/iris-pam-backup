@@ -15,6 +15,8 @@ export function useStatusChip(status?: PayoutProposal["status"]) {
             ? "warning"
             : status === "APPROVED"
             ? "success"
+            : status === "PAID_OUT"
+            ? "success"
             : "error";
         return <Chip label={status} color={color} />;
     }, [status]);

@@ -2,7 +2,9 @@ import { GeneratePayslipBlobData } from "@app/api/generate-payslip-blob/route";
 import { useEffect, useState } from "react";
 
 export function usePayslipFetching(rows?: any[]) {
-    const [finalRows, setFinalRows] = useState<any[]>();
+    const [finalRows, setFinalRows] = useState<
+        { payslip_blob: Blob & any }[]
+    >();
     const [payslipFetchingError, setPayslipFetchingError] = useState<Error>();
 
     useEffect(() => {

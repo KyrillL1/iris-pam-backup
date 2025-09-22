@@ -4,28 +4,29 @@ import { List } from "@components/list";
 import { useDataGrid } from "@refinedev/mui";
 import { DataTable, DataTableAction } from "@components/data-table";
 import { GridColDef } from "@mui/x-data-grid";
-import { PayoutModelWithRelations } from "./payout.model";
 import { PayslipCell } from "@components/payslip-cell";
+import { PayoutModel } from "./payout.model";
 
 export default function Payout() {
-  const { dataGridProps } = useDataGrid<PayoutModelWithRelations>({
+  const { dataGridProps } = useDataGrid<PayoutModel>({
     meta: {
       select: `
         *,
-        employee:employees(first_name, last_name)
-        `
-    }
+        contract:contracts(id, employee(first_name, last_name))
+        `,
+    },
   });
 
-  const columns: GridColDef<PayoutModelWithRelations>[] = [
+  const columns: GridColDef<PayoutModel>[] = [
     {
-      field: "employee_id",
-      headerName: "Employee",
+      field: "contract_id",
+      headerName: "Employee + Contract",
       minWidth: 150,
       valueGetter: (_, row) => {
-        const e = row.employee;
-        return e ? `${e.first_name} ${e.last_name}` : "";
-      }
+        const e = row;
+        // TODO
+        return "MISSING";
+      },
     },
     {
       field: "amount",
@@ -39,16 +40,26 @@ export default function Payout() {
       minWidth: 150,
       type: "string",
       renderCell: (params) => {
-        return <>
-          <PayslipCell path={params.value} />
-        </>
-      }
-    }
+        return (
+          <>
+            <PayslipCell path={params.value} />
+          </>
+        );
+      },
+    },
   ];
 
   return (
     <List canCreate={false}>
-      <DataTable<PayoutModelWithRelations> dataGridProps={dataGridProps} columns={columns} hideActions={[DataTableAction.DELETE, DataTableAction.EDIT, DataTableAction.SHOW]} />
+      <DataTable<PayoutModel>
+        dataGridProps={dataGridProps}
+        columns={columns}
+        hideActions={[
+          DataTableAction.DELETE,
+          DataTableAction.EDIT,
+          DataTableAction.SHOW,
+        ]}
+      />
     </List>
   );
 }

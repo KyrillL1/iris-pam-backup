@@ -24,6 +24,8 @@ export default function PayoutProposals() {
                             ? "warning"
                             : params.value === "APPROVED"
                             ? "success"
+                            : params.value === "PAID_OUT"
+                            ? "success"
                             : "error"}
                     />
                 );

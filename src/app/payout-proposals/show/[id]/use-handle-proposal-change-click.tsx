@@ -1,8 +1,15 @@
 import { useNavigation, useNotification } from "@refinedev/core";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useChangeProposalStatus } from "./use-change-proposal-status";
+import {
+    MarkProposalPaidItems,
+    useMarkProposalPaid,
+} from "./use-mark-proposal-paid";
 
-export function useHandleProposalChangeClick(payoutProposalId?: string) {
+export function useHandleProposalChangeClick(
+    payoutProposalId?: string,
+    payslipEnrichedRows?: { payslip_blob: Blob & any }[],
+) {
     const { open } = useNotification();
     const { list } = useNavigation();
     const {
@@ -18,6 +25,34 @@ export function useHandleProposalChangeClick(payoutProposalId?: string) {
         requestReviewData,
         requestReviewError,
     } = useChangeProposalStatus();
+    const {
+        markProposalPaid,
+        markProposalPaidError,
+        finished: markProposalPaidFinished,
+    } = useMarkProposalPaid();
+
+    const rowsRef = useRef(payslipEnrichedRows);
+
+    useEffect(() => {
+        // Need to use ref here, as otherwise my handleMarkAsPaid.payslipEnrichedRows === undefined
+        rowsRef.current = payslipEnrichedRows;
+    }, [payslipEnrichedRows]);
+
+    const handleMarkAsPaid = useCallback(() => {
+        if (!payoutProposalId) return;
+        if (!rowsRef.current) return;
+
+        const items: MarkProposalPaidItems[] = rowsRef.current.map(
+            (i: any) => {
+                return {
+                    amount: i.net_salary,
+                    payoutProposalItemId: i.id,
+                    payslipBlob: i.payslip_blob,
+                };
+            },
+        );
+        markProposalPaid(payoutProposalId, items);
+    }, [payoutProposalId]);
 
     const handleApproveClick = useCallback(() => {
         if (!payoutProposalId) return;
@@ -59,6 +94,13 @@ export function useHandleProposalChangeClick(payoutProposalId?: string) {
         open?.({ message, type: "error" });
         console.error(requestReviewError);
     }, [requestReviewError]);
+    useEffect(() => {
+        if (!markProposalPaidError) return;
+
+        const message = markProposalPaidError.message;
+        open?.({ message, type: "error" });
+        console.error(markProposalPaidError);
+    }, [markProposalPaidError]);
 
     // SUCCESS HANDLING
 
@@ -86,9 +128,18 @@ export function useHandleProposalChangeClick(payoutProposalId?: string) {
         list("payout_proposals");
     }, [requestReviewData]);
 
+    useEffect(() => {
+        if (!markProposalPaidFinished) return;
+
+        const message = "Successfully marked payout proposal as paid";
+        open?.({ message, type: "success" });
+        list("payouts");
+    }, [markProposalPaidFinished]);
+
     return {
         handleApproveClick,
         handleDenyClick,
         handleRequestReviewClick,
+        handleMarkAsPaid,
     };
 }

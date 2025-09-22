@@ -90,7 +90,7 @@ interface CalculatedPayAdjustment {
 
 interface PayoutProposals {
   id: string;
-  status: "DRAFT" | "UNDER_REVIEW" | "APPROVED" | "DENIED";
+  status: "DRAFT" | "UNDER_REVIEW" | "APPROVED" | "DENIED" | "PAID_OUT";
 }
 
 interface RequestBody {
