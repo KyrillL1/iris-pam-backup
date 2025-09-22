@@ -11,8 +11,7 @@
     "start": "refine start",
     "lint": "next lint",
     "refine": "refine",
-    "ef:create-payout-proposal": "./scripts/call-create-payout-proposal.sh",
-    "ef:generate-payslip": "./scripts/generate-payslip.sh"
+    "ef:create-payout-proposal": "./scripts/call-create-payout-proposal.sh"
   },
   "dependencies": {
     "@emotion/react": "^11.8.2",

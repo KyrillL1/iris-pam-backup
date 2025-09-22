@@ -5,8 +5,10 @@ import { useDataGrid } from "@refinedev/mui";
 import { DataTable } from "@components/data-table";
 import { GridColDef } from "@mui/x-data-grid";
 import { Employee } from "@lib/fetch-employees";
+import { useState } from "react";
 
 export default function EmployeeList() {
+  const [blob, setBlob] = useState<Blob>();
   const { dataGridProps } = useDataGrid<Employee>({});
 
   const columns: GridColDef<Employee>[] = [
@@ -19,9 +21,14 @@ export default function EmployeeList() {
       type: "date",
     },
     { field: "gender", headerName: "Gender", minWidth: 100 },
-    { field: "household_size", headerName: "Household Size", type: "number", minWidth: 120 },
+    {
+      field: "household_size",
+      headerName: "Household Size",
+      type: "number",
+      minWidth: 120,
+    },
     { field: "social_security_number", headerName: "SSN", minWidth: 150 },
-    { field: "quickbooks_name", headerName: "QuickBooks Name", minWidth: 150 }
+    { field: "quickbooks_name", headerName: "QuickBooks Name", minWidth: 150 },
   ];
 
   return (
