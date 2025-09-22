@@ -11,8 +11,8 @@
     "start": "refine start",
     "lint": "next lint",
     "refine": "refine",
-    "ef:deploy": "npx supabase functions deploy --project-ref zitmxagvhpivdadshfdu create-payout-proposal",
-    "ef:call": "./scripts/call-supabase-edge.sh"
+    "ef:create-payout-proposal": "./scripts/call-create-payout-proposal.sh",
+    "ef:generate-payslip": "./scripts/generate-payslip.sh"
   },
   "dependencies": {
     "@emotion/react": "^11.8.2",

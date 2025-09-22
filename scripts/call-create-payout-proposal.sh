@@ -3,6 +3,8 @@ set -a            # automatically export all sourced vars
 source .env.local # load your env file
 set +a
 
+npx supabase functions deploy --project-ref zitmxagvhpivdadshfdu create-payout-proposal
+
 curl -L \
     -i \
     -X POST \
