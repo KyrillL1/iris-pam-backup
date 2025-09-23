@@ -18,14 +18,14 @@ export const resources: ResourceProps[] = [
         show: "/employees/show/:id",
         meta: {
             canDelete: true,
-            icon: <Badge />,
+            icon: <Badge color="primary" />,
         },
     },
     {
         name: "departments",
         list: "/departments",
         meta: {
-            icon: <Diversity3 />,
+            icon: <Diversity3 color="primary" />,
         },
     },
     {
@@ -36,7 +36,7 @@ export const resources: ResourceProps[] = [
         show: "/contracts/show/:id",
         meta: {
             canDelete: true,
-            icon: <Description />,
+            icon: <Description color="primary" />,
         },
     },
     {
@@ -47,7 +47,7 @@ export const resources: ResourceProps[] = [
         edit: "/pay-adjustments-to-employees/edit/:id",
         meta: {
             label: "Benefits & Deductions",
-            icon: <BookmarkAdd />,
+            icon: <BookmarkAdd color="primary" />,
             canDelete: true,
         },
     },
@@ -59,7 +59,7 @@ export const resources: ResourceProps[] = [
         edit: "/recipient-payment-info/edit/:id",
         meta: {
             label: "Recipient Payout Info",
-            icon: <AccountBalance />,
+            icon: <AccountBalance color="primary" />,
             canDelete: true,
         },
     },
@@ -69,7 +69,7 @@ export const resources: ResourceProps[] = [
         show: "/payouts/show/:id",
         edit: "/payouts/edit/:id",
         meta: {
-            icon: <Paid />,
+            icon: <Paid color="primary" />,
             canDelete: false,
         },
     },
@@ -79,7 +79,7 @@ export const resources: ResourceProps[] = [
         create: "/payout-proposals/create",
         show: "/payout-proposals/show/:id",
         meta: {
-            icon: <CurrencyExchange />,
+            icon: <CurrencyExchange color="primary" />,
         },
     },
 ];

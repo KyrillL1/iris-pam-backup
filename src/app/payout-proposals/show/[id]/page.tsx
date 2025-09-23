@@ -58,13 +58,12 @@ export default function PayoutProposalShow() {
     open?.({ message, type: "error" });
   }, [payslipFetchingError]);
 
-  const { chip } = useStatusChip(record?.status);
+  const { chip } = useStatusChip(record?.status, record?.id);
   const { buttonRow } = useButtonRow(record, payslipEnrichedRows);
 
   return (
     <Card>
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <ListButton />
         <Box
           sx={{
             display: "flex",
@@ -84,11 +83,8 @@ export default function PayoutProposalShow() {
             </Typography>
             {chip}
           </Box>
-          {record && (
-            <Typography sx={{ color: "text.secondary", paddingLeft: 2 }}>
-              #{truncateId(record.id, 10)}
-            </Typography>
-          )}
+
+          <ListButton />
         </Box>
 
         <DataGrid

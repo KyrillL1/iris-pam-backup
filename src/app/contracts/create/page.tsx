@@ -33,7 +33,11 @@ export default function ContractCreate() {
       options: ["FREELANCER", "REGULAR", "TEMPORARY"],
       required: true,
     },
-    { name: "determined", label: "Determined", type: "boolean" },
+    {
+      name: "determined",
+      label: "Determined",
+      type: "boolean",
+    },
     {
       name: "calculation_basis",
       label: "Calculation Basis",

@@ -16,9 +16,11 @@ interface CreatePayoutProposalResponseData {
 export function useCreatePayoutProposal() {
     const [data, setData] = useState<CreatePayoutProposalResponseData>();
     const [error, setError] = useState<Error>();
+    const [loading, setLoading] = useState(false);
 
     const createPayoutProposal = useCallback(
         async (createData: CreatePayoutProposalData[]) => {
+            setLoading(true);
             const { data, error } = await supabaseBrowserClient
                 .functions
                 .invoke<CreatePayoutProposalResponseData>(
@@ -29,14 +31,20 @@ export function useCreatePayoutProposal() {
                 );
 
             if (error || !data) {
-                setError(error);
+                const msg = (await error?.context?.json?.())?.message ||
+                    error?.message || error?.data?.message || "Unknown Error";
+                setError(new Error(msg));
+                setData(undefined);
+                setLoading(false);
                 return {
                     data: null,
-                    error,
+                    error: new Error(msg),
                 };
             }
 
+            setLoading(false);
             setData(data);
+            setError(undefined);
             return { data, error };
         },
         [],
@@ -46,5 +54,6 @@ export function useCreatePayoutProposal() {
         createPayoutProposal,
         data,
         error,
+        loading,
     };
 }

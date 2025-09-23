@@ -5,10 +5,8 @@ import { useDataGrid } from "@refinedev/mui";
 import { DataTable } from "@components/data-table";
 import { GridColDef } from "@mui/x-data-grid";
 import { Employee } from "@lib/fetch-employees";
-import { useState } from "react";
 
 export default function EmployeeList() {
-  const [blob, setBlob] = useState<Blob>();
   const { dataGridProps } = useDataGrid<Employee>({});
 
   const columns: GridColDef<Employee>[] = [

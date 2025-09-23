@@ -4,8 +4,9 @@ import { Refine } from "@refinedev/core";
 import { DevtoolsProvider } from "@providers/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import {
-  useNotificationProvider,
+  Breadcrumb,
   RefineSnackbarProvider,
+  useNotificationProvider,
 } from "@refinedev/mui";
 import routerProvider from "@refinedev/nextjs-router";
 
@@ -15,7 +16,10 @@ import { dataProvider } from "@providers/data-provider";
 import { ColorModeContextProvider } from "@contexts/color-mode";
 import { Badge } from "@mui/icons-material";
 import { resources } from "./resources";
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { LayoutClient } from "./layout-client";
 
 export const metadata: Metadata = {
   title: "PAM",
@@ -29,7 +33,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <body>
@@ -39,25 +42,9 @@ export default async function RootLayout({
               <RefineSnackbarProvider>
                 <ColorModeContextProvider>
                   <DevtoolsProvider>
-                    <Refine
-                      routerProvider={routerProvider}
-                      authProvider={authProviderClient}
-                      dataProvider={dataProvider}
-                      notificationProvider={useNotificationProvider}
-                      resources={resources}
-                      options={{
-                        syncWithLocation: true,
-                        warnWhenUnsavedChanges: true,
-                        projectId: "a14Qj8-D19Zll-5qGa7R",
-                        title: {
-                          icon: <AppIcon />,
-                          text: "PAM",
-                        }
-                      }}
-                    >
+                    <LayoutClient>
                       {children}
-                      <RefineKbar />
-                    </Refine>
+                    </LayoutClient>
                   </DevtoolsProvider>
                 </ColorModeContextProvider>
               </RefineSnackbarProvider>
@@ -65,6 +52,6 @@ export default async function RootLayout({
           </AppRouterCacheProvider>
         </Suspense>
       </body>
-    </html >
+    </html>
   );
 }

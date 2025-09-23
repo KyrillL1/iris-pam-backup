@@ -23,6 +23,7 @@ import {
   useCreatePayoutProposal,
 } from "./use-create-payout-proposal";
 import { CurrencyExchange } from "@mui/icons-material";
+import { ListButton } from "@refinedev/mui";
 
 interface PayoutProposalCreateRow {
   employee_id: string;
@@ -32,7 +33,7 @@ interface PayoutProposalCreateRow {
 }
 
 export default function PayoutProposalCreate() {
-  const { list } = useNavigation();
+  const { show } = useNavigation();
 
   const columns: GridColDef[] = useMemo(() => [{
     field: "employee_id",
@@ -91,8 +92,12 @@ export default function PayoutProposalCreate() {
     [],
   );
 
-  const { createPayoutProposal, data: createPayoutResponse, error } =
-    useCreatePayoutProposal();
+  const {
+    createPayoutProposal,
+    data: createPayoutResponse,
+    error,
+    loading: createPayoutProposalLoading,
+  } = useCreatePayoutProposal();
   useEffect(() => {
     if (!error) return;
     open?.({ message: error.message, type: "error" });
@@ -114,23 +119,37 @@ export default function PayoutProposalCreate() {
 
     const payoutProposalId = createPayoutResponse.meta.id;
     open?.({
-      message: `${createPayoutResponse.message}. Id: ${payoutProposalId}`,
+      message: `${createPayoutResponse.message}`,
       type: "success",
     });
-    list("payout_proposals");
+    show("payout_proposals", payoutProposalId);
   }, [createPayoutResponse]);
 
   const buttonDisabled = useMemo(() => {
     if (!rows) return true;
+    if (rows.length === 0) return true;
     return rows.some((r) => r.hours_worked === undefined);
   }, [rows]);
 
   return (
     <Card>
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Typography variant="h5">
-          Payout Proposals
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="h5">
+            Payout Proposals
+          </Typography>
+
+          <Box>
+            <ListButton />
+          </Box>
+        </Box>
         <Typography sx={{ color: "text.secondary" }}>
           First specify hours worked for HOURLY workers
         </Typography>
@@ -138,6 +157,7 @@ export default function PayoutProposalCreate() {
           columns={columns}
           rows={rows}
           processRowUpdate={handleProcessRowUpdate}
+          loading={missingWorkedHours === undefined}
         />
         <Box sx={{ display: "flex", justifyContent: "end" }}>
           <Button
@@ -145,6 +165,7 @@ export default function PayoutProposalCreate() {
             onClick={handleCreatePayoutClick}
             startIcon={<CurrencyExchange />}
             disabled={buttonDisabled}
+            loading={createPayoutProposalLoading || !!createPayoutResponse}
           >
             Create
           </Button>

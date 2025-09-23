@@ -1,6 +1,13 @@
 import { useCallback } from "react";
 import { FieldValue, FieldValues } from "react-hook-form";
-import { stringIsCommentFieldName, stringIsEmployeeFieldName, stringIsEndDateField, stringIsFieldName, stringIsStartDateField, stringIsUserInputFieldName } from "./constants";
+import {
+    stringIsCommentFieldName,
+    stringIsEmployeeFieldName,
+    stringIsEndDateField,
+    stringIsFieldName,
+    stringIsStartDateField,
+    stringIsUserInputFieldName,
+} from "./constants";
 import { useNavigation, useNotification } from "@refinedev/core";
 import { supabaseBrowserClient } from "@utils/supabase/client";
 
@@ -57,58 +64,76 @@ export function useHandleFormSave<T extends FieldValues>() {
         const lengthUsIn = parsedUserInputs.length;
         const lengthStD = parsedStartDates.length;
         const lengthEnD = parsedEndDates.length;
-        if (lengthAdj !== lengthCom &&
+        if (
+            lengthAdj !== lengthCom &&
             lengthCom !== lengthUsIn &&
             lengthUsIn !== lengthStD &&
-            lengthStD !== lengthEnD) {
-            console.error("Cant save. Parsed arrays unequal length",
-                { parsedAdjustmentIds, parsedUserInputs, parsedComments, parsedEndDates, parsedStartDates })
-            open?.({ message: "Cant save. Parsed arrays unequal length", type: "error" });
+            lengthStD !== lengthEnD
+        ) {
+            console.error("Cant save. Parsed arrays unequal length", {
+                parsedAdjustmentIds,
+                parsedUserInputs,
+                parsedComments,
+                parsedEndDates,
+                parsedStartDates,
+            });
+            open?.({
+                message: "Cant save. Parsed arrays unequal length",
+                type: "error",
+            });
             return;
         }
 
         const parsedData: ParsedData[] = [];
         for (let i = 0; i < parsedAdjustmentIds.length; i++) {
             const parsedAdjustmentId = parsedAdjustmentIds[i];
-            const parsedUserInput = isNaN(parsedUserInputs[i]) ? null : parsedUserInputs[i];
-            const parsedComment = parsedComments[i] === "" ? null : parsedComments[i];
-            const parsedEndDate = parsedEndDates[i] === "" ? null : new Date(parsedEndDates[i]);
-            const parsedStartDate = new Date(parsedStartDates[i])
+            const parsedUserInput = isNaN(parsedUserInputs[i])
+                ? null
+                : parsedUserInputs[i];
+            const parsedComment = parsedComments[i] === ""
+                ? null
+                : parsedComments[i];
+            const parsedEndDate = parsedEndDates[i] === ""
+                ? null
+                : new Date(parsedEndDates[i]);
+            const parsedStartDate = new Date(parsedStartDates[i]);
             parsedData.push({
                 payAdjustmentId: parsedAdjustmentId,
                 userInput: parsedUserInput,
                 comment: parsedComment,
                 employeeId,
                 startDate: parsedStartDate,
-                endDate: parsedEndDate
-            })
+                endDate: parsedEndDate,
+            });
         }
 
         // Insert into Supabase
         const { error } = await supabaseBrowserClient
             .from("pay_adjustments_to_employees")
             .insert(
-                parsedData.map(item => ({
+                parsedData.map((item) => ({
                     employee_id: item.employeeId,
                     pay_adjustment_id: item.payAdjustmentId,
                     comment: item.comment,
                     user_input: item.userInput,
                     end_date: item.endDate,
-                    start_date: item.startDate
-                }))
+                    start_date: item.startDate,
+                })),
             );
 
         if (error) {
             console.error("Supabase insert failed", error);
             open?.({ message: "Failed to save adjustments", type: "error" });
         } else {
-            open?.({ message: "Adjustments saved successfully", type: "success" });
+            open?.({
+                message: "Adjustments saved successfully",
+                type: "success",
+            });
         }
         list("pay_adjustments_to_employees");
-
     }, []);
 
     return {
-        handleFormSave
-    }
+        handleFormSave,
+    };
 }

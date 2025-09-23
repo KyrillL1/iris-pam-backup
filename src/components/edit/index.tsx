@@ -2,20 +2,28 @@
 
 import React from "react";
 import {
-    Box,
-    TextField,
     Autocomplete,
+    AutocompleteRenderOptionState,
+    Box,
     Checkbox,
     FormControlLabel,
-    AutocompleteRenderOptionState,
+    TextField,
 } from "@mui/material";
 import { Edit as RefineEdit } from "@refinedev/mui";
 import { Controller, FieldValues, Path } from "react-hook-form";
 import { useForm } from "@refinedev/react-hook-form";
-
+import { Breadcrumb } from "@components/breadcrumb";
+import { DatePicker } from "@mui/x-date-pickers";
+import moment from "moment";
 
 // Field types supported
-type FieldType = "text" | "number" | "date" | "select" | "boolean" | "multiline";
+type FieldType =
+    | "text"
+    | "number"
+    | "date"
+    | "select"
+    | "boolean"
+    | "multiline";
 
 // Configuration for each field
 export interface EditFieldConfig {
@@ -49,7 +57,10 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
     const { register, control, formState: { errors }, saveButtonProps } = form;
 
     return (
-        <RefineEdit saveButtonProps={saveButtonProps}>
+        <RefineEdit
+            saveButtonProps={saveButtonProps}
+            breadcrumb={false}
+        >
             <Box
                 component="form"
                 sx={{ display: "flex", flexDirection: "column", gap: 2 }}
@@ -59,14 +70,53 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                     const errorMsg = (errors as any)[field.name]?.message;
 
                     switch (field.type) {
+                        case "date":
+                            return (
+                                <Controller
+                                    key={field.name}
+                                    name={field.name}
+                                    control={control}
+                                    defaultValue={null} // or undefined
+                                    rules={{
+                                        required: field.required
+                                            ? `${field.label} is required`
+                                            : false,
+                                    }}
+                                    render={({ field: controllerField }) => (
+                                        <DatePicker
+                                            {...controllerField}
+                                            value={controllerField.value
+                                                ? moment(
+                                                    controllerField.value,
+                                                )
+                                                : null}
+                                            onChange={(value) => {
+                                                controllerField.onChange(
+                                                    value,
+                                                );
+                                            }}
+                                            slotProps={{
+                                                textField: {
+                                                    required: field.required,
+                                                    label: field.label,
+                                                    fullWidth: true,
+                                                    error: !!errorMsg,
+                                                    helperText: errorMsg,
+                                                },
+                                            }}
+                                        />
+                                    )}
+                                />
+                            );
                         case "text":
                         case "number":
-                        case "date":
                             return (
                                 <TextField
                                     key={field.name}
                                     {...register(field.name as Path<T>, {
-                                        required: field.required ? `${field.label} is required` : false,
+                                        required: field.required
+                                            ? `${field.label} is required`
+                                            : false,
                                         valueAsNumber: field.type === "number",
                                         min: field.min,
                                         max: field.max,
@@ -75,15 +125,20 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                     error={!!errorMsg}
                                     helperText={errorMsg}
                                     fullWidth
+                                    required={field.required}
                                     contentEditable={field.isEditable}
                                     label={field.label}
-                                    type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
+                                    type={field.type === "number"
+                                        ? "number"
+                                        : "text"}
                                     slotProps={{
-                                        inputLabel: { shrink: true }, htmlInput: {
+                                        inputLabel: { shrink: true },
+                                        htmlInput: {
                                             min: field.min,
                                             max: field.max,
                                             step: field.step,
-                                        }
+                                            required: field.required,
+                                        },
                                     }}
                                 />
                             );
@@ -95,13 +150,20 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                     name={field.name as any}
                                     control={control}
                                     defaultValue={null as any}
+                                    rules={{
+                                        required: field.required
+                                            ? `${field.label} is required`
+                                            : false,
+                                    }}
                                     render={({ field: controllerField }) => (
                                         <Autocomplete
                                             {...controllerField}
                                             options={field.options || []}
-                                            getOptionLabel={field.mapOptionToLabel}
+                                            getOptionLabel={field
+                                                .mapOptionToLabel}
                                             renderOption={field.renderOption}
-                                            onChange={(_, value) => controllerField.onChange(value)}
+                                            onChange={(_, value) =>
+                                                controllerField.onChange(value)}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -123,13 +185,24 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                     name={field.name as any}
                                     control={control}
                                     defaultValue={false}
+                                    rules={{
+                                        required: field.required
+                                            ? `${field.name} is required`
+                                            : false,
+                                    }}
                                     render={({ field: controllerField }) => (
                                         <FormControlLabel
                                             control={
                                                 <Checkbox
                                                     {...controllerField}
-                                                    checked={controllerField.value}
-                                                    onChange={(e) => controllerField.onChange(e.target.checked)}
+                                                    checked={controllerField
+                                                        .value}
+                                                    onChange={(e) =>
+                                                        controllerField
+                                                            .onChange(
+                                                                e.target
+                                                                    .checked,
+                                                            )}
                                                 />
                                             }
                                             label={field.label}
@@ -143,6 +216,6 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                     }
                 })}
             </Box>
-        </RefineEdit >
+        </RefineEdit>
     );
 }

@@ -3,7 +3,6 @@
 import { Create, CreateFieldConfig } from "@components/create";
 
 export default function EmployeeCreate() {
-
   const fields: CreateFieldConfig[] = [
     { name: "first_name", label: "First Name", type: "text", required: true },
     { name: "last_name", label: "Last Name", type: "text", required: true },
@@ -13,6 +12,7 @@ export default function EmployeeCreate() {
       label: "Gender",
       type: "select",
       options: ["FEMALE", "MALE"],
+      required: true,
     },
     {
       name: "household_size",
