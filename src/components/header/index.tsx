@@ -20,7 +20,11 @@ import {
 import { HamburgerMenu, RefineThemedLayoutHeaderProps } from "@refinedev/mui";
 import React, { useContext, useState } from "react";
 import { Box, Divider, ListItemIcon, ListSubheader } from "@mui/material";
-import { Logout } from "@mui/icons-material";
+import {
+  AccountCircle,
+  AccountCircleOutlined,
+  Logout,
+} from "@mui/icons-material";
 
 type IUser = {
   id: number;
@@ -69,7 +73,17 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
           {user?.name && (
             <>
               <IconButton onClick={handleClick} sx={{ p: 0 }}>
-                <Avatar src={user.avatar} alt={user.name} />
+                {mode === "dark"
+                  ? (
+                    <AccountCircle
+                      sx={{ width: 32, height: 32, color: "white" }}
+                    />
+                  )
+                  : (
+                    <AccountCircleOutlined
+                      sx={{ width: 32, height: 32, color: "white" }}
+                    />
+                  )}
               </IconButton>
 
               <Menu
