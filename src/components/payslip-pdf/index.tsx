@@ -7,6 +7,15 @@ import {
     View,
 } from "@react-pdf/renderer";
 import { formatMoney } from "@utils/format-money";
+import fs from "fs";
+import path from "path";
+
+const imageFile = fs.readFileSync(
+    path.join(process.cwd(), "public/icons/iris-global.png"),
+);
+const base64IrisGlobalIcon = `data:image/png;base64,${
+    imageFile.toString("base64")
+}`;
 
 interface PayTableRowCombined {
     key: string;
@@ -173,7 +182,7 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                     }}
                 >
                     <Image
-                        src="/icons/iris-global.png"
+                        src={base64IrisGlobalIcon}
                         style={{
                             width: 300,
                             objectFit: "contain",
