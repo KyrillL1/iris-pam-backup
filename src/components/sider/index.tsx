@@ -16,14 +16,39 @@ import {
   ThemedSider,
   ThemedTitle,
 } from "@refinedev/mui";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Link as MuiLink, Typography } from "@mui/material";
 import NextLink from "next/link";
 import { useMenu, useRefineContext } from "@refinedev/core";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+import { usePathname, useRouter } from "next/navigation";
+
+NProgress.configure({ showSpinner: false, minimum: 0.4, speed: 400 });
 
 export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
-  const { menuItems } = useMenu();
-  const items = useMemo(() => {
+  const pathname = usePathname();
+  useEffect(() => {
+    NProgress.done();
+  }, [pathname]);
+
+  useEffect(() => {
+    const header = document.querySelector("header"); // or #app-bar
+    const height = header?.clientHeight || 64;
+
+    const style = document.createElement("style");
+    style.innerHTML = `
+    #nprogress .bar {
+      top: ${height}px !important;
+      height: 3px !important;
+      z-index: 1000 !important;
+    }
+  `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   return (
@@ -35,6 +60,9 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
             {menuItems.map(({ label, route, icon, key }) => {
               return (
                 <ListItemButton
+                  onClick={() => {
+                    NProgress.start();
+                  }}
                   key={key}
                   component={NextLink}
                   href={route || "/"}
