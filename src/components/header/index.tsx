@@ -23,8 +23,10 @@ import { Box, Divider, ListItemIcon, ListSubheader } from "@mui/material";
 import {
   AccountCircle,
   AccountCircleOutlined,
+  KeyboardCommandKey,
   Logout,
 } from "@mui/icons-material";
+import { useKBar } from "@refinedev/kbar"; // ✅ instead of empty import
 
 type IUser = {
   id: number;
@@ -54,6 +56,8 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
     handleClose();
     logout();
   };
+
+  const { query: { toggle: toggleCommandBar } } = useKBar();
 
   return (
     <AppBar position={sticky ? "sticky" : "relative"}>
@@ -123,6 +127,14 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
                     <Typography>Switch</Typography>
                   </MenuItem>
                   <Divider />
+                  <MenuItem
+                    onClick={toggleCommandBar}
+                  >
+                    <ListItemIcon>
+                      <KeyboardCommandKey />
+                    </ListItemIcon>
+                    Command Bar (⌘ + K)
+                  </MenuItem>
                   <MenuItem
                     onClick={handleLogoutClick}
                   >
