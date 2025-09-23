@@ -24,7 +24,12 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { usePathname, useRouter } from "next/navigation";
 
-NProgress.configure({ showSpinner: false, minimum: 0.4, speed: 400 });
+NProgress.configure({
+  showSpinner: false,
+  minimum: 0.4,
+  speed: 400,
+  trickleSpeed: 60,
+});
 
 export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
   const pathname = usePathname();
