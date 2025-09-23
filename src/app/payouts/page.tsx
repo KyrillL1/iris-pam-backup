@@ -2,8 +2,7 @@
 
 import { List } from "@components/list";
 import { useDataGrid } from "@refinedev/mui";
-import { DataTable, DataTableAction } from "@components/data-table";
-import { GridColDef } from "@mui/x-data-grid";
+import { DataTable, DataTableAction, GridColDef } from "@components/data-table";
 import { PayslipCell } from "@components/payslip-cell";
 import { PayoutModel, PayoutModelWithRelations } from "./payout.model";
 
@@ -40,7 +39,7 @@ export default function Payout() {
       field: "amount",
       headerName: "Amount",
       minWidth: 150,
-      type: "number",
+      type: "money",
     },
     {
       field: "payout_slip_path",

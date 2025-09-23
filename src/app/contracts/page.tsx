@@ -2,8 +2,7 @@
 
 import { List } from "@components/list";
 import { useDataGrid } from "@refinedev/mui";
-import { DataTable } from "@components/data-table";
-import { GridColDef } from "@mui/x-data-grid";
+import { DataTable, GridColDef } from "@components/data-table";
 import { ContractWithRelations } from "@lib/fetch-contracts";
 
 export default function ContractList() {
@@ -13,8 +12,8 @@ export default function ContractList() {
         *,
         department:departments(name),
         employee:employees(first_name, last_name)
-      `
-    }
+      `,
+    },
   });
 
   const columns: GridColDef<ContractWithRelations>[] = [
@@ -25,7 +24,7 @@ export default function ContractList() {
       valueGetter: (_, row) => {
         const e = row.employee;
         return e ? `${e.first_name} ${e.last_name}` : "";
-      }
+      },
     },
     {
       field: "department_name",
@@ -54,13 +53,13 @@ export default function ContractList() {
       field: "start_date",
       headerName: "Start Date",
       minWidth: 120,
-      type: "date"
+      type: "date",
     },
     {
       field: "end_date",
       headerName: "End Date",
       minWidth: 120,
-      type: "date"
+      type: "date",
     },
     {
       field: "calculation_basis",
@@ -71,13 +70,16 @@ export default function ContractList() {
       field: "base_salary",
       headerName: "Base Salary",
       minWidth: 120,
-      type: "number",
+      type: "money",
     },
   ];
 
   return (
     <List>
-      <DataTable<ContractWithRelations> dataGridProps={dataGridProps} columns={columns} />
+      <DataTable<ContractWithRelations>
+        dataGridProps={dataGridProps}
+        columns={columns}
+      />
     </List>
   );
 }

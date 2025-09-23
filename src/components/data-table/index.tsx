@@ -3,15 +3,22 @@
 import React from "react";
 import {
     DataGrid,
-    type GridColDef,
+    type GridColDef as MuiGridColDef,
     GridRenderCellParams,
     GridValidRowModel,
+    GridValueFormatter,
 } from "@mui/x-data-grid";
 import { Box, Chip, IconButton } from "@mui/material";
 import { DeleteButton, EditButton, ShowButton } from "@refinedev/mui";
 import { ContentCopy } from "@mui/icons-material";
 import { useNotification } from "@refinedev/core";
 import { truncateId } from "@utils/truncate-id";
+
+export type GridColDef<T extends GridValidRowModel> =
+    & Omit<MuiGridColDef<T>, "type">
+    & {
+        type?: MuiGridColDef<T>["type"] | "money";
+    };
 
 interface DataTableProps<T extends GridValidRowModel> {
     dataGridProps: any; // or refine's DataGridProps type
@@ -49,6 +56,18 @@ export function DataTable<T extends { id: string }>(
                 return {
                     ...col,
                     valueGetter: (v: any) => (v ? new Date(v) : null),
+                } as MuiGridColDef;
+            }
+            if (col.type === "money") {
+                const valueFormatter: GridValueFormatter<T> = (value) => {
+                    return new Intl.NumberFormat("pt-MZ", {
+                        style: "currency",
+                        currency: "MZN",
+                    }).format(value ?? 0);
+                };
+                return {
+                    ...col,
+                    valueFormatter,
                 };
             }
             return col;
