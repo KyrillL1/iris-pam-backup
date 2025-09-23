@@ -16,7 +16,7 @@ export default function ContractEdit() {
       type: "select",
       options: employeeIds,
       mapOptionToLabel: mapEmployeeIdToName,
-      required: true
+      required: true,
     },
 
     {
@@ -24,10 +24,16 @@ export default function ContractEdit() {
       label: "Department",
       type: "select",
       mapOptionToLabel: (option: string) => {
-        return departments.find((d) => d.id === option)?.name || option
+        return departments.find((d) => d.id === option)?.name || option;
       },
       options: departments.map((d) => d.id),
       required: true,
+    },
+    {
+      name: "job_title",
+      label: "Job Title",
+      required: true,
+      type: "text",
     },
 
     {

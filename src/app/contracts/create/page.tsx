@@ -27,6 +27,11 @@ export default function ContractCreate() {
       required: true,
     },
     {
+      name: "job_title",
+      label: "Job Title",
+      type: "text",
+    },
+    {
       name: "contract_type",
       label: "Contract Type",
       type: "select",

@@ -23,7 +23,10 @@ export interface GeneratePayslipBlobData {
         name: string;
     }[];
     work_percentage: number;
-    payout_information: string;
+    means_of_payment: string;
+    recipient_account: string;
+    bank_name?: string;
+    bank_routing_number?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -43,7 +46,10 @@ export async function POST(req: NextRequest) {
             benefits: body.benefits || [],
             deductions: body.deductions || [],
             workPercentage: body.work_percentage || 0,
-            payoutInformation: body.payout_information || "Missing Payout",
+            meansOfPayment: body.means_of_payment || "Missing",
+            recipientAccount: body.recipient_account || "Missing",
+            bankName: body.bank_name || "Missing",
+            bankRoutingNumber: body.bank_routing_number || "Missing",
         };
 
         const element = <PayslipPdf {...payload} />;

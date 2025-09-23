@@ -34,7 +34,11 @@ export interface PayslipPdfProps {
     benefits: PayTableRow[];
     deductions: PayTableRow[];
     workPercentage: number;
-    payoutInformation: string;
+
+    meansOfPayment: string;
+    recipientAccount: string;
+    bankName?: string;
+    bankRoutingNumber?: string;
 }
 
 export const PayslipPdf: React.FC<PayslipPdfProps> = ({
@@ -49,7 +53,10 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
     benefits,
     deductions,
     workPercentage,
-    payoutInformation,
+    meansOfPayment,
+    recipientAccount,
+    bankName,
+    bankRoutingNumber,
 }) => {
     const styles = StyleSheet.create({
         informationOverviewCol: {
@@ -334,7 +341,12 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                     <Text style={{ fontWeight: 700, fontSize: 18 }}>
                         Payout Via
                     </Text>
-                    <Text>{payoutInformation}</Text>
+                    <Text>Means of Payment: {meansOfPayment}</Text>
+                    <Text>Account: {recipientAccount}</Text>
+                    {bankName && <Text>Bank Name: {bankName}</Text>}
+                    {bankRoutingNumber && (
+                        <Text>Bank Routing Number: {bankRoutingNumber}</Text>
+                    )}
                 </View>
             </Page>
         </Document>

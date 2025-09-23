@@ -16,7 +16,7 @@ import { usePayoutProposalShowColumns } from "./use-payout-proposal-show-columns
 import { useStatusChip } from "./use-status-chip";
 import { truncateId } from "@utils/truncate-id";
 import { useButtonRow } from "./use-button-row";
-import { ListButton } from "@refinedev/mui";
+import { DeleteButton, ListButton } from "@refinedev/mui";
 import { usePayslipFetching } from "./use-payslip-fetching";
 
 export default function PayoutProposalShow() {
@@ -58,7 +58,7 @@ export default function PayoutProposalShow() {
     open?.({ message, type: "error" });
   }, [payslipFetchingError]);
 
-  const { chip } = useStatusChip(record?.status, record?.id);
+  const { chip } = useStatusChip(record?.status);
   const { buttonRow } = useButtonRow(record, payslipEnrichedRows);
 
   return (
@@ -84,7 +84,10 @@ export default function PayoutProposalShow() {
             {chip}
           </Box>
 
-          <ListButton />
+          <Box>
+            <DeleteButton />
+            <ListButton />
+          </Box>
         </Box>
 
         <DataGrid

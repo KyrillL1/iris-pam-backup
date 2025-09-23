@@ -22,6 +22,7 @@ export default function ContractsShow() {
     { label: "Created At", value: record?.created_at, type: "datetime" },
     { label: "Updated At", value: record?.updated_at, type: "datetime" },
     { label: "Department", value: record?.department.name },
+    { label: "Job Title", value: record?.job_title },
     { label: "Contract Type", value: record?.contract_type },
     { label: "Determined", value: record?.determined, type: "boolean" },
     { label: "Work %", value: record?.work_percentage, type: "number" },

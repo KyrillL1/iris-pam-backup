@@ -1,4 +1,5 @@
 import { GeneratePayslipBlobData } from "@app/api/generate-payslip-blob/route";
+import { MEANS_OF_PAYMENT } from "@lib/fetch-payout-information";
 import { useEffect, useState } from "react";
 
 export function usePayslipFetching(rows?: any[]) {
@@ -43,12 +44,10 @@ export function usePayslipFetching(rows?: any[]) {
                                 };
                             }),
                             work_percentage: row.contract_work_percentage,
-                            payout_information:
-                                `${row.rpi_payment_means}: ${row.rpi_account} ${
-                                    row.rpi_payment_means === "BANK"
-                                        ? `Routing : ${row.rpi_bank_routing}`
-                                        : ""
-                                }`,
+                            means_of_payment: row.rpi_payment_means,
+                            recipient_account: row.rpi_account,
+                            bank_name: row.rpi_bank_name,
+                            bank_routing_number: row.rpi_bank_routing,
                         };
                         const res = await fetch("/api/generate-payslip-blob", {
                             method: "POST",

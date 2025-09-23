@@ -8,13 +8,17 @@ import {
   RecipientPayoutInformationModel,
 } from "@lib/fetch-payout-information";
 import { useState } from "react";
+import { useRPIFieldValidators } from "../use-RPI-field-validators";
 
 export default function EmployeeCreate() {
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
-
-  const [selectedPaymentMeans, setSelectedPaymentMeans] = useState<
-    MEANS_OF_PAYMENT
-  >();
+  const {
+    handleSelectPaymentMeansChange,
+    mpesaValidate,
+    bankNameValidate,
+    bankAccountNumberValidate,
+    bankRoutingValidate,
+  } = useRPIFieldValidators();
 
   const fields: CreateFieldConfig[] = [
     {
@@ -37,79 +41,31 @@ export default function EmployeeCreate() {
       type: "select",
       options: MEANS_OF_PAYMENT_OPTIONS,
       required: true,
-      onChange: setSelectedPaymentMeans,
+      onChange: handleSelectPaymentMeansChange,
     },
     {
       name: "mpesa_number",
       label: "Mpesa Number",
       type: "number",
-      validate: (value: number | null) => {
-        if (!selectedPaymentMeans) return true;
-
-        if (selectedPaymentMeans === MEANS_OF_PAYMENT.MPESA && !value) {
-          return "Mpesa Number is required";
-        }
-
-        if (selectedPaymentMeans !== MEANS_OF_PAYMENT.MPESA && value) {
-          return "Mpesa Number may NOT be set";
-        }
-
-        return true;
-      },
+      validate: mpesaValidate,
     },
     {
       name: "bank_routing_number",
       label: "Bank Routing Number",
       type: "number",
-      validate: (value: number | null) => {
-        if (!selectedPaymentMeans) return true;
-
-        if (selectedPaymentMeans === MEANS_OF_PAYMENT.BANK && !value) {
-          return "Bank Routing Number is required";
-        }
-
-        if (selectedPaymentMeans !== MEANS_OF_PAYMENT.BANK && value) {
-          return "Bank Routing Number may NOT be set";
-        }
-
-        return true;
-      },
+      validate: bankRoutingValidate,
     },
     {
       name: "bank_account_number",
       label: "Bank Account Number",
       type: "number",
-      validate: (value: number | null) => {
-        if (!selectedPaymentMeans) return true;
-
-        if (selectedPaymentMeans === MEANS_OF_PAYMENT.BANK && !value) {
-          return "Bank Account Number is required";
-        }
-
-        if (selectedPaymentMeans !== MEANS_OF_PAYMENT.BANK && value) {
-          return "Bank Account Number may NOT be set";
-        }
-
-        return true;
-      },
+      validate: bankAccountNumberValidate,
     },
     {
       name: "bank_name",
       label: "Bank Name",
       type: "text",
-      validate: (value: number | null) => {
-        if (!selectedPaymentMeans) return true;
-
-        if (selectedPaymentMeans === MEANS_OF_PAYMENT.BANK && !value) {
-          return "Bank Name is required";
-        }
-
-        if (selectedPaymentMeans !== MEANS_OF_PAYMENT.BANK && value) {
-          return "Bank Name may NOT be set";
-        }
-
-        return true;
-      },
+      validate: bankNameValidate,
     },
   ];
 

@@ -44,6 +44,8 @@ export interface EditFieldConfig {
     step?: number; // for number/currency
     multiline?: boolean;
     isEditable?: boolean;
+    validate?: (value: any) => string | boolean;
+    onChange?: (value: any) => void;
 }
 
 // Props for generic RecordEdit
@@ -81,6 +83,7 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                         required: field.required
                                             ? `${field.label} is required`
                                             : false,
+                                        validate: field.validate,
                                     }}
                                     render={({ field: controllerField }) => (
                                         <DatePicker
@@ -94,6 +97,7 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                                 controllerField.onChange(
                                                     value,
                                                 );
+                                                field?.onChange?.(value);
                                             }}
                                             slotProps={{
                                                 textField: {
@@ -110,21 +114,27 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                             );
                         case "text":
                         case "number":
+                            const reg = register(field.name as Path<T>, {
+                                required: field.required
+                                    ? `${field.label} is required`
+                                    : false,
+                                valueAsNumber: field.type === "number",
+                                min: field.min,
+                                max: field.max,
+                                validate: field.validate,
+                            });
                             return (
                                 <TextField
                                     key={field.name}
-                                    {...register(field.name as Path<T>, {
-                                        required: field.required
-                                            ? `${field.label} is required`
-                                            : false,
-                                        valueAsNumber: field.type === "number",
-                                        min: field.min,
-                                        max: field.max,
-                                    })}
+                                    {...reg}
                                     multiline={field.multiline}
                                     error={!!errorMsg}
                                     helperText={errorMsg}
                                     fullWidth
+                                    onChange={(e) => {
+                                        (reg as any).onChange?.(e);
+                                        field?.onChange?.(e.target.value);
+                                    }}
                                     required={field.required}
                                     contentEditable={field.isEditable}
                                     label={field.label}
@@ -154,6 +164,7 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                         required: field.required
                                             ? `${field.label} is required`
                                             : false,
+                                        validate: field.validate,
                                     }}
                                     render={({ field: controllerField }) => (
                                         <Autocomplete
@@ -162,8 +173,10 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                             getOptionLabel={field
                                                 .mapOptionToLabel}
                                             renderOption={field.renderOption}
-                                            onChange={(_, value) =>
-                                                controllerField.onChange(value)}
+                                            onChange={(_, value) => {
+                                                controllerField.onChange(value);
+                                                field?.onChange?.(value);
+                                            }}
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
@@ -189,6 +202,7 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                         required: field.required
                                             ? `${field.name} is required`
                                             : false,
+                                        validate: field.validate,
                                     }}
                                     render={({ field: controllerField }) => (
                                         <FormControlLabel
@@ -197,12 +211,16 @@ export function Edit<T extends FieldValues>({ fields }: EditProps) {
                                                     {...controllerField}
                                                     checked={controllerField
                                                         .value}
-                                                    onChange={(e) =>
+                                                    onChange={(e) => {
                                                         controllerField
                                                             .onChange(
                                                                 e.target
                                                                     .checked,
-                                                            )}
+                                                            );
+                                                        field?.onChange?.(
+                                                            e.target.checked,
+                                                        );
+                                                    }}
                                                 />
                                             }
                                             label={field.label}
