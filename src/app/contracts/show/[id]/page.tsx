@@ -19,8 +19,8 @@ export default function ContractsShow() {
 
   const fields: ShowField[] = [
     { label: "ID", value: record?.id },
-    { label: "Created At", value: record?.created_at, type: "date" },
-    { label: "Updated At", value: record?.updated_at, type: "date" },
+    { label: "Created At", value: record?.created_at, type: "datetime" },
+    { label: "Updated At", value: record?.updated_at, type: "datetime" },
     { label: "Department", value: record?.department.name },
     { label: "Contract Type", value: record?.contract_type },
     { label: "Determined", value: record?.determined, type: "boolean" },

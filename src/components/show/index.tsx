@@ -2,12 +2,20 @@
 
 import { Breadcrumb } from "@components/breadcrumb";
 import { Stack, Typography } from "@mui/material";
+import { DateTimeField } from "@mui/x-date-pickers";
 import { BooleanField, Show as RefineShow } from "@refinedev/mui";
 import { DateField, NumberField, TextFieldComponent } from "@refinedev/mui";
 import { formatMoney } from "@utils/format-money";
 import { JSX } from "react";
 
-type FieldType = "text" | "number" | "date" | "boolean" | "money" | "custom";
+type FieldType =
+    | "text"
+    | "number"
+    | "date"
+    | "datetime"
+    | "boolean"
+    | "money"
+    | "custom";
 
 export interface ShowField {
     label: string;
@@ -37,6 +45,8 @@ export const Show: React.FC<ShowProps> = ({ isLoading, fields }) => {
                             ? <NumberField value={field.value} />
                             : field.type === "date"
                             ? <DateField value={field.value} />
+                            : field.type === "datetime"
+                            ? <DateField value={field.value} format="DD/MM/YYYY HH:mm:ss"/> 
                             : field.type === "boolean"
                             ? <BooleanField value={field.value} />
                             : field.type === "money"

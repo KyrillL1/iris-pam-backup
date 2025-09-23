@@ -20,8 +20,8 @@ export default function PayAdjustmentsToEmployeesShow() {
 
   const fields: ShowField[] = [
     { label: "ID", value: record?.id },
-    { label: "Created At", value: record?.created_at, type: "date" },
-    { label: "Updated At", value: record?.updated_at, type: "date" },
+    { label: "Created At", value: record?.created_at, type: "datetime" },
+    { label: "Updated At", value: record?.updated_at, type: "datetime" },
     { label: "Employee Name", value: `${record?.employee?.first_name} ${record?.employee?.last_name}` },
     {
       label: "Type", value: record?.pay_adjustment?.is_credit ? "Benefit" : "Deduction"
