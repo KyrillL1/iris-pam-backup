@@ -84,7 +84,7 @@ export default function PayoutProposalShow() {
             {chip}
           </Box>
 
-          <Box>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 1}}>
             <DeleteButton />
             <ListButton />
           </Box>
