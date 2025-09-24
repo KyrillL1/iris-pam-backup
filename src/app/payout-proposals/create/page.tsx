@@ -7,6 +7,9 @@ import {
   Card,
   CardContent,
   IconButton,
+  Step,
+  StepLabel,
+  Stepper,
   Typography,
 } from "@mui/material";
 import {
@@ -24,6 +27,7 @@ import {
 } from "./use-create-payout-proposal";
 import { CurrencyExchange } from "@mui/icons-material";
 import { ListButton } from "@refinedev/mui";
+import { useStepper } from "./use-stepper";
 
 interface PayoutProposalCreateRow {
   employee_id: string;
@@ -131,6 +135,11 @@ export default function PayoutProposalCreate() {
     return rows.some((r) => r.hours_worked === undefined);
   }, [rows]);
 
+  const { stepper, buttonRow, activeStep } = useStepper({
+    onFinish: () => {},
+    onStepComplete: () => {},
+  });
+
   return (
     <Card>
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -140,6 +149,7 @@ export default function PayoutProposalCreate() {
             flexDirection: "row",
             width: "100%",
             justifyContent: "space-between",
+            marginBottom: 1,
           }}
         >
           <Typography variant="h5">
@@ -150,10 +160,14 @@ export default function PayoutProposalCreate() {
             <ListButton />
           </Box>
         </Box>
-        <Typography sx={{ color: "text.secondary" }}>
-          First specify hours worked for HOURLY workers
-        </Typography>
-        <DataGrid
+        {stepper}
+        <Box>
+          hi
+        </Box>
+        {buttonRow}
+
+        {
+          /* <DataGrid
           columns={columns}
           rows={rows}
           processRowUpdate={handleProcessRowUpdate}
@@ -169,7 +183,8 @@ export default function PayoutProposalCreate() {
           >
             Create
           </Button>
-        </Box>
+        </Box> */
+        }
       </CardContent>
     </Card>
   );
