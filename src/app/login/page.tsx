@@ -9,14 +9,7 @@ export default async function Login() {
     redirect(data?.redirectTo || "/");
   }
 
-  return (
-    <AuthPage
-      type="login"
-      registerLink={false}
-      forgotPasswordLink={false}
-      formProps={{ autoComplete: "off" }}
-    />
-  );
+  return <AuthPage />;
 }
 
 async function getData() {
