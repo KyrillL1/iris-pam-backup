@@ -7,12 +7,12 @@ export interface Contract {
     updated_at: string; // timestamp with time zone
     employee_id: string; // UUID
     department_id: string; // UUID
-    contract_type: 'freelancer' | 'regular' | 'temporary';
+    contract_type: "freelancer" | "regular" | "temporary";
     determined: boolean;
     work_percentage: number; // 0 - 100
     start_date: string; // date in ISO format
     end_date: string | null; // nullable date
-    calculation_basis: 'MONTHLY' | 'HOURLY';
+    calculation_basis: "MONTHLY" | "HOURLY";
     base_salary: number; // numeric(12,2);
     job_title: string;
 }
@@ -24,14 +24,18 @@ export interface ContractWithRelations extends Contract {
     employee: {
         first_name: string;
         last_name: string;
-    }
+    };
 }
 
 export function useFetchContractsWithRelations() {
-    const [contractsWithRelations, setContractsWithRelations] = useState<ContractWithRelations[]>([]);
+    const [contractsWithRelations, setContractsWithRelations] = useState<
+        ContractWithRelations[]
+    >([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetch = async () => {
+            setLoading(true);
             const { data, error } = await supabaseBrowserClient
                 .from("contracts")
                 .select(`
@@ -43,13 +47,13 @@ export function useFetchContractsWithRelations() {
             if (!error && data) {
                 setContractsWithRelations(data);
             }
+            setLoading(false);
         };
 
         fetch();
     }, []);
 
-
-    return { contractsWithRelations }
+    return { contractsWithRelations, loading };
 }
 
 export function useFetchContracts() {
@@ -72,8 +76,7 @@ export function useFetchContracts() {
         fetch();
     }, []);
 
-
-    return { contracts }
+    return { contracts };
 }
 
 export function useFetchCurrentContract() {
@@ -87,16 +90,16 @@ export function useFetchCurrentContract() {
                 `)
             .eq("employee_id", employeeId)
             .is("end_date", null)
-            .limit(1)
+            .limit(1);
 
         if (!error && data) {
             setCurrentContract(data[0]);
-            return data[0] as Contract
+            return data[0] as Contract;
         }
     }, []);
 
     return {
         currentContract,
-        fetchCurrentContract
-    }
+        fetchCurrentContract,
+    };
 }

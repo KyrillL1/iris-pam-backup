@@ -68,7 +68,7 @@ export function useStepper({ onFinish, onStepComplete }: UseStepperOptions) {
                     activeStep={activeStep}
                     nonLinear
                     sx={{
-                        width: 400,
+                        width: 600,
                     }}
                 >
                     {steps.map((label, index) => {

@@ -28,6 +28,8 @@ import {
 import { CurrencyExchange } from "@mui/icons-material";
 import { ListButton } from "@refinedev/mui";
 import { useStepper } from "./use-stepper";
+import { useEmployeeStep } from "./use-employee-step";
+import { useHoursStep } from "./use-hours-step";
 
 interface PayoutProposalCreateRow {
   employee_id: string;
@@ -137,8 +139,15 @@ export default function PayoutProposalCreate() {
 
   const { stepper, buttonRow, activeStep } = useStepper({
     onFinish: () => {},
-    onStepComplete: (index: number) => {},
+    onStepComplete: (index: number) => {
+      if (index === 0) {
+        handleCompleteEmployeeStep();
+      }
+    },
   });
+
+  const { employeeView, handleCompleteEmployeeStep } = useEmployeeStep();
+  const { hoursView } = useHoursStep();
 
   return (
     <Card>
@@ -162,8 +171,8 @@ export default function PayoutProposalCreate() {
         </Box>
         {stepper}
         <Box>
-          {activeStep === 0 && <div>Employees</div>}
-          {activeStep === 1 && <div>Hours</div>}
+          {activeStep === 0 && employeeView}
+          {activeStep === 1 && hoursView}
         </Box>
         {buttonRow}
 
