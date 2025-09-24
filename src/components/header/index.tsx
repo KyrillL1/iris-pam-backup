@@ -65,6 +65,7 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
         sx={{
           display: "flex",
           justifyContent: "space-between",
+          padding: 0
         }}
       >
         {/* Left side: HamburgerMenu */}
