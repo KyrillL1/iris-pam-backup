@@ -33,6 +33,11 @@ export default function ContractList() {
       valueGetter: (_, row) => row.department?.name ?? "",
     },
     {
+      field: "job_title",
+      headerName: "Job Title",
+      minWidth: 150,
+    },
+    {
       field: "contract_type",
       headerName: "Contract Type",
       minWidth: 120,

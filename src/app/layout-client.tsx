@@ -15,31 +15,34 @@ import { authProviderClient } from "@providers/auth-provider/auth-provider.clien
 import { dataProvider } from "@providers/data-provider";
 import { resources } from "./resources";
 import "moment/locale/pt";
+import { SelectMultipleProvider } from "@contexts/select-multiple";
 
 export const LayoutClient: React.FC<{ children: React.ReactNode }> = (
   { children },
 ) => {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"pt"}>
-      <Refine
-        routerProvider={routerProvider}
-        authProvider={authProviderClient}
-        dataProvider={dataProvider}
-        notificationProvider={useNotificationProvider}
-        resources={resources}
-        options={{
-          syncWithLocation: true,
-          warnWhenUnsavedChanges: true,
-          projectId: "a14Qj8-D19Zll-5qGa7R",
-          title: {
-            icon: <AppIcon />,
-            text: "PAM",
-          },
-        }}
-      >
-        {children}
-        <RefineKbar />
-      </Refine>
+      <SelectMultipleProvider>
+        <Refine
+          routerProvider={routerProvider}
+          authProvider={authProviderClient}
+          dataProvider={dataProvider}
+          notificationProvider={useNotificationProvider}
+          resources={resources}
+          options={{
+            syncWithLocation: true,
+            warnWhenUnsavedChanges: true,
+            projectId: "a14Qj8-D19Zll-5qGa7R",
+            title: {
+              icon: <AppIcon />,
+              text: "PAM",
+            },
+          }}
+        >
+          {children}
+          <RefineKbar />
+        </Refine>
+      </SelectMultipleProvider>
     </LocalizationProvider>
   );
 };

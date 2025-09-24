@@ -1,18 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
     DataGrid,
     type GridColDef as MuiGridColDef,
+    GridFooter,
     GridRenderCellParams,
+    GridRowModel,
     GridValidRowModel,
     GridValueFormatter,
 } from "@mui/x-data-grid";
-import { Box, Chip, IconButton } from "@mui/material";
+import {
+    Box,
+    Checkbox,
+    Chip,
+    IconButton,
+    Stack,
+    Typography,
+} from "@mui/material";
 import { DeleteButton, EditButton, ShowButton } from "@refinedev/mui";
-import { ContentCopy } from "@mui/icons-material";
-import { useNotification } from "@refinedev/core";
+import { CheckBoxOutlineBlank, ContentCopy } from "@mui/icons-material";
+import { useNotification, useSelect } from "@refinedev/core";
 import { truncateId } from "@utils/truncate-id";
+import { useSelectMultipleContext } from "@contexts/select-multiple";
 
 export type GridColDef<T extends GridValidRowModel> =
     & Omit<MuiGridColDef<T>, "type">
@@ -49,8 +59,44 @@ export function DataTable<T extends { id: string }>(
         });
     };
 
+    const { showMultiple, addSelected, removeSelected, selected } =
+        useSelectMultipleContext();
+
     // Wrap original columns to add ID copy button if needed
     const enhancedColumns = React.useMemo<GridColDef<T>[]>(() => {
+        const actionColumns: GridColDef<T>[] = [];
+        if (showMultiple) {
+            actionColumns.push({
+                field: "select_column",
+                renderHeader: () => <CheckBoxOutlineBlank />,
+                headerAlign: "center",
+                type: "custom",
+                renderCell: (params) => {
+                    const id = params.row.id;
+                    const row = params.row;
+                    return (
+                        <Stack justifyContent={"center"}>
+                            <Checkbox
+                                onChange={(e) => {
+                                    const nowChecked = e.target.checked;
+                                    if (nowChecked) {
+                                        addSelected?.(id, row);
+                                        return;
+                                    }
+
+                                    removeSelected?.(id);
+                                }}
+                            />
+                        </Stack>
+                    );
+                },
+                disableColumnMenu: true,
+                filterable: false,
+                sortable: false,
+                hideable: false,
+            });
+        }
+
         const updatedColumns = columns.map((col) => {
             if (col.type === "date" || col.type === "dateTime") {
                 return {
@@ -144,8 +190,41 @@ export function DataTable<T extends { id: string }>(
                 },
             });
         }
-        return [...updatedColumns, ...standardColumns];
-    }, [columns]);
 
-    return <DataGrid {...dataGridProps} columns={enhancedColumns} />;
+        return [...actionColumns, ...updatedColumns, ...standardColumns];
+    }, [columns, showMultiple]);
+
+    return (
+        <DataGrid
+            {...dataGridProps}
+            columns={enhancedColumns}
+            slots={{
+                footer: () => {
+                    return (
+                        <Stack
+                            flexDirection={"row"}
+                        >
+                            {showMultiple && (
+                                <Typography
+                                    variant="body2"
+                                    component={"span"}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        paddingLeft: 2,
+                                        borderTop: (t) =>
+                                            `1px solid ${t.palette.divider}`,
+                                    }}
+                                >
+                                    Selected: {selected?.length}
+                                </Typography>
+                            )}
+                            <GridFooter sx={{ flexGrow: 1 }} />
+                        </Stack>
+                    );
+                },
+            }}
+        />
+    );
 }
