@@ -29,16 +29,7 @@ import {
 } from "./constants";
 import { useFetchPayAdjustments } from "@lib/fetch-pay-adjustments";
 import { DatePicker } from "@mui/x-date-pickers";
-
-interface PayAdjustmentField {
-  name: string;
-  key: string;
-  label: string;
-  userInputName: string;
-  commentName: string;
-  startDateName: string;
-  endDateName: string;
-}
+import { PayAdjustmentField } from "./pay-adjustment-field.model";
 
 export default function PayAdjustmentsToEmployeesCreate() {
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
