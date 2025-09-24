@@ -137,7 +137,7 @@ export default function PayoutProposalCreate() {
 
   const { stepper, buttonRow, activeStep } = useStepper({
     onFinish: () => {},
-    onStepComplete: () => {},
+    onStepComplete: (index: number) => {},
   });
 
   return (
@@ -162,7 +162,8 @@ export default function PayoutProposalCreate() {
         </Box>
         {stepper}
         <Box>
-          hi
+          {activeStep === 0 && <div>Employees</div>}
+          {activeStep === 1 && <div>Hours</div>}
         </Box>
         {buttonRow}
 

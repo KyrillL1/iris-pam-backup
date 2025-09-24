@@ -25,7 +25,6 @@ export function useStepper({ onFinish, onStepComplete }: UseStepperOptions) {
     const [steps] = useState([
         "Employees",
         "Hours",
-        "Last Month",
     ]);
     const [activeStep, setActiveStep] = useState(0);
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -62,22 +61,36 @@ export function useStepper({ onFinish, onStepComplete }: UseStepperOptions) {
     const isStepCompleted = (index: number) => completedSteps.includes(index);
     const completedAll = completedSteps.length === steps.length;
 
-    const stepper = useMemo(() => (
-        <Stepper activeStep={activeStep} nonLinear>
-            {steps.map((label, index) => {
-                return (
-                    <Step key={label} completed={isStepCompleted(index)}>
-                        <StepButton
-                            color="inherit"
-                            onClick={() => handleStepClick(index)}
-                        >
-                            {label}
-                        </StepButton>
-                    </Step>
-                );
-            })}
-        </Stepper>
-    ), [activeStep, completedSteps]);
+    const stepper = useMemo(
+        () => (
+            <Stack direction={"row"} justifyContent={"center"}>
+                <Stepper
+                    activeStep={activeStep}
+                    nonLinear
+                    sx={{
+                        width: 400,
+                    }}
+                >
+                    {steps.map((label, index) => {
+                        return (
+                            <Step
+                                key={label}
+                                completed={isStepCompleted(index)}
+                            >
+                                <StepButton
+                                    color="inherit"
+                                    onClick={() => handleStepClick(index)}
+                                >
+                                    {label}
+                                </StepButton>
+                            </Step>
+                        );
+                    })}
+                </Stepper>
+            </Stack>
+        ),
+        [activeStep, completedSteps],
+    );
 
     const buttonRow = useMemo(() => {
         return (
@@ -89,7 +102,6 @@ export function useStepper({ onFinish, onStepComplete }: UseStepperOptions) {
                                 <Button
                                     onClick={handleBack}
                                     startIcon={<ArrowLeft />}
-                                    variant="contained"
                                 >
                                     Back
                                 </Button>
@@ -111,7 +123,6 @@ export function useStepper({ onFinish, onStepComplete }: UseStepperOptions) {
                             <Button
                                 onClick={handleNext}
                                 endIcon={<ArrowRight />}
-                                variant="contained"
                             >
                                 Next
                             </Button>
