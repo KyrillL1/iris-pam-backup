@@ -80,6 +80,7 @@ export const resources: ResourceProps[] = [
         show: "/payout-proposals/show/:id",
         meta: {
             icon: <CurrencyExchange color="primary" />,
+            canDelete: true
         },
     },
 ];

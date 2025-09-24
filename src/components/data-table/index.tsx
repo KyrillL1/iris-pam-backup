@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { DeleteButton, EditButton, ShowButton } from "@refinedev/mui";
 import { CheckBoxOutlineBlank, ContentCopy } from "@mui/icons-material";
-import { useNotification, useSelect } from "@refinedev/core";
+import { useNotification, useResourceParams, useSelect } from "@refinedev/core";
 import { truncateId } from "@utils/truncate-id";
 import { useSelectMultipleContext } from "@contexts/select-multiple";
 
@@ -61,6 +61,8 @@ export function DataTable<T extends { id: string }>(
 
     const { showMultiple, addSelected, removeSelected, selected } =
         useSelectMultipleContext();
+
+    const { resource } = useResourceParams();
 
     // Wrap original columns to add ID copy button if needed
     const enhancedColumns = React.useMemo<GridColDef<T>[]>(() => {
@@ -161,7 +163,8 @@ export function DataTable<T extends { id: string }>(
 
         const showEdit = !hideActions.includes(DataTableAction.EDIT);
         const showShow = !hideActions.includes(DataTableAction.SHOW);
-        const showDelete = !hideActions.includes(DataTableAction.DELETE);
+        const showDelete = !hideActions.includes(DataTableAction.DELETE) &&
+            resource?.meta?.canDelete;
         const showActionCell = !hideActionCell &&
             (showEdit || showShow || showDelete);
         if (showActionCell) {
