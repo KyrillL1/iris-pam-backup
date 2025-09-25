@@ -1,5 +1,6 @@
 import { useFetchContractsWithRelations } from "@lib/fetch-contracts";
 import {
+    CheckBox as CheckboxIcon,
     CheckBoxOutlineBlank,
     IndeterminateCheckBox,
 } from "@mui/icons-material";
@@ -38,7 +39,7 @@ export function useEmployeeStep() {
                         selectedContractIds.length ===
                             contractsWithRelations.length
                     ) {
-                        return <Checkbox />;
+                        return <CheckboxIcon />;
                     }
                     return <IndeterminateCheckBox />;
                 }
@@ -91,6 +92,7 @@ export function useEmployeeStep() {
                 loading={loading}
                 rows={rows}
                 checkboxSelection
+                disableRowSelectionOnClick={disableSelectFields}
                 onRowSelectionModelChange={(
                     selectedIds: GridRowSelectionModel,
                 ) => {
