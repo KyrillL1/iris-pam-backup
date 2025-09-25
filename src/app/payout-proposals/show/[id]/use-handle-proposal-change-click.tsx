@@ -5,6 +5,7 @@ import {
     MarkProposalPaidItems,
     useMarkProposalPaid,
 } from "./use-mark-proposal-paid";
+import { useHandleError } from "@utils/use-handle-error";
 
 export function useHandleProposalChangeClick(
     payoutProposalId?: string,
@@ -73,35 +74,11 @@ export function useHandleProposalChangeClick(
     }, [payoutProposalId]);
 
     // ERROR HANDLING
-    useEffect(() => {
-        if (!denyError) return;
-
-        const message = denyError.message;
-        open?.({ message, type: "error" });
-        console.error(denyError);
-    }, [denyError]);
-    useEffect(() => {
-        if (!approveError) return;
-
-        const message = approveError.message;
-        open?.({ message, type: "error" });
-        console.error(approveError);
-    }, [approveError]);
-    useEffect(() => {
-        if (!requestReviewError) return;
-
-        const message = requestReviewError.message;
-        open?.({ message, type: "error" });
-        console.error(requestReviewError);
-    }, [requestReviewError]);
-    useEffect(() => {
-        if (!markProposalPaidError) return;
-
-        const message = markProposalPaidError.message;
-        open?.({ message, type: "error" });
-        console.error(markProposalPaidError);
-    }, [markProposalPaidError]);
-
+    useHandleError(denyError);
+    useHandleError(approveError);
+    useHandleError(requestReviewError);
+    useHandleError(markProposalPaidError);
+    
     // SUCCESS HANDLING
 
     useEffect(() => {

@@ -8,6 +8,7 @@ import {
     usePayoutProposalProvider,
 } from "../payout-proposal.provider";
 import { useCallbackWaitForStateUpdate } from "@utils/use-callback-wait-for-state-update";
+import { useHandleError } from "@utils/use-handle-error";
 
 export interface PayoutProposalCreateRow {
     employee_id: string;
@@ -41,19 +42,7 @@ export function useHoursStep() {
 
     const { missingWorkedHours, missingWorkedHoursError, loading } =
         useFetchMissingWorkedHours(includeContractIds);
-
-    const { open } = useNotification();
-
-    useEffect(() => {
-        if (!missingWorkedHoursError) {
-            return;
-        }
-        console.error(missingWorkedHoursError);
-        open?.({
-            message: `${missingWorkedHoursError.message}`,
-            type: "error",
-        });
-    }, [missingWorkedHoursError]);
+    useHandleError(missingWorkedHoursError);
 
     const [rows, setRows] = useState<PayoutProposalCreateRow[]>([]);
 

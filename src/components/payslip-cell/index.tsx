@@ -2,11 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import { IconButton } from "@mui/material";
 import { Download, OpenInNew } from "@mui/icons-material";
 import { supabaseBrowserClient } from "@utils/supabase/client";
+import { useHandleError } from "@utils/use-handle-error";
 
 export const PayslipCell: React.FC<{ path: string; fileName?: string }> = (
 	{ path, fileName },
 ) => {
 	const [url, setUrl] = useState<string | null>(null);
+
+	const { handleError } = useHandleError();
 
 	useEffect(() => {
 		let active = true;
@@ -20,7 +23,7 @@ export const PayslipCell: React.FC<{ path: string; fileName?: string }> = (
 				.createSignedUrl(path, 3600);
 
 			if (error) {
-				console.error(error);
+				handleError(error, { hideFromUser: true });
 			}
 
 			if (active && data?.signedUrl) {
@@ -42,7 +45,7 @@ export const PayslipCell: React.FC<{ path: string; fileName?: string }> = (
 			.download(path);
 
 		if (error) {
-			console.error(error);
+			handleError(error, { hideFromUser: true });
 		}
 
 		if (data) {

@@ -10,6 +10,7 @@ import {
 } from "./constants";
 import { useNavigation, useNotification } from "@refinedev/core";
 import { supabaseBrowserClient } from "@utils/supabase/client";
+import { useHandleError } from "@utils/use-handle-error";
 
 interface ParsedData {
     payAdjustmentId: string;
@@ -23,6 +24,9 @@ interface ParsedData {
 export function useHandleFormSave<T extends FieldValues>() {
     const { open } = useNotification();
     const { list } = useNavigation();
+
+    const { handleError } = useHandleError();
+
     const handleFormSave = useCallback(async (data: FieldValue<T>) => {
         const parsedAdjustmentIds: string[] = [];
         const parsedUserInputs: number[] = [];
@@ -70,17 +74,18 @@ export function useHandleFormSave<T extends FieldValues>() {
             lengthUsIn !== lengthStD &&
             lengthStD !== lengthEnD
         ) {
-            console.error("Cant save. Parsed arrays unequal length", {
-                parsedAdjustmentIds,
-                parsedUserInputs,
-                parsedComments,
-                parsedEndDates,
-                parsedStartDates,
-            });
-            open?.({
-                message: "Cant save. Parsed arrays unequal length",
-                type: "error",
-            });
+            handleError(
+                new Error("Cant save. Parsed arrays unequal length"),
+                {
+                    meta: {
+                        parsedAdjustmentIds,
+                        parsedUserInputs,
+                        parsedComments,
+                        parsedEndDates,
+                        parsedStartDates,
+                    },
+                },
+            );
             return;
         }
 
@@ -122,8 +127,7 @@ export function useHandleFormSave<T extends FieldValues>() {
             );
 
         if (error) {
-            console.error("Supabase insert failed", error);
-            open?.({ message: "Failed to save adjustments", type: "error" });
+            handleError(new Error("Supabase insert failed", error));
         } else {
             open?.({
                 message: "Adjustments saved successfully",
