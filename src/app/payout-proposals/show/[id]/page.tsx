@@ -97,7 +97,8 @@ export default function PayoutProposalShow() {
               {chip}
             </Box>
             <Typography color="textSecondary">
-              This is a snapshot of the data of: {createdAtDate?.toString()}
+              This is a snapshot from{" "}
+              {createdAtDate?.format("DD/MM/YYYY HH:mm:ss")}
             </Typography>
           </Box>
 
