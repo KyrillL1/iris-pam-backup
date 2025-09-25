@@ -6,12 +6,6 @@ import { useStepper } from "./use-stepper";
 import { useEmployeeStep } from "./use-employee-step";
 import { useHoursStep } from "./use-hours-step";
 import { useHandleStepperComplete } from "./use-handle-stepper-complete";
-import {
-  PayoutProposalContext,
-  PayoutProposalProvider,
-  usePayoutProposalProvider,
-} from "../payout-proposal.provider";
-import { useEffect, useRef } from "react";
 
 export default function PayoutProposalCreate() {
   const { employeeView, handleCompleteEmployeeStep } = useEmployeeStep();
@@ -20,13 +14,9 @@ export default function PayoutProposalCreate() {
   const { createPayoutProposalLoading, handleCompleteClick } =
     useHandleStepperComplete();
 
-  const { hourRows, selectedContracts } = usePayoutProposalProvider();
-  const hourRowsRef = useRef<PayoutProposalContext["hourRows"]>([]);
-  hourRowsRef.current = hourRows || [];
-
   const { stepper, buttonRow, activeStep } = useStepper({
     onFinish: () => {
-      handleCompleteClick(hourRowsRef.current, selectedContracts);
+      handleCompleteClick();
     },
     onStepComplete: (index: number) => {
       if (index === 0) {

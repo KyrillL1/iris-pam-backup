@@ -13,6 +13,7 @@ import {
 } from "@mui/x-data-grid";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePayoutProposalProvider } from "../payout-proposal.provider";
+import { useCallbackWaitForStateUpdate } from "@utils/use-callback-wait-for-state-update";
 
 export function useEmployeeStep() {
     const { contractsWithRelations, loading } =
@@ -25,14 +26,11 @@ export function useEmployeeStep() {
 
     const { setSelectedContracts } = usePayoutProposalProvider();
 
-    const selectedContractIdsRef = useRef<string[]>([]);
-    selectedContractIdsRef.current = selectedContractIds;
-
-    const handleCompleteEmployeeStep = () => {
+    const handleCompleteEmployeeStep = useCallbackWaitForStateUpdate(() => {
         setDisableSelectFields(true);
-        setSelectedContracts?.(selectedContractIdsRef.current);
-    };
-    
+        setSelectedContracts?.(selectedContractIds);
+    }, [selectedContractIds, setSelectedContracts]);
+
     const columns: GridColDef[] = useMemo(() => [
         {
             ...GRID_CHECKBOX_SELECTION_COL_DEF,

@@ -3,7 +3,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFetchMissingWorkedHours } from "./use-fetch-missing-worked-hours";
 import { useNotification } from "@refinedev/core";
 import { Stack, Typography } from "@mui/material";
-import { usePayoutProposalProvider } from "../payout-proposal.provider";
+import {
+    PayoutProposalContext,
+    usePayoutProposalProvider,
+} from "../payout-proposal.provider";
+import { useCallbackWaitForStateUpdate } from "@utils/use-callback-wait-for-state-update";
 
 export interface PayoutProposalCreateRow {
     employee_id: string;
@@ -80,19 +84,18 @@ export function useHoursStep() {
         [],
     );
 
-    const rowsRef = useRef<any[]>([]);
-    rowsRef.current = rows;
-    const { setHourRows, hourRows } = usePayoutProposalProvider();
+    const { setHourRows } = usePayoutProposalProvider();
 
-    const handleCompleteHoursStep = () => {
-        console.log({ hours: rowsRef.current });
-        setHourRows?.(rowsRef.current.map((r) => {
-            return {
-                contractId: r.id,
-                workedHours: r.hours_worked || -1,
-            };
-        }));
-    };
+    const handleCompleteHoursStep = useCallbackWaitForStateUpdate(() => {
+        setHourRows?.(
+            rows.map((r) => {
+                return {
+                    contractId: r.id,
+                    workedHours: r.hours_worked || -1,
+                };
+            }),
+        );
+    }, [rows, setHourRows]);
 
     const hoursView = useMemo(() => {
         return (

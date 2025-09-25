@@ -66,7 +66,9 @@ export function useStepper(
     const isStepFirst = (index: number) => index === 0;
     const isStepCompleted = (index: number) => completedSteps.includes(index);
     const showFinishButton = (index: number) =>
-        (completedSteps.length === steps.length - 1) && (isStepLast(index));
+        ((completedSteps.length === steps.length) ||
+            (completedSteps.length === steps.length - 1)) &&
+        (isStepLast(index));
     const showCompleteButton = (index: number) =>
         !completedSteps.includes(index) && !showFinishButton(index);
 
@@ -153,7 +155,7 @@ export function useStepper(
                 </Stack>
             </>
         );
-    }, [activeStep, completedSteps]);
+    }, [activeStep, completedSteps, finishButtonProps]);
 
     return {
         stepper,

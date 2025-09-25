@@ -4,58 +4,59 @@ import {
     useCreatePayoutProposal,
 } from "./use-create-payout-proposal";
 import { useNavigation, useNotification } from "@refinedev/core";
-import { PayoutProposalContext } from "../payout-proposal.provider";
+import {
+    PayoutProposalContext,
+    usePayoutProposalProvider,
+} from "../payout-proposal.provider";
+import { useCallbackWaitForStateUpdate } from "@utils/use-callback-wait-for-state-update";
 
 export function useHandleStepperComplete() {
     const { open } = useNotification();
     const { show } = useNavigation();
-    const [customError, setCustomError] = useState<Error>();
 
     const {
         createPayoutProposal,
         data: createPayoutResponse,
         error,
-        loading: createPayoutProposalLoading,
     } = useCreatePayoutProposal();
-    
+
+    const [createPayoutProposalLoading, setCreatePayoutProposalLoading] =
+        useState(false);
+
     useEffect(() => {
-        const errorToShow = error || customError;
-        if (!errorToShow) return;
-        open?.({ message: errorToShow.message, type: "error" });
-    }, [error, customError]);
+        if (!error) return;
 
-    const handleCompleteClick = useCallback(
-        (
-            rows?: PayoutProposalContext["hourRows"],
-            includeContractIds?: string[],
-        ) => {
-            if (!rows) {
-                setCustomError(new Error("Missing hour rows"));
-                return;
-            }
-            if (!includeContractIds) {
-                setCustomError(new Error("Missing contractIds"));
-                return;
-            }
+        open?.({ message: error.message, type: "error" });
+        setCreatePayoutProposalLoading(false);
+    }, [error]);
 
-            const worked_hours: CreatePayoutProposalBody["worked_hours"] = rows
-                .map(
-                    (r) => {
-                        return {
-                            contract_id: r.contractId,
-                            hours: r.workedHours,
-                        };
-                    },
-                );
-            const body: CreatePayoutProposalBody = {
-                worked_hours,
-                include_contracts: includeContractIds,
-            };
+    const { hourRows, selectedContracts } = usePayoutProposalProvider();
 
-            createPayoutProposal(body);
-        },
-        [],
-    );
+    const handleCompleteClick = useCallbackWaitForStateUpdate(() => {
+        const rows = hourRows;
+        const includeContractIds = selectedContracts;
+        if (!rows || !includeContractIds) {
+            return;
+        }
+
+        setCreatePayoutProposalLoading(true);
+
+        const worked_hours: CreatePayoutProposalBody["worked_hours"] = rows
+            .map(
+                (r) => {
+                    return {
+                        contract_id: r.contractId,
+                        hours: r.workedHours,
+                    };
+                },
+            );
+        const body: CreatePayoutProposalBody = {
+            worked_hours,
+            include_contracts: includeContractIds,
+        };
+
+        createPayoutProposal(body);
+    }, [hourRows, selectedContracts]);
 
     useEffect(() => {
         if (!createPayoutResponse) return;
