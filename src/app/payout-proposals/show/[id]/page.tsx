@@ -18,7 +18,7 @@ import {
 } from "@refinedev/core";
 import { useEffect, useMemo, useState } from "react";
 import { usePayoutProposalShowColumns } from "./use-payout-proposal-show-columns";
-import { useStatusChip } from "./use-status-chip";
+import { useStatusChip } from "../../use-status-chip";
 import { truncateId } from "@utils/truncate-id";
 import { useButtonRow } from "./use-button-row";
 import { DeleteButton, ListButton } from "@refinedev/mui";

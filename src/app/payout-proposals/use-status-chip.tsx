@@ -5,7 +5,7 @@ import { truncateId } from "@utils/truncate-id";
 import { JSX, useCallback, useMemo } from "react";
 
 export function useStatusChip(status?: PayoutProposal["status"]) {
-    const chip: JSX.Element | undefined = useMemo(() => {
+    const generateChip = (status?: PayoutProposal["status"]) => {
         if (!status) {
             return undefined;
         }
@@ -25,7 +25,10 @@ export function useStatusChip(status?: PayoutProposal["status"]) {
                 color={color}
             />
         );
+    };
+    const chip: JSX.Element | undefined = useMemo(() => {
+        return generateChip(status);
     }, [status]);
 
-    return { chip };
+    return { chip, generateChip };
 }
