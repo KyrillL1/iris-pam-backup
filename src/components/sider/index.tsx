@@ -31,10 +31,10 @@ import { usePathname, useRouter } from "next/navigation";
 import i18n from "@providers/i18n-provider";
 
 i18n.addResourceBundle("en", "sider", {
-  title: "PAM",
+  title: "EN",
 });
 i18n.addResourceBundle("pt", "sider", {
-  title: "PAM",
+  title: "PT",
 });
 
 NProgress.configure({

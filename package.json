@@ -33,6 +33,7 @@
     "@refinedev/supabase": "^6.0.0",
     "@supabase/ssr": "^0.3.0",
     "@supabase/supabase-js": "^2.57.4",
+    "accept-language": "^3.0.20",
     "country-flag-icons": "^1.5.21",
     "expr-eval": "^2.0.2",
     "i18next": "^25.5.2",
