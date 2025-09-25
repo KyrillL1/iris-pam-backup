@@ -23,6 +23,7 @@ import { truncateId } from "@utils/truncate-id";
 import { useButtonRow } from "./use-button-row";
 import { DeleteButton, ListButton } from "@refinedev/mui";
 import { usePayslipFetching } from "./use-payslip-fetching";
+import moment from "moment";
 
 export default function PayoutProposalShow() {
   const { query } = useShow<PayoutProposal>({
@@ -67,6 +68,10 @@ export default function PayoutProposalShow() {
   const { chip } = useStatusChip(record?.status);
   const { buttonRow } = useButtonRow(record, payslipEnrichedRows);
 
+  const createdAtDate = record?.created_at
+    ? moment(record?.created_at)
+    : undefined;
+
   return (
     <Card>
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -77,17 +82,23 @@ export default function PayoutProposalShow() {
             alignItems: "center",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: 2,
-            }}
-          >
-            <Typography variant="h5">
-              Payout Proposal
+          <Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 2,
+                marginBottom: 1,
+              }}
+            >
+              <Typography variant="h5">
+                Payout Proposal
+              </Typography>
+              {chip}
+            </Box>
+            <Typography color="textSecondary">
+              This is a snapshot of the data of: {createdAtDate?.toString()}
             </Typography>
-            {chip}
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>

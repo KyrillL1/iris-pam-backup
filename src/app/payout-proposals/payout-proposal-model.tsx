@@ -39,4 +39,6 @@ export interface PayoutProposal {
     id: string;
     status: "DRAFT" | "APPROVED" | "UNDER_REVIEW" | "DENIED" | "PAID_OUT";
     items: PayoutProposalItem[];
+    created_at: string;
+    updated_at: string;
 }

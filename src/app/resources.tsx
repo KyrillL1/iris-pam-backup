@@ -70,7 +70,7 @@ export const resources: ResourceProps[] = [
         edit: "/payouts/edit/:id",
         meta: {
             icon: <Paid color="primary" />,
-            canDelete: false,
+            canDelete: true,
         },
     },
     {
