@@ -3,8 +3,71 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { Parser } from "npm:expr-eval";
 
-function cutNumberAfter2Digits(n: number): number {
-  return parseFloat(Number(n).toFixed(2));
+export interface SalaryCalculatorPayAdjustment {
+  name: string;
+  amount: number;
+}
+
+export interface SalaryCalculatorOptions {
+  baseSalary: number;
+  calculationBasis: "HOURLY" | "MONTHLY";
+  workQuantity: number; // days or hours
+  workPercentage: number; // 0-100
+  benefits?: SalaryCalculatorPayAdjustment[];
+  deductions?: SalaryCalculatorPayAdjustment[];
+}
+
+export class SalaryCalculator {
+  public baseSalary = 0;
+  public grossSalary = 0;
+  public benefitsTotal = 0;
+  public deductionsTotal = 0;
+  public netSalary = 0;
+
+  constructor(
+    {
+      baseSalary,
+      calculationBasis,
+      workPercentage,
+      workQuantity,
+      benefits = [],
+      deductions = [],
+    }: SalaryCalculatorOptions,
+  ) {
+    this.baseSalary = this.cutNumber(baseSalary);
+
+    const _grossSalary = calculationBasis === "HOURLY"
+      ? baseSalary * workQuantity * workPercentage / 100
+      : baseSalary * workQuantity / 30 * workPercentage / 100;
+    this.grossSalary = this.cutNumber(_grossSalary);
+
+    this.setPayAdjustments(benefits, deductions);
+  }
+
+  public setPayAdjustments(
+    benefits: SalaryCalculatorPayAdjustment[],
+    deductions: SalaryCalculatorPayAdjustment[],
+  ) {
+    const _benefitsTotal = benefits.reduce(
+      (prev, curr) => prev + curr.amount,
+      0,
+    );
+    this.benefitsTotal = this.cutNumber(_benefitsTotal);
+
+    const _deductionsTotal = deductions.reduce(
+      (prev, curr) => prev + curr.amount,
+      0,
+    );
+    this.deductionsTotal = this.cutNumber(_deductionsTotal);
+
+    const _netSalary = this.grossSalary + this.benefitsTotal -
+      this.deductionsTotal;
+    this.netSalary = this.cutNumber(_netSalary);
+  }
+
+  private cutNumber(n: number): number {
+    return parseFloat(Number(n).toFixed(2));
+  }
 }
 
 interface RecipientPaymentInfo {
@@ -221,15 +284,18 @@ Deno.serve(async (req: Request) => {
       const hours_worked = contractsWorkedHours.find((bodyContract) =>
         bodyContract.contract_id === c.id
       )?.hours || 0;
-      const gross_salary = c.calculation_basis === "MONTHLY"
-        ? c.base_salary * c.work_percentage / 100
-        : c.base_salary * hours_worked;
 
       // Split into benefits and deductions
       const benefits: CalculatedPayAdjustment[] = [];
       const deductions: CalculatedPayAdjustment[] = [];
 
-      let net_salary = gross_salary;
+      const salaryCalc = new SalaryCalculator({
+        baseSalary: c.base_salary,
+        workPercentage: c.work_percentage,
+        workQuantity: c.calculation_basis === "HOURLY" ? hours_worked : 30,
+        calculationBasis: c.calculation_basis,
+      });
+      console.log({ salaryCalc });
 
       const aParsed = adjustments as unknown as PayAdjustmentToEmployee[];
       for (const a of aParsed) {
@@ -249,7 +315,7 @@ Deno.serve(async (req: Request) => {
           finalAmount = user_input || amount || 0;
         }
         if (adjustment_type === "GS_PERCENTAGE") {
-          finalAmount = gross_salary *
+          finalAmount = salaryCalc.grossSalary *
             (user_input || percentage || 0) / 100;
         }
         if (adjustment_type === "FORMULA") {
@@ -262,7 +328,7 @@ Deno.serve(async (req: Request) => {
           const expr = parser.parse(formula);
           finalAmount = expr.evaluate({
             "USER_INPUT": user_input || 0,
-            "GROSS_SALARY": gross_salary,
+            "GROSS_SALARY": salaryCalc.grossSalary,
           }) || -1;
         }
 
@@ -272,16 +338,16 @@ Deno.serve(async (req: Request) => {
             name,
             amount: finalAmount,
           });
-          net_salary = net_salary + finalAmount;
         } else {
           deductions.push({
             id,
             name,
             amount: finalAmount,
           });
-          net_salary = net_salary - finalAmount;
         }
       }
+
+      salaryCalc.setPayAdjustments(benefits, deductions);
 
       // Fetch last month's payout for this contract & employee
       const { data: lastMonthItem, error: lastMonthItemError } = await supabase
@@ -338,9 +404,11 @@ Deno.serve(async (req: Request) => {
         benefits,
         deductions,
         hours_worked: c.calculation_basis === "MONTHLY" ? null : hours_worked,
-        gross_salary: cutNumberAfter2Digits(gross_salary),
-        net_salary: cutNumberAfter2Digits(net_salary),
-        net_salary_last_month: cutNumberAfter2Digits(net_salary_last_month),
+        gross_salary: salaryCalc.grossSalary,
+        net_salary: salaryCalc.netSalary,
+        net_salary_last_month: parseFloat(
+          Number(net_salary_last_month).toFixed(2),
+        ),
       });
     }
 

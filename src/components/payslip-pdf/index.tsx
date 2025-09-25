@@ -1,3 +1,4 @@
+import { SalaryCalculator } from "@lib/salary-calculator";
 import {
     Document,
     Image,
@@ -140,26 +141,14 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
         return rows;
     })();
 
-    const totalAmounts = (() => {
-        if (benefits.length === 0 && deductions.length === 0) {
-            return {
-                benefits: 0,
-                deductions: 0,
-            };
-        }
-
-        return {
-            benefits: benefits.reduce((prev, b) => b.amount + prev, 0),
-            deductions: deductions.reduce((prev, d) => d.amount + prev, 0),
-        };
-    })();
-
-    const grossSalary = calculationBasis === "HOURLY"
-        ? baseSalary * (workedQuanitity || 0)
-        : baseSalary * workPercentage / 100;
-
-    const netPay = grossSalary + totalAmounts.benefits -
-        totalAmounts.deductions;
+    const salaryCalc = new SalaryCalculator({
+        baseSalary,
+        calculationBasis,
+        workQuantity: workedQuanitity,
+        workPercentage,
+        benefits,
+        deductions,
+    });
 
     return (
         <Document>
@@ -308,11 +297,11 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                         <View style={{ flexDirection: "row" }}>
                             <Text style={styles.tableFooterTotal}>Total</Text>
                             <Text style={styles.tableFooterAmount}>
-                                {formatMoney(totalAmounts.benefits)}
+                                {formatMoney(salaryCalc.benefitsTotal)}
                             </Text>
                             <Text style={styles.tableFooterTotal}>Total</Text>
                             <Text style={styles.tableFooterAmount}>
-                                {formatMoney(totalAmounts.deductions)}
+                                {formatMoney(salaryCalc.grossSalary)}
                             </Text>
                         </View>
                     </View>
@@ -328,13 +317,13 @@ export const PayslipPdf: React.FC<PayslipPdfProps> = ({
                     </View>
 
                     <View style={{ ...styles.netPayCol, textAlign: "right" }}>
-                        <Text>{formatMoney(grossSalary)}</Text>
-                        <Text>+ {formatMoney(totalAmounts.benefits)}</Text>
+                        <Text>{formatMoney(salaryCalc.grossSalary)}</Text>
+                        <Text>+ {formatMoney(salaryCalc.benefitsTotal)}</Text>
                         <Text style={{ borderBottom: "1px solid black" }}>
-                            - {formatMoney(totalAmounts.deductions)}
+                            - {formatMoney(salaryCalc.deductionsTotal)}
                         </Text>
                         <Text style={{ fontWeight: 700 }}>
-                            {formatMoney(netPay)}
+                            {formatMoney(salaryCalc.netSalary)}
                         </Text>
                     </View>
                 </View>
