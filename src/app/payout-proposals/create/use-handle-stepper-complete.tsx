@@ -1,14 +1,15 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     CreatePayoutProposalBody,
     useCreatePayoutProposal,
 } from "./use-create-payout-proposal";
 import { useNavigation, useNotification } from "@refinedev/core";
-import { PayoutProposalCreateRow } from "./use-hours-step";
+import { PayoutProposalContext } from "../payout-proposal.provider";
 
 export function useHandleStepperComplete() {
     const { open } = useNotification();
     const { show } = useNavigation();
+    const [customError, setCustomError] = useState<Error>();
 
     const {
         createPayoutProposal,
@@ -16,22 +17,33 @@ export function useHandleStepperComplete() {
         error,
         loading: createPayoutProposalLoading,
     } = useCreatePayoutProposal();
+    
     useEffect(() => {
-        if (!error) return;
-        open?.({ message: error.message, type: "error" });
-    }, [error]);
+        const errorToShow = error || customError;
+        if (!errorToShow) return;
+        open?.({ message: errorToShow.message, type: "error" });
+    }, [error, customError]);
 
     const handleCompleteClick = useCallback(
-        (rows?: PayoutProposalCreateRow[], includeContractIds?: string[]) => {
-            if (!rows) return;
-            if (!includeContractIds) return;
+        (
+            rows?: PayoutProposalContext["hourRows"],
+            includeContractIds?: string[],
+        ) => {
+            if (!rows) {
+                setCustomError(new Error("Missing hour rows"));
+                return;
+            }
+            if (!includeContractIds) {
+                setCustomError(new Error("Missing contractIds"));
+                return;
+            }
 
             const worked_hours: CreatePayoutProposalBody["worked_hours"] = rows
                 .map(
                     (r) => {
                         return {
-                            contract_id: r.id,
-                            hours: r.hours_worked || 0,
+                            contract_id: r.contractId,
+                            hours: r.workedHours,
                         };
                     },
                 );

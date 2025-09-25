@@ -1,53 +1,32 @@
 "use client";
 
-import {
-  alpha,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  IconButton,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-} from "@mui/material";
-import {
-  DataGrid,
-  GridCellEditStopParams,
-  GridColDef,
-  GridEventListener,
-} from "@mui/x-data-grid";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useFetchMissingWorkedHours } from "./use-fetch-missing-worked-hours";
-import { useNavigation, useNotification } from "@refinedev/core";
-import { useCreatePayoutProposal } from "./use-create-payout-proposal";
-import { CurrencyExchange } from "@mui/icons-material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 import { ListButton } from "@refinedev/mui";
 import { useStepper } from "./use-stepper";
 import { useEmployeeStep } from "./use-employee-step";
 import { useHoursStep } from "./use-hours-step";
 import { useHandleStepperComplete } from "./use-handle-stepper-complete";
-
-interface PayoutProposalCreateRow {
-  employee_id: string;
-  employee_name: string;
-  id: string; // contract_id
-  hours_worked: number | undefined;
-}
+import {
+  PayoutProposalContext,
+  PayoutProposalProvider,
+  usePayoutProposalProvider,
+} from "../payout-proposal.provider";
+import { useEffect, useRef } from "react";
 
 export default function PayoutProposalCreate() {
-  const { employeeView, handleCompleteEmployeeStep, selectedContractIds } =
-    useEmployeeStep();
-  const { hoursView, handleCompleteHoursStep, rows } = useHoursStep(
-    selectedContractIds,
-  );
+  const { employeeView, handleCompleteEmployeeStep } = useEmployeeStep();
+  const { hoursView, handleCompleteHoursStep } = useHoursStep();
+
   const { createPayoutProposalLoading, handleCompleteClick } =
     useHandleStepperComplete();
 
+  const { hourRows, selectedContracts } = usePayoutProposalProvider();
+  const hourRowsRef = useRef<PayoutProposalContext["hourRows"]>([]);
+  hourRowsRef.current = hourRows || [];
+
   const { stepper, buttonRow, activeStep } = useStepper({
     onFinish: () => {
-      handleCompleteClick(rows, selectedContractIds);
+      handleCompleteClick(hourRowsRef.current, selectedContracts);
     },
     onStepComplete: (index: number) => {
       if (index === 0) {

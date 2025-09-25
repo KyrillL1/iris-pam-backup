@@ -1,8 +1,9 @@
 import { DataGrid, GridColDef, useGridApiRef } from "@mui/x-data-grid";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFetchMissingWorkedHours } from "./use-fetch-missing-worked-hours";
 import { useNotification } from "@refinedev/core";
 import { Stack, Typography } from "@mui/material";
+import { usePayoutProposalProvider } from "../payout-proposal.provider";
 
 export interface PayoutProposalCreateRow {
     employee_id: string;
@@ -11,7 +12,7 @@ export interface PayoutProposalCreateRow {
     hours_worked: number | undefined;
 }
 
-export function useHoursStep(includeContractIds?: string[]) {
+export function useHoursStep() {
     const columns: GridColDef[] = useMemo(() => [{
         field: "employee_id",
         headerName: "Employee Id",
@@ -30,6 +31,9 @@ export function useHoursStep(includeContractIds?: string[]) {
         editable: true,
         type: "number",
     }], []);
+
+    const { selectedContracts: includeContractIds } =
+        usePayoutProposalProvider();
 
     const { missingWorkedHours, missingWorkedHoursError, loading } =
         useFetchMissingWorkedHours(includeContractIds);
@@ -76,13 +80,18 @@ export function useHoursStep(includeContractIds?: string[]) {
         [],
     );
 
-    const [rowsPublicAllowed, setRowsPublicAllowed] = useState(false);
-    const rowsPublic = useMemo(() => {
-        if (!rowsPublicAllowed) return undefined;
-        return rows;
-    }, [rows, rowsPublicAllowed]);
+    const rowsRef = useRef<any[]>([]);
+    rowsRef.current = rows;
+    const { setHourRows, hourRows } = usePayoutProposalProvider();
+
     const handleCompleteHoursStep = () => {
-        setRowsPublicAllowed(true);
+        console.log({ hours: rowsRef.current });
+        setHourRows?.(rowsRef.current.map((r) => {
+            return {
+                contractId: r.id,
+                workedHours: r.hours_worked || -1,
+            };
+        }));
     };
 
     const hoursView = useMemo(() => {
@@ -109,6 +118,5 @@ export function useHoursStep(includeContractIds?: string[]) {
     return {
         hoursView,
         handleCompleteHoursStep,
-        rows: rowsPublic,
     };
 }

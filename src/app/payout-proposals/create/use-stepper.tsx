@@ -57,13 +57,18 @@ export function useStepper(
     }, []);
 
     const handleFinish = useCallback(() => {
+        // as we dont show the complete button for the last step, manually call
+        handleStepCompleteClick(steps.length - 1);
         onFinish?.();
-    }, [onFinish]);
+    }, [onFinish, handleStepCompleteClick]);
 
     const isStepLast = (index: number) => steps.length - 1 === index;
     const isStepFirst = (index: number) => index === 0;
     const isStepCompleted = (index: number) => completedSteps.includes(index);
-    const completedAll = completedSteps.length === steps.length;
+    const showFinishButton = (index: number) =>
+        (completedSteps.length === steps.length - 1) && (isStepLast(index));
+    const showCompleteButton = (index: number) =>
+        !completedSteps.includes(index) && !showFinishButton(index);
 
     const stepper = useMemo(
         () => (
@@ -113,25 +118,27 @@ export function useStepper(
                     </Box>
 
                     <Stack gap={2} direction={"row"}>
-                        {!isStepCompleted(activeStep) && (
-                            <Button
-                                variant="contained"
-                                startIcon={<Check />}
-                                onClick={() =>
-                                    handleStepCompleteClick(activeStep)}
-                            >
-                                Complete
-                            </Button>
-                        )}
-                        {!isStepLast(activeStep) && (
-                            <Button
-                                onClick={handleNext}
-                                endIcon={<ArrowRight />}
-                            >
-                                Next
-                            </Button>
-                        )}
-                        {completedAll && (
+                        {showCompleteButton(activeStep) &&
+                            (
+                                <Button
+                                    variant="contained"
+                                    startIcon={<Check />}
+                                    onClick={() =>
+                                        handleStepCompleteClick(activeStep)}
+                                >
+                                    Complete
+                                </Button>
+                            )}
+                        {!isStepLast(activeStep) &&
+                            (
+                                <Button
+                                    onClick={handleNext}
+                                    endIcon={<ArrowRight />}
+                                >
+                                    Next
+                                </Button>
+                            )}
+                        {showFinishButton(activeStep) && (
                             <Button
                                 color="success"
                                 variant="contained"

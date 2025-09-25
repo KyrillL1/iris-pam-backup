@@ -11,7 +11,8 @@ import {
     GridColDef,
     GridRowSelectionModel,
 } from "@mui/x-data-grid";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { usePayoutProposalProvider } from "../payout-proposal.provider";
 
 export function useEmployeeStep() {
     const { contractsWithRelations, loading } =
@@ -22,15 +23,16 @@ export function useEmployeeStep() {
     );
     const [disableSelectFields, setDisableSelectFields] = useState(false);
 
-    const selectedContractIdsPublic = useMemo(() => {
-        if (disableSelectFields === false) return undefined;
-        return selectedContractIds;
-    }, [disableSelectFields]);
+    const { setSelectedContracts } = usePayoutProposalProvider();
+
+    const selectedContractIdsRef = useRef<string[]>([]);
+    selectedContractIdsRef.current = selectedContractIds;
 
     const handleCompleteEmployeeStep = () => {
         setDisableSelectFields(true);
+        setSelectedContracts?.(selectedContractIdsRef.current);
     };
-
+    
     const columns: GridColDef[] = useMemo(() => [
         {
             ...GRID_CHECKBOX_SELECTION_COL_DEF,
@@ -110,6 +112,5 @@ export function useEmployeeStep() {
     return {
         employeeView,
         handleCompleteEmployeeStep,
-        selectedContractIds: selectedContractIdsPublic,
     };
 }

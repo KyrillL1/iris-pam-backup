@@ -10,7 +10,12 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useNotification, useShow } from "@refinedev/core";
+import {
+  useGo,
+  useNavigation,
+  useNotification,
+  useShow,
+} from "@refinedev/core";
 import { useEffect, useMemo, useState } from "react";
 import { usePayoutProposalShowColumns } from "./use-payout-proposal-show-columns";
 import { useStatusChip } from "./use-status-chip";
@@ -25,6 +30,7 @@ export default function PayoutProposalShow() {
   });
   const { open } = useNotification();
   const { data, isLoading } = query;
+  const { list } = useNavigation();
 
   const record = data?.data;
 
@@ -84,8 +90,12 @@ export default function PayoutProposalShow() {
             {chip}
           </Box>
 
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 1}}>
-            <DeleteButton />
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+            <DeleteButton
+              onSuccess={() => {
+                list("payout_proposals");
+              }}
+            />
             <ListButton />
           </Box>
         </Box>
