@@ -19,10 +19,23 @@ import {
 import React, { useEffect, useMemo, useRef } from "react";
 import { Link as MuiLink, Typography } from "@mui/material";
 import NextLink from "next/link";
-import { useMenu, useRefineContext } from "@refinedev/core";
+import {
+  useMenu,
+  useRefineContext,
+  useTranslate,
+  useTranslation,
+} from "@refinedev/core";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { usePathname, useRouter } from "next/navigation";
+import i18n from "@providers/i18n-provider";
+
+i18n.addResourceBundle("en", "sider", {
+  title: "PAM",
+});
+i18n.addResourceBundle("pt", "sider", {
+  title: "PAM",
+});
 
 NProgress.configure({
   showSpinner: false,
@@ -55,6 +68,8 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
       document.head.removeChild(style);
     };
   }, []);
+
+  const { translate } = useTranslation();
 
   return (
     <ThemedSider
@@ -143,7 +158,7 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
                   transition: "all 0.5s",
                 }}
               >
-                PAM
+                {translate("sider.title")}
               </Typography>
             </Box>
           </NextLink>

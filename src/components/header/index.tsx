@@ -16,6 +16,7 @@ import {
   useGetIdentity,
   useLogout,
   useMenu,
+  useTranslation,
 } from "@refinedev/core";
 import { HamburgerMenu, RefineThemedLayoutHeaderProps } from "@refinedev/mui";
 import React, { useContext, useState } from "react";
@@ -24,9 +25,11 @@ import {
   AccountCircle,
   AccountCircleOutlined,
   KeyboardCommandKey,
+  Language,
   Logout,
 } from "@mui/icons-material";
-import { useKBar } from "@refinedev/kbar"; // ✅ instead of empty import
+import { useKBar } from "@refinedev/kbar";
+import { MZ, US } from "country-flag-icons/react/3x2";
 
 type IUser = {
   id: number;
@@ -59,13 +62,21 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
 
   const { query: { toggle: toggleCommandBar } } = useKBar();
 
+  const { changeLocale, getLocale } = useTranslation();
+  const toggleLanguage = () => {
+    if (getLocale() === "en") {
+      return changeLocale("pt");
+    }
+    return changeLocale("en");
+  };
+
   return (
     <AppBar position={sticky ? "sticky" : "relative"}>
       <Toolbar
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          padding: 0
+          padding: 0,
         }}
       >
         {/* Left side: HamburgerMenu */}
@@ -117,7 +128,7 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
                     disableGutters
                     sx={{ marginLeft: 1, backgroundColor: "transparent" }}
                   >
-                    Theme
+                    Customize
                   </ListSubheader>
                   <MenuItem onClick={() => setMode()}>
                     <ListItemIcon>
@@ -125,7 +136,19 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
                         ? <LightModeOutlined />
                         : <DarkModeOutlined />}
                     </ListItemIcon>
-                    <Typography>Switch</Typography>
+                    <Typography>
+                      {mode === "dark" ? "Select light mode" : "Select dark mode"}
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem onClick={toggleLanguage}>
+                    <ListItemIcon>
+                      {getLocale() === "en"
+                        ? <MZ style={{ marginRight: "12px" }} />
+                        : <US style={{ marginRight: "12px" }} />}
+                    </ListItemIcon>
+                    {getLocale() === "en"
+                      ? "Language to Portuguese"
+                      : "Language to English"}
                   </MenuItem>
                   <Divider />
                   <MenuItem

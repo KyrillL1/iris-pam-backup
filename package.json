@@ -33,7 +33,9 @@
     "@refinedev/supabase": "^6.0.0",
     "@supabase/ssr": "^0.3.0",
     "@supabase/supabase-js": "^2.57.4",
+    "country-flag-icons": "^1.5.21",
     "expr-eval": "^2.0.2",
+    "i18next": "^25.5.2",
     "js-cookie": "^3.0.5",
     "moment": "^2.30.1",
     "next": "^15.2.4",
@@ -41,6 +43,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.62.0",
+    "react-i18next": "^15.7.3",
     "react-pdf": "^10.1.0",
     "zod": "^4.1.5"
   },

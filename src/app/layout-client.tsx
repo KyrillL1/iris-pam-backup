@@ -16,10 +16,12 @@ import { dataProvider } from "@providers/data-provider";
 import { resources } from "./resources";
 import "moment/locale/pt";
 import { SelectMultipleProvider } from "@contexts/select-multiple";
+import { useI18NProvider } from "@providers/i18n-provider";
 
 export const LayoutClient: React.FC<{ children: React.ReactNode }> = (
   { children },
 ) => {
+  const i18NProvider = useI18NProvider();
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"pt"}>
       <SelectMultipleProvider>
@@ -27,6 +29,7 @@ export const LayoutClient: React.FC<{ children: React.ReactNode }> = (
           routerProvider={routerProvider}
           authProvider={authProviderClient}
           dataProvider={dataProvider}
+          i18nProvider={i18NProvider}
           notificationProvider={useNotificationProvider}
           resources={resources}
           options={{
