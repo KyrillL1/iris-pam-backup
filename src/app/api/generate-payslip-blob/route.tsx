@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
             workPercentage: body.work_percentage || 0,
             meansOfPayment: body.means_of_payment || "Missing",
             recipientAccount: body.recipient_account || "Missing",
-            bankName: body.bank_name || "Missing",
-            bankRoutingNumber: body.bank_routing_number || "Missing",
+            bankName: body.bank_name,
+            bankRoutingNumber: body.bank_routing_number,
         };
 
         const element = <PayslipPdf {...payload} />;
