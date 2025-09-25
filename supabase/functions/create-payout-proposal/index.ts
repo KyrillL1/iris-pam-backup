@@ -3,6 +3,10 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { Parser } from "npm:expr-eval";
 
+function cutNumberAfter2Digits(n: number): number {
+  return parseFloat(Number(n).toFixed(2));
+}
+
 interface RecipientPaymentInfo {
   id: string;
   recipient_name: string;
@@ -77,9 +81,9 @@ interface PayoutProposalItem {
   benefits: { id: string; name: string; amount: number }[];
   deductions: { id: string; name: string; amount: number }[];
   hours_worked: number | null;
-  gross_salary: string;
-  net_salary: string;
-  net_salary_last_month: string;
+  gross_salary: number;
+  net_salary: number;
+  net_salary_last_month: number;
 }
 
 interface CalculatedPayAdjustment {
@@ -170,7 +174,6 @@ Deno.serve(async (req: Request) => {
     if (employeeError) throw employeeError;
 
     // 3️⃣ Map employees to payout items with benefits & deductions
-    // TODO: Make sure step 3 works (with benefits & deductions)
     const payoutProposalItems: PayoutProposalItem[] = [];
 
     for (const contract of contractsWithRelations) {
@@ -280,6 +283,40 @@ Deno.serve(async (req: Request) => {
         }
       }
 
+      // Fetch last month's payout for this contract & employee
+      const { data: lastMonthItem, error: lastMonthItemError } = await supabase
+        .from("payout_proposal_items")
+        .select("id")
+        .eq("employee_id", c.employee_id)
+        .eq("contract_id", c.id)
+        .order("created_at", { ascending: false }) // newest first
+        .limit(1);
+
+      if (lastMonthItemError) {
+        throw lastMonthItemError;
+      }
+
+      let net_salary_last_month = 0;
+
+      if (lastMonthItem && lastMonthItem.length > 0) {
+        const lastItemId = lastMonthItem[0].id;
+
+        const { data: lastPayoutData, error: lastPayoutError } = await supabase
+          .from("payouts")
+          .select("amount")
+          .eq("payout_proposal_item_id", lastItemId)
+          .single(); // expecting one payout per item
+
+        if (
+          lastPayoutError && lastPayoutError.code !== "PGRST116"
+        ) {
+          throw lastPayoutError; // ignore not found
+        }
+        if (lastPayoutData) {
+          net_salary_last_month = Number(lastPayoutData.amount);
+        }
+      }
+
       // Push the final payout item
       payoutProposalItems.push({
         payout_proposal_id: payoutProposalId,
@@ -301,9 +338,9 @@ Deno.serve(async (req: Request) => {
         benefits,
         deductions,
         hours_worked: c.calculation_basis === "MONTHLY" ? null : hours_worked,
-        gross_salary: Number(gross_salary).toFixed(2),
-        net_salary: Number(net_salary).toFixed(2),
-        net_salary_last_month: Number(-1).toFixed(2),
+        gross_salary: cutNumberAfter2Digits(gross_salary),
+        net_salary: cutNumberAfter2Digits(net_salary),
+        net_salary_last_month: cutNumberAfter2Digits(net_salary_last_month),
       });
     }
 
