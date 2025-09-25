@@ -2,6 +2,7 @@ import { I18nProvider } from "@refinedev/core";
 import i18n from "i18next";
 import { initReactI18next, useTranslation } from "react-i18next";
 import { defaultNS, fallbackLng, languages } from "./settings";
+import { useParams, usePathname } from "next/navigation";
 
 i18n.use(initReactI18next).init({
     supportedLngs: languages,
@@ -21,6 +22,8 @@ export function useI18NProvider() {
         changeLocale: (lang: string) => i18n.changeLanguage(lang),
         getLocale: () => i18n.language,
     };
+
+    // FIx: So url is synced with language switching
 
     return i18nProvider;
 }

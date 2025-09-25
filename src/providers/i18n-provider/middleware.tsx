@@ -10,30 +10,30 @@ export async function i18nMiddleware(
         request: { headers: req.headers },
     });
 
-    // 3️⃣ Detect language
+    // 1. Detect Language
     let lng: string | undefined | null;
 
-    // Try cookie
-    if (req.cookies.has(cookieName)) {
-        lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
-    }
-
-    // Try Accept Language Header
     if (!lng) {
         lng = acceptLanguage.get(req.headers.get("Accept-Language") ?? "");
     }
 
-    // Default fallback
-    if (!lng) lng = fallbackLng;
-
-    // Add language header
-    response.headers.set(headerName, lng);
-
-    // 3️⃣ Check if language is already in the path
     const lngInPath = languages.find((loc) =>
         req.nextUrl.pathname.startsWith(`/${loc}`)
     );
 
+    if (!lng) lng = lngInPath || fallbackLng;
+
+    // 2. Add header for next time
+    // Add language header
+    response.headers.set(headerName, lng);
+
+    /**
+     * Now that we have parsed the language, we:
+     * A) if the path is already including a lng prefix, we rewrite internally so
+     * our app directory doesn't need to be updated
+     * B) if the path is not already including a lng prefix, we redirect so
+     * the user includes the lang prefix
+     */
     // If language is not in path, rewrite internally
     if (
         !lngInPath &&
@@ -47,5 +47,18 @@ export async function i18nMiddleware(
         );
     }
 
-    return NextResponse.next();
+    if (lngInPath) {
+        // Remove the first path segment (language)
+        const internalPath =
+            req.nextUrl.pathname.replace(`/${lngInPath}`, "") || "/";
+
+        const rewriteUrl = new URL(
+            `${internalPath}${req.nextUrl.search}`,
+            req.url,
+        );
+
+        return NextResponse.rewrite(rewriteUrl);
+    }
+
+    return response;
 }
