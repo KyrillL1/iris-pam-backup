@@ -19,7 +19,6 @@ export function useHandleDeleteMany() {
     const [confirmDeleteManyOpen, setConfirmDeleteManyOpen] = useState(false);
 
     const handleDeleteManyClick = useCallback(() => {
-        console.log({ selected });
         if (selected?.length === 0 || !selected) {
             return;
         }

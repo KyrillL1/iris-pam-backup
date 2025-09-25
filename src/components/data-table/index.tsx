@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     DataGrid,
     type GridColDef as MuiGridColDef,
@@ -9,6 +9,7 @@ import {
     GridRowModel,
     GridValidRowModel,
     GridValueFormatter,
+    useGridApiRef,
 } from "@mui/x-data-grid";
 import {
     Box,
@@ -18,7 +19,12 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
-import { DeleteButton, EditButton, ShowButton } from "@refinedev/mui";
+import {
+    DeleteButton,
+    EditButton,
+    ShowButton,
+    useDataGrid,
+} from "@refinedev/mui";
 import { CheckBoxOutlineBlank, ContentCopy } from "@mui/icons-material";
 import { useNotification, useResourceParams, useSelect } from "@refinedev/core";
 import { truncateId } from "@utils/truncate-id";
@@ -59,46 +65,13 @@ export function DataTable<T extends { id: string }>(
         });
     };
 
-    const { showMultiple, addSelected, removeSelected, selected } =
+    const { showMultiple, setSelected, clearSelected } =
         useSelectMultipleContext();
 
     const { resource } = useResourceParams();
 
     // Wrap original columns to add ID copy button if needed
     const enhancedColumns = React.useMemo<GridColDef<T>[]>(() => {
-        const actionColumns: GridColDef<T>[] = [];
-        if (showMultiple) {
-            actionColumns.push({
-                field: "select_column",
-                renderHeader: () => <CheckBoxOutlineBlank />,
-                headerAlign: "center",
-                type: "custom",
-                renderCell: (params) => {
-                    const id = params.row.id;
-                    const row = params.row;
-                    return (
-                        <Stack justifyContent={"center"}>
-                            <Checkbox
-                                onChange={(e) => {
-                                    const nowChecked = e.target.checked;
-                                    if (nowChecked) {
-                                        addSelected?.(id, row);
-                                        return;
-                                    }
-
-                                    removeSelected?.(id);
-                                }}
-                            />
-                        </Stack>
-                    );
-                },
-                disableColumnMenu: true,
-                filterable: false,
-                sortable: false,
-                hideable: false,
-            });
-        }
-
         const updatedColumns = columns.map((col) => {
             if (col.type === "date" || col.type === "dateTime") {
                 return {
@@ -194,39 +167,29 @@ export function DataTable<T extends { id: string }>(
             });
         }
 
-        return [...actionColumns, ...updatedColumns, ...standardColumns];
+        return [...updatedColumns, ...standardColumns];
     }, [columns, showMultiple]);
+
+    const apiRef = useGridApiRef();
+    useEffect(() => {
+        // whenever it changes, make sure to reset your selection
+        clearSelected?.();
+        apiRef.current.setRowSelectionModel([]);
+    }, [showMultiple]);
 
     return (
         <DataGrid
             {...dataGridProps}
             columns={enhancedColumns}
-            slots={{
-                footer: () => {
-                    return (
-                        <Stack
-                            flexDirection={"row"}
-                        >
-                            {showMultiple && (
-                                <Typography
-                                    variant="body2"
-                                    component={"span"}
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        paddingLeft: 2,
-                                        borderTop: (t) =>
-                                            `1px solid ${t.palette.divider}`,
-                                    }}
-                                >
-                                    Selected: {selected?.length}
-                                </Typography>
-                            )}
-                            <GridFooter sx={{ flexGrow: 1 }} />
-                        </Stack>
-                    );
-                },
+            checkboxSelection={showMultiple}
+            apiRef={apiRef}
+            onRowSelectionModelChange={(selectedIds, details) => {
+                setSelected?.((selectedIds as string[]).map((id) => {
+                    return {
+                        key: id,
+                        value: details.api.getRow(id),
+                    };
+                }));
             }}
         />
     );

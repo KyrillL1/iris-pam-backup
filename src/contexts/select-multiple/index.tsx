@@ -13,6 +13,7 @@ export interface SelectMultipleContext<T = any> {
     addSelected?: (key: string, value: T) => void;
     removeSelected?: (key: string) => void;
     clearSelected?: () => void;
+    setSelected?: (entries: { key: string; value: T }[]) => void;
 }
 
 const SelectMultipleContext = createContext<SelectMultipleContext>({}); // TODO: Fix this?
@@ -43,6 +44,7 @@ export const SelectMultipleProvider: React.FC<PropsWithChildren> = (
             addSelected,
             removeSelected,
             clearSelected,
+            setSelected,
         };
     }, [showMultiple, selected]);
 
