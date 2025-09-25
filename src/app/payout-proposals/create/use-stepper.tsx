@@ -8,6 +8,7 @@ import {
 import {
     Box,
     Button,
+    ButtonProps,
     Stack,
     Step,
     StepButton,
@@ -19,9 +20,12 @@ import { useCallback, useMemo, useState } from "react";
 export interface UseStepperOptions {
     onFinish?: () => void;
     onStepComplete?: (index: number) => void;
+    finishButtonProps?: ButtonProps;
 }
 
-export function useStepper({ onFinish, onStepComplete }: UseStepperOptions) {
+export function useStepper(
+    { onFinish, onStepComplete, finishButtonProps }: UseStepperOptions,
+) {
     const [steps] = useState([
         "Employees",
         "Hours",
@@ -133,6 +137,7 @@ export function useStepper({ onFinish, onStepComplete }: UseStepperOptions) {
                                 variant="contained"
                                 onClick={handleFinish}
                                 startIcon={<CurrencyExchange />}
+                                {...finishButtonProps}
                             >
                                 Create Proposal
                             </Button>

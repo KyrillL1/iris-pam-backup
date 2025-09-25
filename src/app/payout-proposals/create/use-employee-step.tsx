@@ -22,6 +22,11 @@ export function useEmployeeStep() {
     );
     const [disableSelectFields, setDisableSelectFields] = useState(false);
 
+    const selectedContractIdsPublic = useMemo(() => {
+        if (disableSelectFields === false) return undefined;
+        return selectedContractIds;
+    }, [disableSelectFields]);
+
     const handleCompleteEmployeeStep = () => {
         setDisableSelectFields(true);
     };
@@ -105,6 +110,6 @@ export function useEmployeeStep() {
     return {
         employeeView,
         handleCompleteEmployeeStep,
-        selectedContractIds,
+        selectedContractIds: selectedContractIdsPublic,
     };
 }

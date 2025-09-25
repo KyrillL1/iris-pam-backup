@@ -98,6 +98,7 @@ interface RequestBody {
     contract_id: string;
     hours: number;
   }[];
+  include_contracts?: string[];
 }
 
 const corsHeaders = {
@@ -119,6 +120,12 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
+
+    const body = await req.json() as RequestBody;
+
+    if (!body.include_contracts || body.include_contracts?.length === 0) {
+      throw new Error("Missing include_contracts");
+    }
 
     // 1️⃣ Create the payout proposal
     const { data: proposalData, error: proposalError } = await supabase
@@ -157,7 +164,8 @@ Deno.serve(async (req: Request) => {
         department:departments(name)
       `)
         .lte("start_date", new Date().toISOString())
-        .or(`end_date.gte.${new Date().toISOString()},end_date.is.null`);
+        .or(`end_date.gte.${new Date().toISOString()},end_date.is.null`)
+        .in("id", body.include_contracts);
 
     if (employeeError) throw employeeError;
 
@@ -206,8 +214,7 @@ Deno.serve(async (req: Request) => {
         throw new Error("Missing adjustments for employee " + c.employee_id);
       }
 
-      const contractsWorkedHours =
-        (await req.json() as RequestBody).worked_hours || [];
+      const contractsWorkedHours = body.worked_hours || [];
       const hours_worked = contractsWorkedHours.find((bodyContract) =>
         bodyContract.contract_id === c.id
       )?.hours || 0;

@@ -17,15 +17,17 @@ interface ContractRow {
     };
 }
 
-export function useFetchMissingWorkedHours() {
+export function useFetchMissingWorkedHours(includeContractIds?: string[]) {
     const [missingWorkedHours, setMissingWorkedHours] = useState<
         MissingWorkedHours[]
     >();
     const [missingWorkedHoursError, setMissingWorkedHoursError] = useState<
         Error
     >();
+    const [loading, setLoading] = useState(false);
 
     const fetch = useCallback(async () => {
+        setLoading(true);
         const { data, error } = await supabaseBrowserClient
             .from("contracts")
             .select(
@@ -35,31 +37,40 @@ export function useFetchMissingWorkedHours() {
             .overrideTypes<ContractRow[]>();
 
         if (error) {
+            setLoading(false);
             setMissingWorkedHoursError(error);
             return { data: null, error };
         }
 
-        setMissingWorkedHours(data.map((c) => {
-            const employee_name =
-                `${c.employee.first_name} ${c.employee.last_name}`;
-            return {
-                employee_id: c.employee_id,
-                contract_id: c.id,
-                employee_name,
-            };
-        }));
+        setMissingWorkedHours(
+            data.filter((c) => {
+                const contractShallBeIncluded = (includeContractIds || [])
+                    .includes(c.id);
+                return contractShallBeIncluded;
+            }).map((c) => {
+                const employee_name =
+                    `${c.employee.first_name} ${c.employee.last_name}`;
+                return {
+                    employee_id: c.employee_id,
+                    contract_id: c.id,
+                    employee_name,
+                };
+            }),
+        );
+        setLoading(false);
         return {
             data,
             error: null,
         };
-    }, []);
+    }, [includeContractIds]);
 
     useEffect(() => {
         fetch();
-    }, []);
+    }, [includeContractIds]);
 
     return {
         missingWorkedHours,
         missingWorkedHoursError,
+        loading,
     };
 }

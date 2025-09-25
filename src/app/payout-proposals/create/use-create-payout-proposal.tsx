@@ -1,9 +1,12 @@
 import { supabaseBrowserClient } from "@utils/supabase/client";
 import { useCallback, useState } from "react";
 
-export interface CreatePayoutProposalData {
-    contract_id: string;
-    hours: number;
+export interface CreatePayoutProposalBody {
+    worked_hours: {
+        contract_id: string;
+        hours: number;
+    }[];
+    include_contracts: string[];
 }
 
 interface CreatePayoutProposalResponseData {
@@ -19,14 +22,14 @@ export function useCreatePayoutProposal() {
     const [loading, setLoading] = useState(false);
 
     const createPayoutProposal = useCallback(
-        async (createData: CreatePayoutProposalData[]) => {
+        async (body: CreatePayoutProposalBody) => {
             setLoading(true);
             const { data, error } = await supabaseBrowserClient
                 .functions
                 .invoke<CreatePayoutProposalResponseData>(
                     "create-payout-proposal",
                     {
-                        body: { worked_hours: createData },
+                        body,
                     },
                 );
 
