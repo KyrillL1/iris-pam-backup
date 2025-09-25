@@ -18,6 +18,7 @@ import {
   Menu,
   MenuItem,
   Stack,
+  Typography,
 } from "@mui/material";
 import { useDelete, useDeleteMany, useResourceParams } from "@refinedev/core";
 import {
@@ -48,6 +49,7 @@ export const List: React.FC<RefineListProps> = ({ ...props }) => {
   return (
     <RefineList
       {...props}
+      title={<Typography variant="h6">{resource?.meta?.label}</Typography>}
       headerButtons={() => (
         <Stack
           direction="row"

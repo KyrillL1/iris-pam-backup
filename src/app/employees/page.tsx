@@ -5,6 +5,8 @@ import { useDataGrid } from "@refinedev/mui";
 import { DataTable } from "@components/data-table";
 import { GridColDef } from "@mui/x-data-grid";
 import { Employee } from "@lib/fetch-employees";
+import { Typography } from "@mui/material";
+import { useResourceParams } from "@refinedev/core";
 
 export default function EmployeeList() {
   const { dataGridProps } = useDataGrid<Employee>({});

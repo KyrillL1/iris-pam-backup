@@ -7,6 +7,7 @@ import {
 } from "@providers/i18n-provider/settings";
 import { type NextRequest, NextResponse } from "next/server";
 import acceptLanguage from "accept-language";
+import { i18nMiddleware } from "@providers/i18n-provider/middleware";
 
 /**
  * Middleware to handle:
@@ -23,40 +24,7 @@ export async function middleware(req: NextRequest) {
   // 1️⃣ Supabase session update, pass the same response
   response = await updateSession(req, response);
 
-  // 2️⃣ Ignore static assets
-  const path = req.nextUrl.pathname;
-  if (path.includes("icon") || path.includes("chrome")) {
-    return response;
-  }
-
-  // 3️⃣ Detect language
-  let lng: string | undefined | null;
-
-  // Try cookie
-  if (req.cookies.has(cookieName)) {
-    lng = acceptLanguage.get(req.cookies.get(cookieName)?.value);
-  }
-
-  // Fallback to Accept-Language header
-  if (!lng) {
-    lng = acceptLanguage.get(req.headers.get("Accept-Language") ?? "");
-  }
-
-  // Default fallback
-  if (!lng) lng = fallbackLng;
-
-  // 4️⃣ Check if language is already in the path
-  const lngInPath = languages.find((loc) => path.startsWith(`/${loc}`));
-
-  // Add language header
-  response.headers.set(headerName, lngInPath || lng);
-
-  // 5️⃣ Redirect if language missing in path
-  if (!lngInPath && !path.startsWith("/_next")) {
-    return NextResponse.redirect(
-      new URL(`/${lng}${req.nextUrl.pathname}${req.nextUrl.search}`, req.url),
-    );
-  }
+  response = await i18nMiddleware(req, response);
 
   return response;
 }

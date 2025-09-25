@@ -17,6 +17,7 @@ export const resources: ResourceProps[] = [
         edit: "/employees/edit/:id",
         show: "/employees/show/:id",
         meta: {
+            label: "Employees",
             canDelete: true,
             icon: <Badge color="primary" />,
         },
@@ -25,6 +26,7 @@ export const resources: ResourceProps[] = [
         name: "departments",
         list: "/departments",
         meta: {
+            label: "Departments",
             icon: <Diversity3 color="primary" />,
         },
     },
@@ -35,6 +37,7 @@ export const resources: ResourceProps[] = [
         edit: "/contracts/edit/:id",
         show: "/contracts/show/:id",
         meta: {
+            label: "Contracts",
             canDelete: true,
             icon: <Description color="primary" />,
         },
@@ -69,6 +72,7 @@ export const resources: ResourceProps[] = [
         show: "/payouts/show/:id",
         edit: "/payouts/edit/:id",
         meta: {
+            label: "Payouts",
             icon: <Paid color="primary" />,
             canDelete: true,
         },
@@ -79,8 +83,9 @@ export const resources: ResourceProps[] = [
         create: "/payout-proposals/create",
         show: "/payout-proposals/show/:id",
         meta: {
+            label: "Payout Proposals",
             icon: <CurrencyExchange color="primary" />,
-            canDelete: true
+            canDelete: true,
         },
     },
 ];

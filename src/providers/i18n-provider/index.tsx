@@ -3,18 +3,11 @@ import i18n from "i18next";
 import { initReactI18next, useTranslation } from "react-i18next";
 import { defaultNS, fallbackLng, languages } from "./settings";
 
-const runsOnServerSide = typeof window === "undefined";
-
 i18n.use(initReactI18next).init({
     supportedLngs: languages,
     fallbackLng,
     lng: undefined, // let detect the language on client side
     fallbackNS: defaultNS,
-    defaultNS,
-    detection: {
-        order: ["path", "htmlTag", "cookie", "navigator"],
-    },
-    preload: runsOnServerSide ? languages : [],
 });
 
 export function useI18NProvider() {
