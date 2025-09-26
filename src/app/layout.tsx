@@ -1,29 +1,17 @@
 import { Metadata } from "next";
 import React, { CSSProperties, Suspense } from "react";
-import { Refine } from "@refinedev/core";
 import { DevtoolsProvider } from "@providers/devtools";
-import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-import {
-  Breadcrumb,
-  RefineSnackbarProvider,
-  useNotificationProvider,
-} from "@refinedev/mui";
-import routerProvider from "@refinedev/nextjs-router";
-
-import { AppIcon } from "@components/app-icon";
-import { authProviderClient } from "@providers/auth-provider/auth-provider.client";
-import { dataProvider } from "@providers/data-provider";
+import { RefineKbarProvider } from "@refinedev/kbar";
+import { RefineSnackbarProvider } from "@refinedev/mui";
 import { ColorModeContextProvider } from "@contexts/color-mode";
-import { Badge } from "@mui/icons-material";
-import { resources } from "./resources";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LayoutClient } from "./layout-client";
-
-function onError(error: any) {
-  console.log("CAUGHT IN LAYOUT: ", error);
-}
+import {
+  fallbackLng,
+  headerName,
+  languages,
+} from "@providers/i18n-provider/settings";
+import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "PAM",
@@ -46,6 +34,8 @@ export default async function RootLayout({
     overscrollBehaviorY: "none",
   };
 
+  const lang = await (await headers()).get(headerName) || fallbackLng;
+
   return (
     <html
       lang="en"
@@ -60,7 +50,7 @@ export default async function RootLayout({
               <RefineSnackbarProvider>
                 <ColorModeContextProvider>
                   <DevtoolsProvider>
-                    <LayoutClient>
+                    <LayoutClient lang={lang}>
                       {children}
                     </LayoutClient>
                   </DevtoolsProvider>
