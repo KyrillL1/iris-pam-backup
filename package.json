@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 refine dev",
+    "compile-all": "./scripts/compile-all-next-dev.sh",
     "build": "refine build",
     "start": "refine start",
     "lint": "next lint",

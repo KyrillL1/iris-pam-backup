@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# By default, next doesn't compile all routes
+# To speed up local development, hit them all once, so they are compiled before you start working
 curl -I http://localhost:3000/en
 curl -I http://localhost:3000/en/employees
 curl -I http://localhost:3000/en/departments
