@@ -17,12 +17,14 @@ import "moment/locale/pt";
 import { SelectMultipleProvider } from "@contexts/select-multiple";
 import { useI18NProvider } from "@providers/i18n-provider";
 import routerProvider from "@providers/router-provider";
-import { useSyncLocalePath } from "@providers/i18n-provider/use-sync-locale-path";
+import { useSyncLangFromPath } from "@providers/i18n-provider/use-sync-lang-from-path";
 
 export const LayoutClient: React.FC<{ children: React.ReactNode }> = (
   { children },
 ) => {
   const i18NProvider = useI18NProvider();
+
+  useSyncLangFromPath();
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"pt"}>
