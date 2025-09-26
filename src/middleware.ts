@@ -9,12 +9,6 @@ import { type NextRequest, NextResponse } from "next/server";
 import acceptLanguage from "accept-language";
 import { i18nMiddleware } from "@providers/i18n-provider/middleware";
 
-/**
- * Middleware to handle:
- * 1. Supabase session update
- * 2. Language detection (cookie, header, referer)
- * 3. Language redirect
- */
 export async function middleware(req: NextRequest) {
   // Start with a single NextResponse instance
   let response = NextResponse.next({

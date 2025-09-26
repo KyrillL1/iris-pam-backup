@@ -19,11 +19,12 @@ import { useI18NProvider } from "@providers/i18n-provider";
 import routerProvider from "@providers/router-provider";
 import { useSyncLangFromPath } from "@providers/i18n-provider/use-sync-lang-from-path";
 
-export const LayoutClient: React.FC<{ children: React.ReactNode }> = (
+export const LayoutClient: React.FC<
+  { children: React.ReactNode }
+> = (
   { children },
 ) => {
   const i18NProvider = useI18NProvider();
-
   useSyncLangFromPath();
 
   return (

@@ -20,6 +20,11 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LayoutClient } from "./layout-client";
+import { headers } from "next/headers";
+import {
+  fallbackLng,
+  headerName as i18nHeaderName,
+} from "@providers/i18n-provider/settings";
 
 export const metadata: Metadata = {
   title: "PAM",
@@ -41,6 +46,7 @@ export default async function RootLayout({
     overflowX: "hidden",
     overscrollBehaviorY: "none",
   };
+
   return (
     <html
       lang="en"

@@ -4,12 +4,8 @@ import acceptLanguage from "accept-language";
 
 export async function i18nMiddleware(
     req: NextRequest,
-    response?: NextResponse,
+    response: NextResponse,
 ): Promise<NextResponse> {
-    response = response ?? NextResponse.next({
-        request: { headers: req.headers },
-    });
-
     // 1. Detect Language
     let lng: string | undefined | null;
 
@@ -44,6 +40,7 @@ export async function i18nMiddleware(
                 `/${lng}${req.nextUrl.pathname}${req.nextUrl.search}`,
                 req.url,
             ),
+            { headers: response.headers },
         );
     }
 
@@ -57,7 +54,7 @@ export async function i18nMiddleware(
             req.url,
         );
 
-        return NextResponse.rewrite(rewriteUrl);
+        return NextResponse.rewrite(rewriteUrl, { headers: response.headers });
     }
 
     return response;

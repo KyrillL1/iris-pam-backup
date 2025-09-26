@@ -3,12 +3,15 @@ import i18n from "i18next";
 import { initReactI18next, useTranslation } from "react-i18next";
 import { defaultNS, fallbackLng, languages } from "./settings";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 i18n.use(initReactI18next).init({
+    // debug: true,
     supportedLngs: languages,
     fallbackLng,
-    lng: undefined, // let detect the language on client side
+    lng: undefined,
     fallbackNS: defaultNS,
+    defaultNS,
 });
 
 export function useI18NProvider() {
