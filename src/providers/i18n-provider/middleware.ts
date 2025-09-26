@@ -28,7 +28,7 @@ export async function checkLangPrefix(
         return NextResponse.rewrite(rewriteUrl, { headers: response.headers });
     }
 
-    const possibleOtherLng = pathname.split("/").filter(Boolean)[0];
+    const possibleOtherLng = pathname.split("/").filter(Boolean)[0] || "";
     const wantsUnsupportedLang = possibleOtherLng.length === 2;
     if (wantsUnsupportedLang) {
         pathname = pathname.replace(`/${possibleOtherLng}`, "");
