@@ -15,18 +15,14 @@ import { dataProvider } from "@providers/data-provider";
 import { resources } from "./resources";
 import "moment/locale/pt";
 import { SelectMultipleProvider } from "@contexts/select-multiple";
-import { useI18NProvider } from "@providers/i18n-provider";
 import routerProvider from "@providers/router-provider";
-import { useSyncLangFromPath } from "@providers/i18n-provider/use-sync-lang-from-path";
+import { i18nProvider } from "@providers/i18n-provider";
 
 export const LayoutClient: React.FC<
   { children: React.ReactNode }
 > = (
   { children },
 ) => {
-  const i18NProvider = useI18NProvider();
-  useSyncLangFromPath();
-
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"pt"}>
       <SelectMultipleProvider>
@@ -34,7 +30,7 @@ export const LayoutClient: React.FC<
           routerProvider={routerProvider}
           authProvider={authProviderClient}
           dataProvider={dataProvider}
-          i18nProvider={i18NProvider}
+          i18nProvider={i18nProvider}
           notificationProvider={useNotificationProvider}
           resources={resources}
           options={{

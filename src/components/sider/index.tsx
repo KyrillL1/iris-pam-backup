@@ -4,9 +4,6 @@ import { AppIcon } from "@components/app-icon";
 import {
   alpha,
   Box,
-  Collapse,
-  List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -27,15 +24,7 @@ import {
 } from "@refinedev/core";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
-import { usePathname, useRouter } from "next/navigation";
-import i18n from "@providers/i18n-provider";
-
-i18n.addResourceBundle("en", "sider", {
-  title: "EN",
-});
-i18n.addResourceBundle("pt", "sider", {
-  title: "PT",
-});
+import { usePathname } from "next/navigation";
 
 NProgress.configure({
   showSpinner: false,
@@ -69,7 +58,7 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
     };
   }, []);
 
-  const { translate } = useTranslation();
+  const { getLocale } = useTranslation();
 
   return (
     <ThemedSider
@@ -158,7 +147,7 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
                   transition: "all 0.5s",
                 }}
               >
-                {translate("sider.title")}
+                {getLocale()}
               </Typography>
             </Box>
           </NextLink>

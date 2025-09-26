@@ -1,12 +1,5 @@
 import { updateSession } from "@/utils/supabase/middleware";
-import {
-  cookieName,
-  fallbackLng,
-  headerName,
-  languages,
-} from "@providers/i18n-provider/settings";
 import { type NextRequest, NextResponse } from "next/server";
-import acceptLanguage from "accept-language";
 import { i18nMiddleware } from "@providers/i18n-provider/middleware";
 
 export async function middleware(req: NextRequest) {
