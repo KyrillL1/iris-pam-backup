@@ -3,10 +3,7 @@
 import React from "react";
 import { Refine } from "@refinedev/core";
 import { RefineKbar } from "@refinedev/kbar";
-import {
-  RefineSnackbarProvider,
-  useNotificationProvider,
-} from "@refinedev/mui";
+import { useNotificationProvider } from "@refinedev/mui";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { AppIcon } from "@components/app-icon";
