@@ -15,14 +15,16 @@ import { dataProvider } from "@providers/data-provider";
 import { resources } from "./resources";
 import "moment/locale/pt";
 import { SelectMultipleProvider } from "@contexts/select-multiple";
-import routerProvider from "@providers/router-provider";
-import { i18nProvider } from "@providers/i18n-provider";
+import routerProvider from "@refinedev/nextjs-router/app";
+import { usei18NProvider } from "@providers/i18n-provider";
 
 export const LayoutClient: React.FC<
   { children: React.ReactNode }
 > = (
   { children },
 ) => {
+  const { i18nProvider } = usei18NProvider();
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={"pt"}>
       <SelectMultipleProvider>

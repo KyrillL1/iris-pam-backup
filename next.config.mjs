@@ -1,4 +1,5 @@
 import { z } from "zod";
+import createNextIntlPlugin from 'next-intl/plugin';
 
 // ✅ Validate env variables before anything else runs
 (() => {
@@ -28,4 +29,6 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin("./src/providers/i18n-provider/request.ts");
+
+export default withNextIntl(nextConfig)

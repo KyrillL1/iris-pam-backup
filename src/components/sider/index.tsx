@@ -147,7 +147,7 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
                   transition: "all 0.5s",
                 }}
               >
-                {getLocale()}
+                {getLocale()}{}
               </Typography>
             </Box>
           </NextLink>

@@ -20,6 +20,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LayoutClient } from "./layout-client";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
   title: "PAM",
@@ -56,9 +57,11 @@ export default async function RootLayout({
               <RefineSnackbarProvider>
                 <ColorModeContextProvider>
                   <DevtoolsProvider>
-                    <LayoutClient>
-                      {children}
-                    </LayoutClient>
+                    <NextIntlClientProvider>
+                      <LayoutClient>
+                        {children}
+                      </LayoutClient>
+                    </NextIntlClientProvider>
                   </DevtoolsProvider>
                 </ColorModeContextProvider>
               </RefineSnackbarProvider>

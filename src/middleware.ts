@@ -1,6 +1,6 @@
 import { updateSession } from "@/utils/supabase/middleware";
+import { checkLangPrefix } from "@providers/i18n-provider/middleware";
 import { type NextRequest, NextResponse } from "next/server";
-import { i18nMiddleware } from "@providers/i18n-provider/middleware";
 
 export async function middleware(req: NextRequest) {
   // Start with a single NextResponse instance
@@ -8,10 +8,9 @@ export async function middleware(req: NextRequest) {
     request: { headers: req.headers },
   });
 
-  // 1️⃣ Supabase session update, pass the same response
   response = await updateSession(req, response);
 
-  response = await i18nMiddleware(req, response);
+  response = await checkLangPrefix(req, response);
 
   return response;
 }
