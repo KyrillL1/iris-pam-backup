@@ -5,6 +5,7 @@ import React, {
   type PropsWithChildren,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -12,7 +13,9 @@ import { ThemeProvider } from "@mui/material/styles";
 import Cookies from "js-cookie";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeDark, ThemeLight } from "./theme-light";
+import { ThemeDark, ThemeLight } from "./themes";
+import { useLocale } from "@i18n/i18n-provider";
+import { ptPT } from "@mui/material/locale";
 
 type ColorModeContextType = {
   mode: string;
@@ -53,6 +56,15 @@ export const ColorModeContextProvider: React.FC<
     Cookies.set("theme", nextTheme);
   };
 
+  const { locale } = useLocale();
+  const currentTheme = useMemo(() => {
+    let theme = mode === "light" ? ThemeLight : ThemeDark;
+    if (locale === "pt") {
+      theme = { ...theme, ...ptPT };
+    }
+    return theme;
+  }, [mode, locale]);
+
   return (
     <ColorModeContext.Provider
       value={{
@@ -62,7 +74,7 @@ export const ColorModeContextProvider: React.FC<
     >
       <ThemeProvider
         // you can change the theme colors here. example: mode === "light" ? RefineThemes.Magenta : RefineThemes.MagentaDark
-        theme={mode === "light" ? ThemeLight : ThemeDark}
+        theme={currentTheme}
       >
         <CssBaseline />
         <GlobalStyles styles={{ html: { WebkitFontSmoothing: "auto" } }} />

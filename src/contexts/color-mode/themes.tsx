@@ -1,5 +1,7 @@
 import { createTheme } from "@mui/material";
 import { RefineThemes } from "@refinedev/mui";
+import { ptPT } from "@mui/x-data-grid/locales";
+import { myI18n } from "@i18n/i18n-provider";
 
 export const ThemeLight = createTheme({
     ...RefineThemes.Blue, // base Refine Blue theme

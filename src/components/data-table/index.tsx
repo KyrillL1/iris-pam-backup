@@ -15,7 +15,7 @@ import { ContentCopy } from "@mui/icons-material";
 import { useNotification, useResourceParams } from "@refinedev/core";
 import { truncateId } from "@utils/truncate-id";
 import { useSelectMultipleContext } from "@contexts/select-multiple";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
+import { myI18n, useLocale, useTranslation } from "@i18n/i18n-provider";
 
 export type GridColDef<T extends GridValidRowModel> =
     & Omit<MuiGridColDef<T>, "type">
@@ -178,6 +178,8 @@ export function DataTable<T extends { id: string }>(
         clearSelected?.();
         apiRef.current.setRowSelectionModel([]);
     }, [showMultiple]);
+
+    const { locale } = useLocale();
 
     return (
         <DataGrid
