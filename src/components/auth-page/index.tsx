@@ -8,6 +8,8 @@ import {
   CardContent,
   Checkbox,
   FormControlLabel,
+  IconButton,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -15,6 +17,38 @@ import { Controller, useForm } from "react-hook-form";
 import { AppIcon } from "@components/app-icon"; // your custom icon
 import { Login } from "@mui/icons-material"; // MUI icon
 import Image from "next/image";
+import { myI18n, useLocale, useTranslation } from "@i18n/i18n-provider";
+import { MZ, US } from "country-flag-icons/react/3x2";
+import { useCallback } from "react";
+
+myI18n.addResourceBundle("en", "authpage", {
+  title: "Welcome To PAM",
+  subtitle: "Sign into your account",
+  email: "Email",
+  password: "Password",
+  remember: "Remember me",
+  login: "Login",
+  redirecting: "Redirecting...",
+  errors: {
+    emailRequired: "Email is required",
+    passwordRequired: "Password is required",
+  },
+  changeLanguage: "Change to ",
+});
+myI18n.addResourceBundle("pt", "authpage", {
+  title: "Bem-vindo ao PAM",
+  subtitle: "Entre na sua conta",
+  email: "E-mail",
+  password: "Senha",
+  remember: "Lembrar-me",
+  login: "Entrar",
+  redirecting: "Redirecionando...",
+  errors: {
+    emailRequired: "O e-mail é obrigatório",
+    passwordRequired: "A senha é obrigatória",
+  },
+  changeLanguage: "Mudar ao",
+});
 
 type LoginFormValues = {
   email: string;
@@ -37,6 +71,17 @@ export const AuthPage = () => {
     login(values);
   };
 
+  const { t } = useTranslation("authpage");
+
+  const { locale, changeLocale } = useLocale();
+  const toggleLocale = () => {
+    if (locale === "en") {
+      changeLocale("pt");
+      return;
+    }
+    changeLocale("en");
+  };
+
   return (
     <Box
       display="flex"
@@ -46,37 +91,56 @@ export const AuthPage = () => {
     >
       <Card sx={{ minWidth: 240, maxWidth: 500, p: 2 }}>
         <CardContent>
+          <Stack justifyContent={"end"} direction={"row"}>
+            <Button
+              onClick={toggleLocale}
+              sx={{ color: "black" }}
+              endIcon={locale === "en"
+                ? (
+                  <MZ
+                    style={{ marginRight: "12px" }}
+                    width={24}
+                    height={24}
+                  />
+                )
+                : (
+                  <US
+                    style={{ marginRight: "12px" }}
+                    width={24}
+                    height={24}
+                  />
+                )}
+            >
+              {t("changeLanguage")}
+            </Button>
+          </Stack>
           <Box
             display="flex"
             justifyContent="center"
             sx={{ height: "124px", position: "relative", marginBottom: 5 }}
           >
-            {/* Custom app icon */}
+            {/* Custom app icon */}{" "}
             <Image
               src={"/icons/iris-global.png"}
               alt="Iris global icon"
               fill
-              objectFit="contain"
+              style={{ objectFit: "contain" }}
             />
-          </Box>
-
+          </Box>{" "}
           <Typography variant="h5" align="center" gutterBottom>
-            Welcome To PAM
-          </Typography>
-
-          <Typography align="center" gutterBottom>
-            Sign into your account
-          </Typography>
-
+            {t("title")}
+          </Typography>{" "}
+          <Typography align="center" gutterBottom>{t("subtitle")}</Typography>
+          {" "}
           <form onSubmit={handleSubmit(onSubmit)}>
             <Controller
               name="email"
               control={control}
-              rules={{ required: "Email is required" }}
+              rules={{ required: t("errors.emailRequired") as string }}
               render={({ field, fieldState }) => (
                 <TextField
                   {...field}
-                  label="Email"
+                  label={t("email")}
                   type="email"
                   margin="normal"
                   fullWidth
@@ -84,16 +148,15 @@ export const AuthPage = () => {
                   helperText={fieldState.error?.message}
                 />
               )}
-            />
-
+            />{" "}
             <Controller
               name="password"
               control={control}
-              rules={{ required: "Password is required" }}
+              rules={{ required: t("errors.passwordRequired") as string }}
               render={({ field, fieldState }) => (
                 <TextField
                   {...field}
-                  label="Password"
+                  label={t("password")}
                   type="password"
                   margin="normal"
                   fullWidth
@@ -101,19 +164,17 @@ export const AuthPage = () => {
                   helperText={fieldState.error?.message}
                 />
               )}
-            />
-
+            />{" "}
             <Controller
               name="remember"
               control={control}
               render={({ field }) => (
                 <FormControlLabel
                   control={<Checkbox {...field} checked={field.value} />}
-                  label="Remember me"
+                  label={t("remember")}
                 />
               )}
-            />
-
+            />{" "}
             {(status === "idle" || status === "pending" ||
               status === "error") && (
               <Button
@@ -122,13 +183,11 @@ export const AuthPage = () => {
                 color="primary"
                 fullWidth
                 startIcon={<Login />}
-                loading={status === "pending"}
                 sx={{ mt: 2 }}
               >
-                Login
+                {t("login")}
               </Button>
-            )}
-            {status === "success" && (
+            )} {status === "success" && (
               <Button
                 type="submit"
                 variant="contained"
@@ -137,7 +196,7 @@ export const AuthPage = () => {
                 startIcon={<Login />}
                 sx={{ mt: 2 }}
               >
-                Redirecting...
+                {t("redirecting")}
               </Button>
             )}
           </form>

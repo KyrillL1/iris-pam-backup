@@ -22,9 +22,9 @@ myI18n.addResourceBundle("pt", "Delete", {
 });
 
 export const refineI18nProvider = {
-    translate: (key: string, ns?: string) => {
-        return myI18n.t(key, { ns }).toString() || key;
-    },
-    changeLocale: (lng: string) => myI18n.changeLanguage(lng),
-    getLocale: () => myI18n.language,
+  translate: (key: string, ns?: string) => {
+    return myI18n.t(key, { ns }).toString() || key;
+  },
+  changeLocale: (lng: string) => myI18n.changeLanguage(lng),
+  getLocale: () => myI18n.language,
 };
