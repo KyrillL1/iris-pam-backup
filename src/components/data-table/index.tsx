@@ -1,34 +1,21 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
     DataGrid,
     type GridColDef as MuiGridColDef,
-    GridFooter,
     GridRenderCellParams,
-    GridRowModel,
     GridValidRowModel,
     GridValueFormatter,
     useGridApiRef,
 } from "@mui/x-data-grid";
-import {
-    Box,
-    Checkbox,
-    Chip,
-    IconButton,
-    Stack,
-    Typography,
-} from "@mui/material";
-import {
-    DeleteButton,
-    EditButton,
-    ShowButton,
-    useDataGrid,
-} from "@refinedev/mui";
-import { CheckBoxOutlineBlank, ContentCopy } from "@mui/icons-material";
-import { useNotification, useResourceParams, useSelect } from "@refinedev/core";
+import { Box, Chip, IconButton } from "@mui/material";
+import { DeleteButton, EditButton, ShowButton } from "@refinedev/mui";
+import { ContentCopy } from "@mui/icons-material";
+import { useNotification, useResourceParams } from "@refinedev/core";
 import { truncateId } from "@utils/truncate-id";
 import { useSelectMultipleContext } from "@contexts/select-multiple";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
 
 export type GridColDef<T extends GridValidRowModel> =
     & Omit<MuiGridColDef<T>, "type">
@@ -37,7 +24,7 @@ export type GridColDef<T extends GridValidRowModel> =
     };
 
 interface DataTableProps<T extends GridValidRowModel> {
-    dataGridProps: any; // or refine's DataGridProps type
+    dataGridProps: any;
     columns: GridColDef<T>[];
     truncateId?: (id: string) => string;
     hideActions?: DataTableAction[];
@@ -50,27 +37,51 @@ export enum DataTableAction {
     DELETE = "DELETE",
 }
 
+// Add i18n resource bundle for table headers
+myI18n.addResourceBundle("en", "datatable", {
+    headers: {
+        id: "ID",
+        created_at: "Created At",
+        updated_at: "Updated At",
+        actions: "Actions",
+    },
+    notifications: {
+        copyId: "Copied ID: {{id}}",
+    },
+});
+
+myI18n.addResourceBundle("pt", "datatable", {
+    headers: {
+        id: "ID",
+        created_at: "Criado em",
+        updated_at: "Atualizado em",
+        actions: "Ações",
+    },
+    notifications: {
+        copyId: "ID copiado: {{id}}",
+    },
+});
+
 export function DataTable<T extends { id: string }>(
     { dataGridProps, columns, hideActions = [], hideActionCell = false }:
         DataTableProps<T>,
 ) {
     const { open } = useNotification();
+    const { showMultiple, setSelected, clearSelected } =
+        useSelectMultipleContext();
+    const { resource } = useResourceParams();
+    const { t } = useTranslation("datatable");
+    const apiRef = useGridApiRef();
 
     const handleCopyIdClick = (id: string) => {
         navigator.clipboard.writeText(id);
         open?.({
             type: "success",
             message: "",
-            description: `Copied ID: ${id}`,
+            description: t("notifications.copyId", { id }),
         });
     };
 
-    const { showMultiple, setSelected, clearSelected } =
-        useSelectMultipleContext();
-
-    const { resource } = useResourceParams();
-
-    // Wrap original columns to add ID copy button if needed
     const enhancedColumns = React.useMemo<GridColDef<T>[]>(() => {
         const updatedColumns = columns.map((col) => {
             if (col.type === "date" || col.type === "dateTime") {
@@ -80,16 +91,12 @@ export function DataTable<T extends { id: string }>(
                 } as MuiGridColDef;
             }
             if (col.type === "money") {
-                const valueFormatter: GridValueFormatter<T> = (value) => {
-                    return new Intl.NumberFormat("pt-MZ", {
+                const valueFormatter: GridValueFormatter<T> = (value) =>
+                    new Intl.NumberFormat("pt-MZ", {
                         style: "currency",
                         currency: "MZN",
                     }).format(value ?? 0);
-                };
-                return {
-                    ...col,
-                    valueFormatter,
-                };
+                return { ...col, valueFormatter };
             }
             return col;
         });
@@ -97,37 +104,35 @@ export function DataTable<T extends { id: string }>(
         const standardColumns: GridColDef<T>[] = [
             {
                 field: "id",
-                headerName: "ID",
+                headerName: t("headers.id"),
                 type: "string",
                 minWidth: 120,
-                renderCell: (params) => {
-                    return (
-                        <>
-                            <Chip
-                                label={truncateId(params.value as string)}
-                                size="small"
-                            />
-                            <IconButton
-                                size="small"
-                                onClick={() =>
-                                    handleCopyIdClick(params.value as string)}
-                            >
-                                <ContentCopy fontSize="inherit" />
-                            </IconButton>
-                        </>
-                    );
-                },
+                renderCell: (params: GridRenderCellParams<T>) => (
+                    <>
+                        <Chip
+                            label={truncateId(params.value as string)}
+                            size="small"
+                        />
+                        <IconButton
+                            size="small"
+                            onClick={() =>
+                                handleCopyIdClick(params.value as string)}
+                        >
+                            <ContentCopy fontSize="inherit" />
+                        </IconButton>
+                    </>
+                ),
             },
             {
                 field: "created_at",
-                headerName: "Created At",
+                headerName: t("headers.created_at"),
                 type: "dateTime",
                 minWidth: 180,
                 valueGetter: (v: any) => (v ? new Date(v) : null),
             },
             {
                 field: "updated_at",
-                headerName: "Updated At",
+                headerName: t("headers.updated_at"),
                 type: "dateTime",
                 minWidth: 180,
                 valueGetter: (v: any) => (v ? new Date(v) : null),
@@ -140,39 +145,36 @@ export function DataTable<T extends { id: string }>(
             resource?.meta?.canDelete;
         const showActionCell = !hideActionCell &&
             (showEdit || showShow || showDelete);
+
         if (showActionCell) {
             standardColumns.push({
                 field: "actions",
-                headerName: "Actions",
+                headerName: t("headers.actions"),
                 align: "right",
                 headerAlign: "right",
                 minWidth: 150,
                 sortable: false,
                 filterable: false,
-                renderCell: ({ row }: GridRenderCellParams<T>) => {
-                    return (
-                        <Box sx={{ display: "flex", justifyContent: "end" }}>
-                            {showEdit && (
-                                <EditButton hideText recordItemId={row.id} />
-                            )}
-                            {showShow && (
-                                <ShowButton hideText recordItemId={row.id} />
-                            )}
-                            {showDelete && (
-                                <DeleteButton hideText recordItemId={row.id} />
-                            )}
-                        </Box>
-                    );
-                },
+                renderCell: ({ row }: GridRenderCellParams<T>) => (
+                    <Box sx={{ display: "flex", justifyContent: "end" }}>
+                        {showEdit && (
+                            <EditButton hideText recordItemId={row.id} />
+                        )}
+                        {showShow && (
+                            <ShowButton hideText recordItemId={row.id} />
+                        )}
+                        {showDelete && (
+                            <DeleteButton hideText recordItemId={row.id} />
+                        )}
+                    </Box>
+                ),
             });
         }
 
         return [...updatedColumns, ...standardColumns];
-    }, [columns, showMultiple]);
+    }, [columns, showMultiple, t, hideActions, hideActionCell, resource]);
 
-    const apiRef = useGridApiRef();
     useEffect(() => {
-        // whenever it changes, make sure to reset your selection
         clearSelected?.();
         apiRef.current.setRowSelectionModel([]);
     }, [showMultiple]);
@@ -184,12 +186,10 @@ export function DataTable<T extends { id: string }>(
             checkboxSelection={showMultiple}
             apiRef={apiRef}
             onRowSelectionModelChange={(selectedIds, details) => {
-                setSelected?.((selectedIds as string[]).map((id) => {
-                    return {
-                        key: id,
-                        value: details.api.getRow(id),
-                    };
-                }));
+                setSelected?.((selectedIds as string[]).map((id) => ({
+                    key: id,
+                    value: details.api.getRow(id),
+                })));
             }}
         />
     );
