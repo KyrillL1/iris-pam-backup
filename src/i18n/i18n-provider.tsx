@@ -2,9 +2,14 @@
 
 import i18next from "i18next";
 import React, { PropsWithChildren } from "react";
-import { initReactI18next } from "react-i18next";
+import {
+    initReactI18next,
+    useTranslation as useTranslationi18next,
+    UseTranslationOptions,
+} from "react-i18next";
 import { fallbackLng, languages } from "./settings";
 import { usePathname, useRouter } from "next/navigation";
+
 i18next
     .use(initReactI18next)
     .init({
@@ -52,4 +57,11 @@ export function useLocale() {
     };
 }
 
-export { i18next };
+export function useTranslation(
+    ns?: string,
+    options?: UseTranslationOptions<any>,
+) {
+    return useTranslationi18next(ns, options);
+}
+
+export const myI18n = i18next;

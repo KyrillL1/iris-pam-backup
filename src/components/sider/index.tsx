@@ -17,10 +17,10 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { i18next } from "@i18n/i18n-provider";
+import { myI18n } from "@i18n/i18n-provider";
 
-i18next.addResourceBundle("en", "sider", { title: "PAM" });
-i18next.addResourceBundle("pt", "sider", { title: "PAM-pt" });
+myI18n.addResourceBundle("en", "sider", { title: "PAM" });
+myI18n.addResourceBundle("pt", "sider", { title: "PAM" });
 
 NProgress.configure({
   showSpinner: false,
@@ -111,7 +111,7 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
                           noWrap
                           sx={{
                             fontWeight: 400,
-                            fontSize: "1rem",
+                            fontSize: "0.9rem",
                             lineHeight: 1.5,
                           }}
                         >

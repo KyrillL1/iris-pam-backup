@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Refine } from "@refinedev/core";
 import { RefineKbar } from "@refinedev/kbar";
 import { useNotificationProvider } from "@refinedev/mui";
@@ -9,7 +9,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { AppIcon } from "@components/app-icon";
 import { authProviderClient } from "@providers/auth-provider/auth-provider.client";
 import { dataProvider } from "@providers/data-provider";
-import { resources } from "./resources";
+import { getResources } from "./resources";
 import "moment/locale/pt";
 import { SelectMultipleProvider } from "@contexts/select-multiple";
 import { routerProvider } from "@providers/router-provider";
@@ -22,6 +22,10 @@ export const LayoutClient: React.FC<
 ) => {
   const { locale } = useLocale();
 
+  const localizedResources = useMemo(() => {
+    return getResources();
+  }, [locale]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={locale}>
       <SelectMultipleProvider>
@@ -30,7 +34,7 @@ export const LayoutClient: React.FC<
           authProvider={authProviderClient}
           dataProvider={dataProvider}
           notificationProvider={useNotificationProvider}
-          resources={resources}
+          resources={localizedResources}
           options={{
             syncWithLocation: true,
             warnWhenUnsavedChanges: true,

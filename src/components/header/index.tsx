@@ -29,8 +29,22 @@ import {
 } from "@mui/icons-material";
 import { useKBar } from "@refinedev/kbar";
 import { MZ, US } from "country-flag-icons/react/3x2";
-import { useTranslation } from "react-i18next";
-import { useLocale } from "@i18n/i18n-provider";
+import { myI18n, useLocale, useTranslation } from "@i18n/i18n-provider";
+
+myI18n.addResourceBundle("en", "header", {
+  customize: "Customize",
+  selectMode: "Select {{mode}} mode",
+  changeLanguage: "Language to {{lang}}",
+  commandBar: "Command Bar (⌘ + K)",
+  logout: "Logout",
+});
+myI18n.addResourceBundle("pt", "header", {
+  customize: "Personalizar",
+  selectMode: "Selecionar modo {{mode}}",
+  changeLanguage: "Idioma para {{lang}}",
+  commandBar: "Barra de Comandos (⌘ + K)",
+  logout: "Sair",
+});
 
 type IUser = {
   id: number;
@@ -71,14 +85,12 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
     return changeLocale("en");
   };
 
+  const { t } = useTranslation("header");
+
   return (
     <AppBar position={sticky ? "sticky" : "relative"}>
       <Toolbar
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: 0,
-        }}
+        sx={{ display: "flex", justifyContent: "space-between", padding: 0 }}
       >
         {/* Left side: HamburgerMenu */}
         <Box>
@@ -107,14 +119,8 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
                 sx={{
                   marginTop: "4px",
                   filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
@@ -124,13 +130,16 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
                   <Typography gutterBottom sx={{ paddingX: 1 }}>
                     {user.name}
                   </Typography>
+
                   <Divider />
+
                   <ListSubheader
                     disableGutters
                     sx={{ marginLeft: 1, backgroundColor: "transparent" }}
                   >
-                    Customize
+                    {t("customize")}
                   </ListSubheader>
+
                   <MenuItem onClick={() => setMode()}>
                     <ListItemIcon>
                       {mode === "dark"
@@ -139,36 +148,38 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
                     </ListItemIcon>
                     <Typography>
                       {mode === "dark"
-                        ? "Select light mode"
-                        : "Select dark mode"}
+                        ? t("selectMode", { mode: t("light") })
+                        : t("selectMode", { mode: t("dark") })}
                     </Typography>
                   </MenuItem>
+
                   <MenuItem onClick={toggleLanguage}>
                     <ListItemIcon>
                       {locale === "en"
                         ? <MZ style={{ marginRight: "12px" }} />
                         : <US style={{ marginRight: "12px" }} />}
                     </ListItemIcon>
-                    {locale === "en"
-                      ? "Language to Portuguese"
-                      : "Language to English"}
+                    <Typography>
+                      {locale === "en"
+                        ? t("changeLanguage", { lang: "Portuguese" })
+                        : t("changeLanguage", { lang: "Inglês" })}
+                    </Typography>
                   </MenuItem>
+
                   <Divider />
-                  <MenuItem
-                    onClick={toggleCommandBar}
-                  >
+
+                  <MenuItem onClick={toggleCommandBar}>
                     <ListItemIcon>
                       <KeyboardCommandKey />
                     </ListItemIcon>
-                    Command Bar (⌘ + K)
+                    <Typography>{t("commandBar")}</Typography>
                   </MenuItem>
-                  <MenuItem
-                    onClick={handleLogoutClick}
-                  >
+
+                  <MenuItem onClick={handleLogoutClick}>
                     <ListItemIcon>
                       <Logout />
                     </ListItemIcon>
-                    Logout
+                    <Typography>{t("logout")}</Typography>
                   </MenuItem>
                 </Box>
               </Menu>

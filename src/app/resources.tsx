@@ -1,3 +1,4 @@
+import { myI18n } from "@i18n/i18n-provider";
 import {
     AccountBalance,
     Badge,
@@ -9,7 +10,26 @@ import {
 } from "@mui/icons-material";
 import { ResourceProps } from "@refinedev/core";
 
-export const resources: ResourceProps[] = [
+myI18n.addResourceBundle("en", "resources", {
+    employees: "Employees",
+    departments: "Departments",
+    contracts: "Contracts",
+    pay_adjustments: "Benefits & Deductions",
+    recipient_payout_info: "Recipient Payout Info",
+    payouts: "Payouts",
+    payout_proposals: "Payout Proposals",
+});
+myI18n.addResourceBundle("pt", "resources", {
+    employees: "Trabalhadores",
+    departments: "Departamentos",
+    contracts: "Contratos",
+    pay_adjustments: "Benefícios & Deduções",
+    recipient_payout_info: "Info de Pagamento",
+    payouts: "Pagamentos",
+    payout_proposals: "Propostas de Pagamento",
+});
+
+export const getResources: () => ResourceProps[] = () => [
     {
         name: "employees",
         list: "/employees",
@@ -17,7 +37,7 @@ export const resources: ResourceProps[] = [
         edit: "/employees/edit/:id",
         show: "/employees/show/:id",
         meta: {
-            label: "Employees",
+            label: myI18n.t("resources:employees"),
             canDelete: true,
             icon: <Badge color="primary" />,
         },
@@ -26,7 +46,7 @@ export const resources: ResourceProps[] = [
         name: "departments",
         list: "/departments",
         meta: {
-            label: "Departments",
+            label: myI18n.t("resources:departments"),
             icon: <Diversity3 color="primary" />,
         },
     },
@@ -37,7 +57,7 @@ export const resources: ResourceProps[] = [
         edit: "/contracts/edit/:id",
         show: "/contracts/show/:id",
         meta: {
-            label: "Contracts",
+            label: myI18n.t("resources:contracts"),
             canDelete: true,
             icon: <Description color="primary" />,
         },
@@ -49,7 +69,7 @@ export const resources: ResourceProps[] = [
         show: "/pay-adjustments-to-employees/show/:id",
         edit: "/pay-adjustments-to-employees/edit/:id",
         meta: {
-            label: "Benefits & Deductions",
+            label: myI18n.t("resources:pay_adjustments"),
             icon: <BookmarkAdd color="primary" />,
             canDelete: true,
         },
@@ -61,7 +81,7 @@ export const resources: ResourceProps[] = [
         show: "/recipient-payment-info/show/:id",
         edit: "/recipient-payment-info/edit/:id",
         meta: {
-            label: "Recipient Payout Info",
+            label: myI18n.t("resources:recipient_payout_info"),
             icon: <AccountBalance color="primary" />,
             canDelete: true,
         },
@@ -72,7 +92,7 @@ export const resources: ResourceProps[] = [
         show: "/payouts/show/:id",
         edit: "/payouts/edit/:id",
         meta: {
-            label: "Payouts",
+            label: myI18n.t("resources:payouts"),
             icon: <Paid color="primary" />,
             canDelete: true,
         },
@@ -83,7 +103,7 @@ export const resources: ResourceProps[] = [
         create: "/payout-proposals/create",
         show: "/payout-proposals/show/:id",
         meta: {
-            label: "Payout Proposals",
+            label: myI18n.t("resources:payout_proposals"),
             icon: <CurrencyExchange color="primary" />,
             canDelete: true,
         },
