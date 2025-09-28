@@ -14,26 +14,7 @@ import "moment/locale/pt";
 import { SelectMultipleProvider } from "@contexts/select-multiple";
 import { routerProvider } from "@providers/router-provider";
 import { myI18n, useLocale } from "@i18n/i18n-provider";
-
-myI18n.addResourceBundle("en", "List", {
-  "actions.list": "List",
-});
-myI18n.addResourceBundle("en", "Create", {
-  "actions.create": "Create",
-});
-myI18n.addResourceBundle("en", "Delete", {
-  "actions.delete": "Delete",
-});
-
-myI18n.addResourceBundle("pt", "List", {
-  "actions.list": "Lista",
-});
-myI18n.addResourceBundle("pt", "Create", {
-  "actions.create": "Criar",
-});
-myI18n.addResourceBundle("pt", "Delete", {
-  "actions.delete": "Apagar",
-});
+import { refineI18nProvider } from "@i18n/refine-i18n-provider";
 
 export const LayoutClient: React.FC<
   { children: React.ReactNode }
@@ -55,15 +36,7 @@ export const LayoutClient: React.FC<
           dataProvider={dataProvider}
           notificationProvider={useNotificationProvider}
           resources={localizedResources}
-          i18nProvider={{
-            translate: (key: string, ns?: string) => {
-              return myI18n.t(key, { ns }).toString() || key;
-            },
-            changeLocale: (lng: string) =>
-              myI18n.changeLanguage(lng),
-            getLocale: () =>
-              myI18n.language,
-          }}
+          i18nProvider={refineI18nProvider}
           options={{
             syncWithLocation: true,
             warnWhenUnsavedChanges: true,
