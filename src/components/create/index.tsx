@@ -21,6 +21,7 @@ import {
 import {
     Control,
     Controller,
+    ControllerRenderProps,
     FieldValues,
     FormState,
     Path,
@@ -39,12 +40,17 @@ type FieldType =
     | "multiselect"
     | "custom";
 
+type CreateFieldOption = {
+    label: string;
+    value: string;
+};
+
 // Config for each field
 export interface CreateFieldConfig<T extends FieldValues = any> {
     name: string;
     label: string;
     type: FieldType;
-    options?: any[];
+    options?: (string | CreateFieldOption)[];
     mapOptionToLabel?: (option: any) => string;
     renderOption?: (
         props: React.HTMLAttributes<HTMLLIElement>,
@@ -274,35 +280,72 @@ export function Create<T extends FieldValues>(
                                     name={field.name as Path<T>}
                                     control={control}
                                     defaultValue={"" as any}
-                                    render={({ field: controllerField }) => (
-                                        <Autocomplete
-                                            loading={field.loading}
-                                            options={field.options || []}
-                                            getOptionLabel={field
-                                                .mapOptionToLabel ??
-                                                ((o) => (typeof o === "string"
-                                                    ? o
-                                                    : String(o)))}
-                                            renderOption={field.renderOption}
-                                            value={field.options?.find(
-                                                (o) =>
-                                                    o === controllerField.value,
-                                            ) || null}
-                                            onChange={(_, value) => {
-                                                controllerField.onChange(value);
-                                                field.onChange?.(value);
-                                            }}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    required={field.required}
-                                                    label={field.label}
-                                                    error={!!errorMsg}
-                                                    helperText={errorMsg}
-                                                />
-                                            )}
-                                        />
-                                    )}
+                                    render={({ field: controllerField }) => {
+                                        const mapOptionToLabel = (
+                                            o: string | CreateFieldOption,
+                                        ) => {
+                                            if (typeof o === "string") return o;
+                                            if (o.label !== undefined) {
+                                                return o.label;
+                                            }
+                                            return String(o);
+                                        };
+
+                                        const value = field.options?.find(
+                                            (o) => {
+                                                if (
+                                                    typeof o === "string"
+                                                ) {
+                                                    return controllerField
+                                                        .value === o;
+                                                }
+
+                                                return controllerField.value ===
+                                                    o.value;
+                                            },
+                                        ) || "";
+
+                                        const onChange = (
+                                            _: any,
+                                            value:
+                                                | string
+                                                | CreateFieldOption
+                                                | null,
+                                        ) => {
+                                            const valueAsString =
+                                                typeof value === "string"
+                                                    ? value
+                                                    : value?.value;
+                                            controllerField.onChange(
+                                                valueAsString,
+                                            );
+                                            field.onChange?.(valueAsString);
+                                        };
+
+                                        return (
+                                            <Autocomplete
+                                                loading={field.loading}
+                                                options={field.options || []}
+                                                getOptionLabel={field
+                                                    .mapOptionToLabel ||
+                                                    mapOptionToLabel}
+                                                renderOption={field
+                                                    .renderOption}
+                                                value={value}
+                                                onChange={onChange}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        required={field
+                                                            .required}
+                                                        label={field.label}
+                                                        error={!!errorMsg}
+                                                        helperText={errorMsg}
+                                                    />
+                                                )}
+                                            />
+                                        );
+                                    }}
                                 />
                             );
 

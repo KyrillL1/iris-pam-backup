@@ -9,6 +9,8 @@ import {
 } from "react-i18next";
 import { fallbackLng, languages } from "./settings";
 import { usePathname, useRouter } from "next/navigation";
+import refineMsgEn from "./refine-messages.en.json";
+import refineMsgPt from "./refine-messages.pt.json";
 
 i18next
     .use(initReactI18next)
@@ -18,6 +20,11 @@ i18next
         fallbackLng,
         lng: undefined,
         preload: languages,
+        resources: {
+            en: { refine: refineMsgEn },
+            pt: { refine: refineMsgPt },
+        },
+        defaultNS: "refine",
     });
 
 export const I18NProvider: React.FC<

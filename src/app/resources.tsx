@@ -20,7 +20,7 @@ myI18n.addResourceBundle("en", "resources", {
     payout_proposals: "Payout Proposals",
 });
 myI18n.addResourceBundle("pt", "resources", {
-    employees: "Trabalhadores",
+    employees: "Funcionários",
     departments: "Departamentos",
     contracts: "Contratos",
     pay_adjustments: "Benefícios & Deduções",

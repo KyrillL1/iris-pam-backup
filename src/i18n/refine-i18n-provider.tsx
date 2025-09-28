@@ -1,29 +1,32 @@
+import { I18nProvider } from "@refinedev/core";
 import { myI18n } from "./i18n-provider";
 
-// KBAR
-myI18n.addResourceBundle("en", "List", {
-  "actions.list": "List",
-});
-myI18n.addResourceBundle("en", "Create", {
-  "actions.create": "Create",
-});
-myI18n.addResourceBundle("en", "Delete", {
-  "actions.delete": "Delete",
-});
+/**
+ * This is only needed for internal refine rendering.
+ *
+ * For our code, we'll use useTranslation from @i18n/i18n-provider
+ */
+export const refineI18nProvider: I18nProvider = {
+  translate: (key: string, options?: string | any, fallback?: any) => {
+    // weird bug in refine that if options is undefined, it'll just pass (key, fallback)
+    // triggering techincally "options" to become fallback
+    let actualFallback: string = "";
+    if (fallback === undefined && typeof options === "string") {
+      actualFallback = options;
+    }
+    if (fallback !== undefined) {
+      actualFallback = fallback;
+    }
 
-myI18n.addResourceBundle("pt", "List", {
-  "actions.list": "Lista",
-});
-myI18n.addResourceBundle("pt", "Create", {
-  "actions.create": "Criar",
-});
-myI18n.addResourceBundle("pt", "Delete", {
-  "actions.delete": "Apagar",
-});
+    let actualOptions = {};
+    if (options && typeof options !== "string") {
+      actualOptions = options;
+    }
 
-export const refineI18nProvider = {
-  translate: (key: string, ns?: string) => {
-    return myI18n.t(key, { ns }).toString() || key;
+    return myI18n.t(key, {
+      defaultValue: actualFallback || key,
+      ...actualOptions,
+    });
   },
   changeLocale: (lng: string) => myI18n.changeLanguage(lng),
   getLocale: () => myI18n.language,
