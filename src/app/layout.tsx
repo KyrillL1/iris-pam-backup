@@ -6,12 +6,8 @@ import { RefineSnackbarProvider } from "@refinedev/mui";
 import { ColorModeContextProvider } from "@contexts/color-mode";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { LayoutClient } from "./layout-client";
-import {
-  fallbackLng,
-  headerName,
-  languages,
-} from "@providers/i18n-provider/settings";
-import { headers } from "next/headers";
+import { fetchServerLocale } from "@i18n/fetch-server-locale";
+import { I18NProvider } from "@i18n/i18n-provider";
 
 export const metadata: Metadata = {
   title: "PAM",
@@ -34,7 +30,7 @@ export default async function RootLayout({
     overscrollBehaviorY: "none",
   };
 
-  const lang = await (await headers()).get(headerName) || fallbackLng;
+  const lng = await fetchServerLocale();
 
   return (
     <html
@@ -50,9 +46,11 @@ export default async function RootLayout({
               <RefineSnackbarProvider>
                 <ColorModeContextProvider>
                   <DevtoolsProvider>
-                    <LayoutClient lang={lang}>
-                      {children}
-                    </LayoutClient>
+                    <I18NProvider initialLang={lng}>
+                      <LayoutClient>
+                        {children}
+                      </LayoutClient>
+                    </I18NProvider>
                   </DevtoolsProvider>
                 </ColorModeContextProvider>
               </RefineSnackbarProvider>

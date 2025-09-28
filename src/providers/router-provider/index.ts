@@ -11,7 +11,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import React from "react";
 import { useContext } from "react";
 import qs from "qs";
-import { languages } from "@providers/i18n-provider/settings";
+import { languages } from "@i18n/settings";
 
 function convertToNumberIfPossible(input: string): number | null {
     return isNaN(Number(input)) ? null : Number(input);

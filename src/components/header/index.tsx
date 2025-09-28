@@ -16,7 +16,6 @@ import {
   useGetIdentity,
   useLogout,
   useMenu,
-  useTranslation,
 } from "@refinedev/core";
 import { HamburgerMenu, RefineThemedLayoutHeaderProps } from "@refinedev/mui";
 import React, { useContext, useState } from "react";
@@ -30,6 +29,8 @@ import {
 } from "@mui/icons-material";
 import { useKBar } from "@refinedev/kbar";
 import { MZ, US } from "country-flag-icons/react/3x2";
+import { useTranslation } from "react-i18next";
+import { useLocale } from "@i18n/i18n-provider";
 
 type IUser = {
   id: number;
@@ -62,9 +63,9 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
 
   const { query: { toggle: toggleCommandBar } } = useKBar();
 
-  const { changeLocale, getLocale } = useTranslation();
+  const { locale, changeLocale } = useLocale();
   const toggleLanguage = () => {
-    if (getLocale() === "en") {
+    if (locale === "en") {
       return changeLocale("pt");
     }
     return changeLocale("en");
@@ -137,16 +138,18 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
                         : <DarkModeOutlined />}
                     </ListItemIcon>
                     <Typography>
-                      {mode === "dark" ? "Select light mode" : "Select dark mode"}
+                      {mode === "dark"
+                        ? "Select light mode"
+                        : "Select dark mode"}
                     </Typography>
                   </MenuItem>
                   <MenuItem onClick={toggleLanguage}>
                     <ListItemIcon>
-                      {getLocale() === "en"
+                      {locale === "en"
                         ? <MZ style={{ marginRight: "12px" }} />
                         : <US style={{ marginRight: "12px" }} />}
                     </ListItemIcon>
-                    {getLocale() === "en"
+                    {locale === "en"
                       ? "Language to Portuguese"
                       : "Language to English"}
                   </MenuItem>

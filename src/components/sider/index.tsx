@@ -8,23 +8,19 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import {
-  RefineThemedLayoutSiderProps,
-  ThemedSider,
-  ThemedTitle,
-} from "@refinedev/mui";
-import React, { useEffect, useMemo, useRef } from "react";
-import { Link as MuiLink, Typography } from "@mui/material";
+import { RefineThemedLayoutSiderProps, ThemedSider } from "@refinedev/mui";
+import React, { useEffect } from "react";
+import { Typography } from "@mui/material";
 import NextLink from "next/link";
-import {
-  useMenu,
-  useRefineContext,
-  useTranslate,
-  useTranslation,
-} from "@refinedev/core";
+import { useMenu } from "@refinedev/core";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { i18next } from "@i18n/i18n-provider";
+
+i18next.addResourceBundle("en", "sider", { title: "PAM" });
+i18next.addResourceBundle("pt", "sider", { title: "PAM-pt" });
 
 NProgress.configure({
   showSpinner: false,
@@ -58,7 +54,7 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
     };
   }, []);
 
-  const { getLocale } = useTranslation();
+  const { t } = useTranslation("sider");
 
   return (
     <ThemedSider
@@ -147,7 +143,7 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
                   transition: "all 0.5s",
                 }}
               >
-                {getLocale()}{}
+                {t("title")}
               </Typography>
             </Box>
           </NextLink>

@@ -49,7 +49,7 @@ export const AuthPage = () => {
           <Box
             display="flex"
             justifyContent="center"
-            sx={{ height: "124px", position: "relative", marginBottom: 3 }}
+            sx={{ height: "124px", position: "relative", marginBottom: 5 }}
           >
             {/* Custom app icon */}
             <Image

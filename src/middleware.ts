@@ -1,5 +1,5 @@
 import { updateSession } from "@/utils/supabase/middleware";
-import { checkLangPrefix } from "@providers/i18n-provider/middleware";
+import { checkLangPrefix } from "@i18n/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
