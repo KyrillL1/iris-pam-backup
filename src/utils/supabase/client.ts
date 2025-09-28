@@ -1,4 +1,12 @@
+import { myI18n } from "@i18n/i18n-provider";
 import { createBrowserClient } from "@supabase/ssr";
+
+myI18n.addResourceBundle("en", "supabase/client", {
+  cantDeleteForeign: "Another item depends on it. {{details}}",
+});
+myI18n.addResourceBundle("pt", "supabase/client", {
+  cantDeleteForeign: "Um outro item depende disso. {{details}}",
+});
 
 export const supabaseBrowserClient = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,7 +34,10 @@ export const supabaseBrowserClient = createBrowserClient(
             return new Response(
               JSON.stringify({
                 error: "CustomForeignKeyError",
-                message: `Another item depends on it. ${details}`,
+                message: myI18n.t("cantDeleteForeign", {
+                  ns: "supabase/client",
+                  details,
+                }),
                 code: "23503",
                 details,
               }),

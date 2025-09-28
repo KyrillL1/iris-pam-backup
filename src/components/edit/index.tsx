@@ -9,12 +9,16 @@ import {
     FormControlLabel,
     TextField,
 } from "@mui/material";
-import { Edit as RefineEdit } from "@refinedev/mui";
+import {
+    Edit as RefineEdit,
+    EditProps as RefineEditProps,
+} from "@refinedev/mui";
 import { Controller, FieldValues, Path } from "react-hook-form";
 import { useForm } from "@refinedev/react-hook-form";
 import { Breadcrumb } from "@components/breadcrumb";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
+import { CrudTitle } from "@components/crud-title";
 
 // Field types supported
 type FieldType =
@@ -49,19 +53,21 @@ export interface EditFieldConfig {
 }
 
 // Props for generic RecordEdit
-interface EditProps {
+interface EditProps extends RefineEditProps {
     fields: EditFieldConfig[];
 }
 
-export function Edit<T extends FieldValues>({ fields }: EditProps) {
+export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
     const form = useForm<T>();
 
     const { register, control, formState: { errors }, saveButtonProps } = form;
 
     return (
         <RefineEdit
+            {...props}
             saveButtonProps={saveButtonProps}
             breadcrumb={false}
+            title={props.title || <CrudTitle type="EDIT" />}
         >
             <Box
                 component="form"

@@ -1,11 +1,11 @@
 "use client";
 
 import { Create, CreateFieldConfig } from "@components/create";
+import { CrudTitle } from "@components/crud-title";
 import { myI18n, useTranslation } from "@i18n/i18n-provider";
 import { ListItem, MenuItem, Typography } from "@mui/material";
 
 myI18n.addResourceBundle("en", "employees/create", {
-  title: "Create Employees",
   fields: {
     first_name: "First Name",
     last_name: "Last Name",
@@ -24,7 +24,6 @@ myI18n.addResourceBundle("en", "employees/create", {
 });
 
 myI18n.addResourceBundle("pt", "employees/create", {
-  title: "Criar Funcionários",
   fields: {
     first_name: "Primeiro Nome",
     last_name: "Sobrenome",
@@ -98,7 +97,6 @@ export default function EmployeeCreate() {
   return (
     <Create
       fields={fields}
-      title={<Typography variant="h5">{t("title")}</Typography>}
     />
   );
 }

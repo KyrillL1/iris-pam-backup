@@ -1,9 +1,14 @@
 "use client";
 
 import { Breadcrumb } from "@components/breadcrumb";
+import { CrudTitle } from "@components/crud-title";
 import { Stack, Typography } from "@mui/material";
 import { DateTimeField } from "@mui/x-date-pickers";
-import { BooleanField, Show as RefineShow } from "@refinedev/mui";
+import {
+    BooleanField,
+    Show as RefineShow,
+    ShowProps as RefineShowProps,
+} from "@refinedev/mui";
 import { DateField, NumberField, TextFieldComponent } from "@refinedev/mui";
 import { formatMoney } from "@utils/format-money";
 import { JSX } from "react";
@@ -24,7 +29,7 @@ export interface ShowField {
     custom?: (value: any) => JSX.Element;
 }
 
-export interface ShowProps {
+export interface ShowProps extends RefineShowProps {
     isLoading: boolean;
     fields: ShowField[];
 }
@@ -32,9 +37,14 @@ export interface ShowProps {
 /**
  * Generic component to show any record
  */
-export const Show: React.FC<ShowProps> = ({ isLoading, fields }) => {
+export const Show: React.FC<ShowProps> = ({ isLoading, fields, ...props }) => {
     return (
-        <RefineShow isLoading={isLoading} breadcrumb={false}>
+        <RefineShow
+            {...props}
+            isLoading={isLoading}
+            breadcrumb={false}
+            title={props.title || <CrudTitle type="SHOW" />}
+        >
             <Stack gap={1}>
                 {fields.map((field, idx) => (
                     <div key={idx}>
@@ -46,7 +56,12 @@ export const Show: React.FC<ShowProps> = ({ isLoading, fields }) => {
                             : field.type === "date"
                             ? <DateField value={field.value} />
                             : field.type === "datetime"
-                            ? <DateField value={field.value} format="DD/MM/YYYY HH:mm:ss"/> 
+                            ? (
+                                <DateField
+                                    value={field.value}
+                                    format="DD/MM/YYYY HH:mm:ss"
+                                />
+                            )
                             : field.type === "boolean"
                             ? <BooleanField value={field.value} />
                             : field.type === "money"

@@ -17,7 +17,7 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { myI18n } from "@i18n/i18n-provider";
+import { myI18n, useLocale } from "@i18n/i18n-provider";
 
 myI18n.addResourceBundle("en", "sider", { title: "PAM" });
 myI18n.addResourceBundle("pt", "sider", { title: "PAM" });

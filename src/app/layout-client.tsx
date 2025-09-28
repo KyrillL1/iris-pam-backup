@@ -12,9 +12,9 @@ import { dataProvider } from "@providers/data-provider";
 import { getResources } from "./resources";
 import "moment/locale/pt";
 import { SelectMultipleProvider } from "@contexts/select-multiple";
-import { routerProvider } from "@providers/router-provider";
 import { myI18n, useLocale } from "@i18n/i18n-provider";
 import { refineI18nProvider } from "@i18n/refine-i18n-provider";
+import routerProvider from "@refinedev/nextjs-router/app";
 
 export const LayoutClient: React.FC<
   { children: React.ReactNode }
@@ -24,7 +24,18 @@ export const LayoutClient: React.FC<
   const { locale } = useLocale();
 
   const localizedResources = useMemo(() => {
-    return getResources();
+    const res = getResources();
+
+    const resWithCorrectPaths = res.map((r) => {
+      return {
+        ...r,
+        list: `/${locale}${r.list}`,
+        create: `/${locale}${r.create}`,
+        edit: `/${locale}${r.edit}`,
+        show: `/${locale}${r.show}`,
+      };
+    });
+    return resWithCorrectPaths;
   }, [locale]);
 
   return (

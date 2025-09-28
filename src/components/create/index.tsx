@@ -29,6 +29,7 @@ import {
 import { useForm } from "@refinedev/react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Breadcrumb } from "@components/breadcrumb";
+import { CrudTitle } from "@components/crud-title";
 
 // Supported field types
 type FieldType =
@@ -137,6 +138,8 @@ export function Create<T extends FieldValues>(
                 </>
             )}
             breadcrumb={false}
+            title={props.title ||
+                <CrudTitle type="CREATE" />}
         >
             <Box
                 component="form"
