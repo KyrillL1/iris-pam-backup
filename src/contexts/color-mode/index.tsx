@@ -9,13 +9,14 @@ import React, {
   useState,
 } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { ThemeProvider } from "@mui/material/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Cookies from "js-cookie";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeDark, ThemeLight } from "./themes";
 import { useLocale } from "@i18n/i18n-provider";
-import { ptPT } from "@mui/material/locale";
+import { ptPT as dataGridPt } from "@mui/x-data-grid/locales";
+import { ptPT as muiPt } from "@mui/material/locale";
 
 type ColorModeContextType = {
   mode: string;
@@ -60,7 +61,7 @@ export const ColorModeContextProvider: React.FC<
   const currentTheme = useMemo(() => {
     let theme = mode === "light" ? ThemeLight : ThemeDark;
     if (locale === "pt") {
-      theme = { ...theme, ...ptPT };
+      theme = createTheme(theme, dataGridPt, muiPt);
     }
     return theme;
   }, [mode, locale]);

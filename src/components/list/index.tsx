@@ -77,7 +77,7 @@ export const List: React.FC<RefineListProps> = ({ ...props }) => {
               {confirmationDialog}
             </>
           )}
-          {resource?.create && (
+          {resource?.create && props.canCreate && (
             <CreateButton hideText variant="outlined" sx={{ border: "none" }} />
           )}
           <RefreshButton hideText />
