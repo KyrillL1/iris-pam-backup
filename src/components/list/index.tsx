@@ -30,7 +30,9 @@ import {
 import React, { useCallback, useState } from "react";
 import { useHandleDeleteMany } from "./use-handle-delete-many";
 
-export const List: React.FC<RefineListProps> = ({ ...props }) => {
+export const List: React.FC<RefineListProps> = (
+  { canCreate = true, ...props },
+) => {
   const { toggle, showMultiple, clearSelected } = useSelectMultipleContext();
 
   const {
@@ -77,7 +79,7 @@ export const List: React.FC<RefineListProps> = ({ ...props }) => {
               {confirmationDialog}
             </>
           )}
-          {resource?.create && props.canCreate && (
+          {resource?.create && canCreate && (
             <CreateButton hideText variant="outlined" sx={{ border: "none" }} />
           )}
           <RefreshButton hideText />
