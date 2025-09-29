@@ -15,6 +15,7 @@ import { SelectMultipleProvider } from "@contexts/select-multiple";
 import { myI18n, useLocale } from "@i18n/i18n-provider";
 import { refineI18nProvider } from "@i18n/refine-i18n-provider";
 import routerProvider from "@refinedev/nextjs-router/app";
+import { useLocalizedResources } from "./use-localized-resources";
 
 export const LayoutClient: React.FC<
   { children: React.ReactNode }
@@ -22,21 +23,7 @@ export const LayoutClient: React.FC<
   { children },
 ) => {
   const { locale } = useLocale();
-
-  const localizedResources = useMemo(() => {
-    const res = getResources();
-
-    const resWithCorrectPaths = res.map((r) => {
-      return {
-        ...r,
-        list: `/${locale}${r.list}`,
-        create: `/${locale}${r.create}`,
-        edit: `/${locale}${r.edit}`,
-        show: `/${locale}${r.show}`,
-      };
-    });
-    return resWithCorrectPaths;
-  }, [locale]);
+  const { localizedResources } = useLocalizedResources();
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={locale}>

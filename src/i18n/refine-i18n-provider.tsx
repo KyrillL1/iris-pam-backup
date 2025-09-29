@@ -28,6 +28,14 @@ export const refineI18nProvider: I18nProvider = {
       ...actualOptions,
     });
   },
-  changeLocale: (lng: string) => myI18n.changeLanguage(lng),
-  getLocale: () => myI18n.language,
+  changeLocale: (lng: string) => {
+    throw new Error(
+      "Dont use this function to changeLocale, use @i18n/i18n-provider",
+    );
+  },
+  getLocale: () => {
+    throw new Error(
+      "Dont use this function to get Locale, use @i18n/i18n-provider",
+    );
+  },
 };
