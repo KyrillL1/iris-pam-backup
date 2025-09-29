@@ -4,7 +4,7 @@ import { List } from "@components/list";
 import { useDataGrid } from "@refinedev/mui";
 import { DataTable, GridColDef } from "@components/data-table";
 import { ContractWithRelations } from "@lib/fetch-contracts";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
+import { myI18n, useLocale, useTranslation } from "@i18n/i18n-provider";
 import { useCallback, useMemo } from "react";
 
 myI18n.addResourceBundle("en", "contracts/list", {
@@ -19,6 +19,17 @@ myI18n.addResourceBundle("en", "contracts/list", {
     end_date: "End Date",
     calculation_basis: "Calculation",
     base_salary: "Base Salary",
+  },
+  options: {
+    contract_type: {
+      FREELANCER: "Freelancer",
+      REGULAR: "Regular",
+      TEMPORARY: "Temporary",
+    },
+    calculation_basis: {
+      MONTHLY: "Monthly",
+      HOURLY: "Hourly",
+    },
   },
 });
 
@@ -35,10 +46,22 @@ myI18n.addResourceBundle("pt", "contracts/list", {
     calculation_basis: "Cálculo",
     base_salary: "Salário Base",
   },
+  options: {
+    contract_type: {
+      FREELANCER: "Freelancer",
+      REGULAR: "Regular",
+      TEMPORARY: "Temporário",
+    },
+    calculation_basis: {
+      MONTHLY: "Mensal",
+      HOURLY: "Horária",
+    },
+  },
 });
 
 export default function ContractList() {
   const { t } = useTranslation("contracts/list");
+  const { locale } = useLocale();
 
   const { dataGridProps } = useDataGrid<ContractWithRelations>({
     meta: {
@@ -71,6 +94,11 @@ export default function ContractList() {
       field: "contract_type",
       headerName: t("columns.contract_type"),
       minWidth: 150,
+      valueGetter: (value: string) => {
+        if (value === "") return value;
+
+        return t(`options.contract_type.${value}`);
+      },
     },
     {
       field: "determined",
@@ -100,6 +128,11 @@ export default function ContractList() {
       field: "calculation_basis",
       headerName: t("columns.calculation_basis"),
       minWidth: 120,
+      valueGetter: (value: string) => {
+        if (value === "") return value;
+
+        return t(`options.calculation_basis.${value}`);
+      },
     },
     {
       field: "base_salary",
@@ -107,7 +140,7 @@ export default function ContractList() {
       minWidth: 120,
       type: "money",
     },
-  ], [t]);
+  ], [t, locale]);
 
   return (
     <List>

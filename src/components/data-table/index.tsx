@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
     DataGrid,
+    GridCallbackDetails,
     type GridColDef as MuiGridColDef,
     GridRenderCellParams,
     GridValidRowModel,
@@ -179,7 +180,15 @@ export function DataTable<T extends { id: string }>(
         apiRef.current.setRowSelectionModel([]);
     }, [showMultiple]);
 
-    const { locale } = useLocale();
+    const onRowSelectionModelChange = useCallback(
+        (selectedIds: string[], details: GridCallbackDetails) => {
+            setSelected?.((selectedIds as string[]).map((id) => ({
+                key: id,
+                value: details.api.getRow(id),
+            })));
+        },
+        [setSelected],
+    );
 
     return (
         <DataGrid
@@ -187,12 +196,7 @@ export function DataTable<T extends { id: string }>(
             columns={enhancedColumns}
             checkboxSelection={showMultiple}
             apiRef={apiRef}
-            onRowSelectionModelChange={(selectedIds, details) => {
-                setSelected?.((selectedIds as string[]).map((id) => ({
-                    key: id,
-                    value: details.api.getRow(id),
-                })));
-            }}
+            onRowSelectionModelChange={onRowSelectionModelChange}
         />
     );
 }
