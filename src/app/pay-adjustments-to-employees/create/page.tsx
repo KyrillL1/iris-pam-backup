@@ -4,20 +4,15 @@ import { useFetchEmployees } from "@lib/fetch-employees";
 import {
   Autocomplete,
   Box,
-  Button,
-  Card,
   IconButton,
-  MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
 import { payAdjustmentOptionFactory } from "../pay-adjustment-option-factory";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Create as RefineCreate, ListButton } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
-import { Controller, Path } from "react-hook-form";
-import { Add, Remove } from "@mui/icons-material";
-import { usePrintPayAdjustmentSubtext } from "./use-print-pay-adjustment-subtext";
+import { Add } from "@mui/icons-material";
 import { useHandleFormSave } from "./use-handle-form-save";
 import {
   EMPLOYEE_FIELD_NAME,
@@ -28,15 +23,31 @@ import {
   mapIndexToStartDateFieldName,
 } from "./constants";
 import { useFetchPayAdjustments } from "@lib/fetch-pay-adjustments";
-import { DatePicker } from "@mui/x-date-pickers";
 import { PayAdjustmentField } from "./pay-adjustment-field.model";
 import { useGeneratePayAdjustmentField } from "./use-generate-pay-adjustment-field";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
+import { Controller, Path } from "react-hook-form";
+
+// Add translation bundles
+myI18n.addResourceBundle("en", "pay-adjustments-to-employees-create", {
+  title: "Create Benefit / Deduction for Employee",
+  employeeLabel: "Employee",
+  employeeRequired: "Employee is required",
+  addButton: "Add Benefit / Deduction",
+});
+
+myI18n.addResourceBundle("pt", "pay-adjustments-to-employees-create", {
+  title: "Criar Benefício / Desconto para Funcionário",
+  employeeLabel: "Funcionário",
+  employeeRequired: "Funcionário é obrigatório",
+  addButton: "Adicionar Benefício / Desconto",
+});
 
 export default function PayAdjustmentsToEmployeesCreate() {
-  const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
+  const { t } = useTranslation("pay-adjustments-to-employees-create");
 
-  const { payAdjustmentIds, payAdjustments, mapPayAdjustmentIdToName } =
-    useFetchPayAdjustments();
+  const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
+  const { payAdjustmentIds, payAdjustments } = useFetchPayAdjustments();
 
   const form = useForm();
   const {
@@ -59,7 +70,7 @@ export default function PayAdjustmentsToEmployeesCreate() {
         ...prev,
         {
           name: mapIndexToFieldName(nextIndex),
-          label: `Benefit/ Deduction ${nextIndex}`,
+          label: `${t("addButton")} ${nextIndex}`,
           key: mapIndexToFieldName(nextIndex),
           userInputName: mapIndexToCustomUserInputName(nextIndex),
           commentName: mapIndexToCommentFieldName(nextIndex),
@@ -68,19 +79,14 @@ export default function PayAdjustmentsToEmployeesCreate() {
         },
       ];
     });
-  }, [payAdjustmentIds]);
+  }, [t, payAdjustmentIds]);
 
   const handleRemovePayAdjustment = useCallback((field: PayAdjustmentField) => {
-    setPayAdjustmentFields((prev) => {
-      const payAdjustmentEntry = prev.find((p) => p.key === field.key);
-      if (!payAdjustmentEntry) return prev;
-
-      return prev.filter((p) => p.key !== field.key);
-    });
+    setPayAdjustmentFields((prev) => prev.filter((p) => p.key !== field.key));
     unregister(field.name);
     unregister(field.commentName);
     unregister(field.userInputName);
-  }, []);
+  }, [unregister]);
 
   const { generatePayAdjustmentField } = useGeneratePayAdjustmentField({
     control,
@@ -96,14 +102,12 @@ export default function PayAdjustmentsToEmployeesCreate() {
     <RefineCreate
       title={
         <Typography component="h5" fontSize="1.5rem">
-          Create Benefit / Deduction for Employee
+          {t("title")}
         </Typography>
       }
       saveButtonProps={{
         ...saveButtonProps,
-        onClick: form.handleSubmit((data) => {
-          handleFormSave(data);
-        }),
+        onClick: form.handleSubmit((data) => handleFormSave(data)),
         disabled: payAdjustmentFields.length === 0,
       }}
       breadcrumb={false}
@@ -123,7 +127,7 @@ export default function PayAdjustmentsToEmployeesCreate() {
         }}
       >
         <Controller
-          rules={{ required: `Employee is required` }}
+          rules={{ required: t("employeeRequired") }}
           key={EMPLOYEE_FIELD_NAME}
           name={EMPLOYEE_FIELD_NAME as Path<any>}
           control={control}
@@ -132,14 +136,13 @@ export default function PayAdjustmentsToEmployeesCreate() {
             <Autocomplete
               options={employeeIds || []}
               getOptionLabel={mapEmployeeIdToName}
-              value={employeeIds?.find(
-                (o) => o === controllerField.value,
-              ) || null}
+              value={employeeIds?.find((o) => o === controllerField.value) ||
+                null}
               onChange={(_, value) => controllerField.onChange(value)}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label={"Employee"}
+                  label={t("employeeLabel")}
                   error={!!(errors as any)[EMPLOYEE_FIELD_NAME]?.message}
                   helperText={(errors as any)[EMPLOYEE_FIELD_NAME]?.message}
                   required
@@ -154,7 +157,7 @@ export default function PayAdjustmentsToEmployeesCreate() {
         <Box sx={{ display: "flex", justifyContent: "end" }}>
           <IconButton
             onClick={handleAddPayAdjustment}
-            loading={!payAdjustments || payAdjustments.length === 0}
+            disabled={!payAdjustments || payAdjustments.length === 0}
           >
             <Add />
           </IconButton>

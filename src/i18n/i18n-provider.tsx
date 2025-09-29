@@ -14,6 +14,18 @@ import refineMsgPt from "./refine-messages.pt.json";
 
 i18next
     .use(initReactI18next)
+    .use({
+        type: "postProcessor",
+        name: "unescape",
+        process: function (value: string) {
+            if (!value) return value;
+            return value.replace(/&amp;/g, "&")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'");
+        },
+    })
     .init({
         // debug: true,
         supportedLngs: languages,
@@ -24,7 +36,8 @@ i18next
             en: { refine: refineMsgEn },
             pt: { refine: refineMsgPt },
         },
-        defaultNS: "refine",
+        defaultNS: "refine", // ⚠️ This tells i18next to always run post-processors
+        postProcess: ["unescape"],
     });
 
 export const I18NProvider: React.FC<

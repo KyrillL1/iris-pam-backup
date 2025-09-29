@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback } from "react";
 import { PayAdjustmentField } from "./pay-adjustment-field.model";
 import {
@@ -22,24 +24,47 @@ import { payAdjustmentOptionFactory } from "../pay-adjustment-option-factory";
 import { Remove } from "@mui/icons-material";
 import { usePrintPayAdjustmentSubtext } from "./use-print-pay-adjustment-subtext";
 import { DatePicker } from "@mui/x-date-pickers";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
+
+// Translation bundles
+myI18n.addResourceBundle("en", "pay-adjustment-field", {
+    required: "{{label}} is required",
+    customInputLabel: "Custom User Input",
+    customInputPlaceholder: "Leave empty for default",
+    commentLabel: "Comment",
+    commentPlaceholder: "Optional",
+    startDateLabel: "Start Date",
+    endDateLabel: "End Date",
+});
+
+myI18n.addResourceBundle("pt", "pay-adjustment-field", {
+    required: "{{label}} é obrigatório",
+    customInputLabel: "Entrada do Usuário",
+    customInputPlaceholder: "Deixe vazio para padrão",
+    commentLabel: "Comentário",
+    commentPlaceholder: "Opcional",
+    startDateLabel: "Data Início",
+    endDateLabel: "Data Fim",
+});
 
 export interface GeneratePayAdjustmentFieldOptions {
     control: Control;
     errors: FieldErrors;
     watch: UseFormWatch<any>;
     register: UseFormRegister<any>;
+    unregister?: UseFormUnregister<any>;
     onRemovePayAdjustmentField: (field: PayAdjustmentField) => void;
 }
 
-export function useGeneratePayAdjustmentField(
-    {
-        control,
-        errors,
-        watch,
-        register,
-        onRemovePayAdjustmentField,
-    }: GeneratePayAdjustmentFieldOptions,
-) {
+export function useGeneratePayAdjustmentField({
+    control,
+    errors,
+    watch,
+    register,
+    onRemovePayAdjustmentField,
+}: GeneratePayAdjustmentFieldOptions) {
+    const { t } = useTranslation("pay-adjustment-field");
+
     const { payAdjustmentIds, payAdjustments, mapPayAdjustmentIdToName } =
         useFetchPayAdjustments();
     const { printPayAdjustmentSubtext } = usePrintPayAdjustmentSubtext();
@@ -49,8 +74,8 @@ export function useGeneratePayAdjustmentField(
             const selectedPayAdjustmentId = watch(field.name) as
                 | string
                 | undefined;
-            const selectedPayAdjustment = payAdjustments.find((p) =>
-                p.id === selectedPayAdjustmentId
+            const selectedPayAdjustment = payAdjustments.find(
+                (p) => p.id === selectedPayAdjustmentId,
             );
 
             return (
@@ -66,7 +91,9 @@ export function useGeneratePayAdjustmentField(
                     <Box sx={{ display: "flex", width: "100%", gap: 2 }}>
                         <Controller
                             key={field.key}
-                            rules={{ required: `${field.label} is required` }}
+                            rules={{
+                                required: t("required", { label: field.label }),
+                            }}
                             name={field.name as Path<any>}
                             control={control}
                             defaultValue={"" as any}
@@ -76,23 +103,26 @@ export function useGeneratePayAdjustmentField(
                                     options={payAdjustmentIds}
                                     getOptionLabel={mapPayAdjustmentIdToName}
                                     renderOption={(props, option) => {
-                                        const id = option;
                                         const fullPayAdjustment = payAdjustments
-                                            .find((p) => p.id === id);
-
+                                            .find(
+                                                (p) => p.id === option,
+                                            );
                                         if (!fullPayAdjustment) {
                                             return (
-                                                <MenuItem key={id} value={id}>
+                                                <MenuItem
+                                                    {...props}
+                                                    key={option}
+                                                    value={option}
+                                                >
                                                     Missing Item
                                                 </MenuItem>
                                             );
                                         }
-
                                         return (
                                             <MenuItem
                                                 {...props}
-                                                key={id}
-                                                value={id}
+                                                key={option}
+                                                value={option}
                                             >
                                                 {payAdjustmentOptionFactory(
                                                     fullPayAdjustment,
@@ -110,14 +140,14 @@ export function useGeneratePayAdjustmentField(
                                                 ?.message}
                                             helperText={(errors as any)[
                                                 field.name
-                                            ]
-                                                ?.message}
+                                            ]?.message}
                                             required
                                         />
                                     )}
                                 />
                             )}
                         />
+
                         <TextField
                             {...register(field.userInputName, {
                                 valueAsNumber: true,
@@ -126,14 +156,12 @@ export function useGeneratePayAdjustmentField(
                             sx={{ flexGrow: 1 }}
                             required={false}
                             defaultValue={""}
-                            label={"Custom User Input"}
-                            placeholder="Leave empty for default"
-                            type={"number"}
-                            slotProps={{
-                                htmlInput: { min: 0 },
-                                inputLabel: { shrink: true },
-                            }}
+                            label={t("customInputLabel")}
+                            placeholder={t("customInputPlaceholder")}
+                            type="number"
+                            inputProps={{ min: 0 }}
                         />
+
                         <IconButton
                             color="error"
                             onClick={() => onRemovePayAdjustmentField(field)}
@@ -141,6 +169,7 @@ export function useGeneratePayAdjustmentField(
                             <Remove />
                         </IconButton>
                     </Box>
+
                     <Box
                         sx={{
                             display: "flex",
@@ -157,69 +186,61 @@ export function useGeneratePayAdjustmentField(
                             multiline
                             required={false}
                             defaultValue={""}
-                            label={"Comment"}
-                            placeholder="Optional"
-                            type={"text"}
-                            slotProps={{ inputLabel: { shrink: true } }}
+                            label={t("commentLabel")}
+                            placeholder={t("commentPlaceholder")}
                         />
                     </Box>
+
                     <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
                         <Controller
                             key={field.startDateName}
                             name={field.startDateName}
                             control={control}
-                            defaultValue={null} // or undefined
-                            rules={{ required: "Start Date is required" }}
+                            defaultValue={null}
+                            rules={{
+                                required: t("required", {
+                                    label: t("startDateLabel"),
+                                }),
+                            }}
                             render={({ field: controllerField }) => (
                                 <DatePicker
                                     {...controllerField}
                                     value={controllerField.value}
-                                    onChange={(value) => {
-                                        controllerField.onChange(
-                                            value,
-                                        );
-                                    }}
-                                    sx={{
-                                        flexGrow: 1,
-                                    }}
+                                    onChange={controllerField.onChange}
+                                    sx={{ flexGrow: 1 }}
                                     slotProps={{
                                         textField: {
                                             required: true,
-                                            label: "Start Date",
+                                            label: t("startDateLabel"),
                                             fullWidth: true,
-                                            error: !!(errors as any)[
-                                                field.startDateName
-                                            ]
-                                                ?.message,
-                                            helperText: (errors as any)[
-                                                field.startDateName
-                                            ]
-                                                ?.message,
+                                            error:
+                                                !!(errors as any)[
+                                                    field.startDateName
+                                                ]?.message,
+                                            helperText:
+                                                (errors as any)[
+                                                    field.startDateName
+                                                ]?.message,
                                         },
                                     }}
                                 />
                             )}
                         />
+
                         <Controller
                             key={field.endDateName}
                             name={field.endDateName}
                             control={control}
-                            defaultValue={null} // or undefined
+                            defaultValue={null}
                             render={({ field: controllerField }) => (
                                 <DatePicker
                                     {...controllerField}
                                     value={controllerField.value}
-                                    onChange={(value) => {
-                                        controllerField.onChange(
-                                            value,
-                                        );
-                                    }}
-                                    sx={{
-                                        flexGrow: 1,
-                                    }}
+                                    onChange={controllerField.onChange}
+                                    sx={{ flexGrow: 1 }}
                                     slotProps={{
                                         textField: {
-                                            label: "End Date",
+                                            label: t("endDateLabel"),
                                             fullWidth: true,
                                         },
                                     }}
@@ -230,10 +251,18 @@ export function useGeneratePayAdjustmentField(
                 </Card>
             );
         },
-        [control, errors, payAdjustmentIds, payAdjustments],
+        [
+            control,
+            errors,
+            payAdjustmentIds,
+            payAdjustments,
+            register,
+            watch,
+            onRemovePayAdjustmentField,
+            printPayAdjustmentSubtext,
+            t,
+        ],
     );
 
-    return {
-        generatePayAdjustmentField,
-    };
+    return { generatePayAdjustmentField };
 }
