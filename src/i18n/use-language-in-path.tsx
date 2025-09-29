@@ -1,5 +1,5 @@
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { languages } from "./settings";
 
 export function useLanguageInPath() {
@@ -9,7 +9,15 @@ export function useLanguageInPath() {
         return languages.find((l) => pathname.startsWith(`/${l}`));
     }, [pathname]);
 
+    const isPathAlreadyPrefixed = useCallback((path: string) => {
+        if (languages.find((l) => path.startsWith(`/${l}`))) {
+            return true;
+        }
+        return false;
+    }, []);
+
     return {
         pathStartsWithPrefix,
+        isPathAlreadyPrefixed,
     };
 }

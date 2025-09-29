@@ -13,8 +13,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { ComponentProps } from "react";
 import qs from "qs";
 import { useContext } from "react";
-import { languages } from "@i18n/settings";
-import NextLink from "next/link";
 import { useLanguageInPath } from "@i18n/use-language-in-path";
 import { useLocale } from "@i18n/i18n-provider";
 
@@ -22,21 +20,10 @@ function convertToNumberIfPossible(input: string): number | null {
     return isNaN(Number(input)) ? null : Number(input);
 }
 
-// TODO: Fix link & go so redirecting with refine elements works
-
 /**
  * Need to override standard router, so parsing and navigating works with locale prefix in path
  */
 export const routerProvider: RouterProvider = {
-    Link: React.forwardRef<
-        HTMLAnchorElement,
-        ComponentProps<NonNullable<RouterProvider["Link"]>>
-    >(function RefineLink({ to, ...props }, ref) {
-        const { locale } = useLocale();
-        to = `${locale}to`;
-
-        return <NextLink href={to} {...props} ref={ref} />;
-    }),
     back() {
         const { back } = useRouter();
 
@@ -44,9 +31,10 @@ export const routerProvider: RouterProvider = {
     },
     go() {
         const { push, replace } = useRouter();
-        const pathname = usePathname();
         const searchParamsObj = useSearchParams();
         const { locale } = useLocale();
+        const { isPathAlreadyPrefixed } = useLanguageInPath();
+        const pathname = usePathname();
 
         const fn = React.useCallback(
             ({
@@ -86,12 +74,11 @@ export const routerProvider: RouterProvider = {
                  * Need to insert correct locale here too
                  */
 
-                let prefixedTo = to;
-                if (prefixedTo && locale) {
-                    prefixedTo = `/${locale}${prefixedTo}`;
-                }
+                let urlTo = to || cleanPathname;
 
-                const urlTo = prefixedTo || cleanPathname;
+                if (!isPathAlreadyPrefixed(urlTo)) {
+                    urlTo = `/${locale}${urlTo}`;
+                }
 
                 /**
                  * Rest as original
@@ -116,7 +103,7 @@ export const routerProvider: RouterProvider = {
 
                 return undefined;
             },
-            [searchParamsObj, push, replace, locale],
+            [searchParamsObj, push, replace, locale, pathname],
         );
 
         return fn;

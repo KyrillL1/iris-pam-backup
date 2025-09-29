@@ -18,6 +18,7 @@ import "nprogress/nprogress.css";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { myI18n, useLocale } from "@i18n/i18n-provider";
+import { Link } from "@i18n/Link";
 
 myI18n.addResourceBundle("en", "sider", { title: "PAM" });
 myI18n.addResourceBundle("pt", "sider", { title: "PAM" });
@@ -69,7 +70,7 @@ export const Sider: React.FC<RefineThemedLayoutSiderProps> = () => {
                     NProgress.start();
                   }}
                   key={key}
-                  component={NextLink}
+                  component={Link}
                   href={route || "/"}
                   selected={key === selectedKey}
                   aria-label={label}
