@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fallbackLng, headerName, languages } from "./settings";
 import acceptLanguage from "accept-language";
+import { myI18n } from "./i18n-provider";
 
 export async function checkLangPrefix(
     request: NextRequest,

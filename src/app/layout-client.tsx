@@ -14,8 +14,7 @@ import "moment/locale/pt";
 import { SelectMultipleProvider } from "@contexts/select-multiple";
 import { myI18n, useLocale } from "@i18n/i18n-provider";
 import { refineI18nProvider } from "@i18n/refine-i18n-provider";
-import routerProvider from "@refinedev/nextjs-router/app";
-import { useLocalizedResources } from "./use-localized-resources";
+import { routerProvider } from "@providers/router-provider";
 
 export const LayoutClient: React.FC<
   { children: React.ReactNode }
@@ -23,7 +22,6 @@ export const LayoutClient: React.FC<
   { children },
 ) => {
   const { locale } = useLocale();
-  const { localizedResources } = useLocalizedResources();
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale={locale}>
@@ -33,7 +31,7 @@ export const LayoutClient: React.FC<
           authProvider={authProviderClient}
           dataProvider={dataProvider}
           notificationProvider={useNotificationProvider}
-          resources={localizedResources}
+          resources={getResources()}
           i18nProvider={refineI18nProvider}
           options={{
             syncWithLocation: true,
