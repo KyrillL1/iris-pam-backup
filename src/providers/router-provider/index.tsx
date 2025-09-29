@@ -10,11 +10,12 @@ import routerProviderRefine, {
     stringifyConfig,
 } from "@refinedev/nextjs-router/app";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, useEffect } from "react";
 import qs from "qs";
 import { useContext } from "react";
 import { useLanguageInPath } from "@i18n/use-language-in-path";
 import { useLocale } from "@i18n/i18n-provider";
+import { useLinkStatus } from "next/link";
 
 function convertToNumberIfPossible(input: string): number | null {
     return isNaN(Number(input)) ? null : Number(input);

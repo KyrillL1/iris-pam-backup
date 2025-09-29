@@ -1,6 +1,5 @@
 "use client";
 
-import { Breadcrumb } from "@components/breadcrumb";
 import { CrudTitle } from "@components/crud-title";
 import { Stack, Typography } from "@mui/material";
 import { DateTimeField } from "@mui/x-date-pickers";

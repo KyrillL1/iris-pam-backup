@@ -5,9 +5,10 @@
   "engines": {
     "node": ">=20"
   },
-  "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 refine dev",
+  "scripts": {    
     "compile-all": "./scripts/compile-all-next-dev.sh",
+    "dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 refine dev",
+    "dev-fast": "concurrently \"pnpm dev\" \"pnpm compile-all \"",
     "build": "refine build",
     "start": "refine start",
     "lint": "next lint",
