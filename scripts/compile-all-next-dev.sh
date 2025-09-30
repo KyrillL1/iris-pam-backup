@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Wait till dev server is up
-sleep 3
+until curl -s -o /dev/null http://localhost:3000/; do
+  echo "Waiting for server..."
+  sleep 2
+done
 
 # By default, next doesn't compile all routes
 # To speed up local development, hit them all once, so they are compiled before you start working

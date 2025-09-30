@@ -4,8 +4,35 @@ import { useRPIFieldValidators } from "@app/recipient-payment-info/use-RPI-field
 import { Edit, EditFieldConfig } from "@components/edit";
 import { Employee, useFetchEmployees } from "@lib/fetch-employees";
 import { MEANS_OF_PAYMENT_OPTIONS } from "@lib/fetch-payout-information";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
+
+// Add i18n resource bundles
+myI18n.addResourceBundle("en", "rpi/edit", {
+  fields: {
+    employee: "Employee",
+    recipient_name: "Recipient Name",
+    means_of_payment: "Means of Payment",
+    mpesa_number: "MPesa Number",
+    bank_routing_number: "Bank Routing Number",
+    bank_account_number: "Bank Account Number",
+    bank_name: "Bank Name",
+  },
+});
+
+myI18n.addResourceBundle("pt", "rpi/edit", {
+  fields: {
+    employee: "Funcionário",
+    recipient_name: "Nome do Beneficiário",
+    means_of_payment: "Método de Pagamento",
+    mpesa_number: "Número Mpesa",
+    bank_routing_number: "Número de Roteamento Bancário",
+    bank_account_number: "Número da Conta Bancária",
+    bank_name: "Nome do Banco",
+  },
+});
 
 export default function RecipientPayoutInformationEdit() {
+  const { t } = useTranslation("rpi/edit");
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
   const {
     handleSelectPaymentMeansChange,
@@ -18,7 +45,7 @@ export default function RecipientPayoutInformationEdit() {
   const fields: EditFieldConfig[] = [
     {
       name: "employee_id",
-      label: "Employee",
+      label: t("fields.employee"),
       type: "select",
       required: true,
       options: employeeIds,
@@ -26,13 +53,13 @@ export default function RecipientPayoutInformationEdit() {
     },
     {
       name: "recipient_name",
-      label: "Recipient Name",
+      label: t("fields.recipient_name"),
       type: "text",
       required: true,
     },
     {
       name: "means_of_payment",
-      label: "Means of Payment",
+      label: t("fields.means_of_payment"),
       type: "select",
       required: true,
       options: MEANS_OF_PAYMENT_OPTIONS,
@@ -40,25 +67,25 @@ export default function RecipientPayoutInformationEdit() {
     },
     {
       name: "mpesa_number",
-      label: "Mpesa Number",
+      label: t("fields.mpesa_number"),
       type: "number",
       validate: mpesaValidate,
     },
     {
       name: "bank_routing_number",
-      label: "Bank Routing Number",
+      label: t("fields.bank_routing_number"),
       type: "number",
       validate: bankRoutingValidate,
     },
     {
       name: "bank_account_number",
-      label: "Bank Account Number",
+      label: t("fields.bank_account_number"),
       type: "number",
       validate: bankAccountNumberValidate,
     },
     {
       name: "bank_name",
-      label: "Bank Name",
+      label: t("fields.bank_name"),
       type: "text",
       validate: bankNameValidate,
     },

@@ -29,6 +29,23 @@ import {
 import { useForm } from "@refinedev/react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers";
 import { CrudTitle } from "@components/crud-title";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
+
+myI18n.addResourceBundle("en", "create", {
+    validations: {
+        required: "{{field}} is required",
+        min: "{{field}} must be at least {{min}}",
+        max: "{{field}} cannot exceed {{max}}",
+    },
+});
+
+myI18n.addResourceBundle("pt", "create", {
+    validations: {
+        required: "{{field}} é obrigatório",
+        min: "{{field}} deve ser pelo menos {{min}}",
+        max: "{{field}} não pode exceder {{max}}",
+    },
+});
 
 // Supported field types
 type FieldType =
@@ -85,6 +102,23 @@ interface CreateProps extends RefineCreateProps {
 export function Create<T extends FieldValues>(
     { fields, onSave, ...props }: CreateProps,
 ) {
+    const { t } = useTranslation("create");
+
+    const getValidationMessage = useCallback((
+        field: CreateFieldConfig,
+        type: "required" | "min" | "max",
+        value?: number,
+    ) => {
+        switch (type) {
+            case "required":
+                return t("validations.required", { field: field.label });
+            case "min":
+                return t("validations.min", { field: field.label, min: value });
+            case "max":
+                return t("validations.max", { field: field.label, max: value });
+        }
+    }, [t]);
+
     const form = useForm<T>();
     const {
         register,
@@ -160,7 +194,10 @@ export function Create<T extends FieldValues>(
                                     defaultValue={null} // or undefined
                                     rules={{
                                         required: field.required
-                                            ? `${field.label} is required`
+                                            ? getValidationMessage(
+                                                field,
+                                                "required",
+                                            )
                                             : false,
                                         validate: field.validate,
                                     }}
@@ -190,7 +227,7 @@ export function Create<T extends FieldValues>(
                         case "number":
                             const regNumber = register(field.name as Path<T>, {
                                 required: field.required
-                                    ? `${field.label} is required`
+                                    ? getValidationMessage(field, "required")
                                     : false,
                                 setValueAs: (v) => {
                                     if (
@@ -205,13 +242,21 @@ export function Create<T extends FieldValues>(
                                         field.min !== undefined &&
                                         value < field.min
                                     ) {
-                                        return `${field.label} must be at least ${field.min}`;
+                                        return getValidationMessage(
+                                            field,
+                                            "min",
+                                            field.min,
+                                        );
                                     }
                                     if (
                                         field.max !== undefined &&
                                         value > field.max
                                     ) {
-                                        return `${field.label} cannot exceed ${field.max}`;
+                                        return getValidationMessage(
+                                            field,
+                                            "max",
+                                            field.max,
+                                        );
                                     }
                                     if (field.validate) {
                                         return field.validate(value);
@@ -247,7 +292,7 @@ export function Create<T extends FieldValues>(
                         case "text":
                             const reg = register(field.name as Path<T>, {
                                 required: field.required
-                                    ? `${field.label} is required`
+                                    ? getValidationMessage(field, "required")
                                     : false,
                                 validate: field.validate,
                             });
@@ -275,7 +320,10 @@ export function Create<T extends FieldValues>(
                                     key={field.name}
                                     rules={{
                                         required: field.required
-                                            ? `${field.label} is required`
+                                            ? getValidationMessage(
+                                                field,
+                                                "required",
+                                            )
                                             : false,
                                         validate: field.validate,
                                     }}
@@ -361,7 +409,10 @@ export function Create<T extends FieldValues>(
                                     rules={{
                                         validate: field.validate,
                                         required: field.required
-                                            ? `${field.name} is required`
+                                            ? getValidationMessage(
+                                                field,
+                                                "required",
+                                            )
                                             : false,
                                     }}
                                     render={({ field: controllerField }) => (
@@ -405,7 +456,10 @@ export function Create<T extends FieldValues>(
                                     defaultValue={false as any}
                                     rules={{
                                         required: field.required
-                                            ? `${field.name} is required`
+                                            ? getValidationMessage(
+                                                field,
+                                                "required",
+                                            )
                                             : false,
                                         validate: field.validate,
                                     }}

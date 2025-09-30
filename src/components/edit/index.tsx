@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import {
     Autocomplete,
     AutocompleteRenderOptionState,
@@ -18,6 +18,23 @@ import { useForm } from "@refinedev/react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers";
 import moment from "moment";
 import { CrudTitle } from "@components/crud-title";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
+
+myI18n.addResourceBundle("en", "edit", {
+    validations: {
+        required: "{{field}} is required",
+        min: "{{field}} must be at least {{min}}",
+        max: "{{field}} cannot exceed {{max}}",
+    },
+});
+
+myI18n.addResourceBundle("pt", "edit", {
+    validations: {
+        required: "{{field}} é obrigatório",
+        min: "{{field}} deve ser pelo menos {{min}}",
+        max: "{{field}} não pode exceder {{max}}",
+    },
+});
 
 // Field types supported
 type FieldType =
@@ -57,6 +74,22 @@ interface EditProps extends RefineEditProps {
 }
 
 export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
+    const { t } = useTranslation("edit");
+
+    const getValidationMessage = useCallback((
+        field: EditFieldConfig,
+        type: "required" | "min" | "max",
+        value?: number,
+    ) => {
+        switch (type) {
+            case "required":
+                return t("validations.required", { field: field.label });
+            case "min":
+                return t("validations.min", { field: field.label, min: value });
+            case "max":
+                return t("validations.max", { field: field.label, max: value });
+        }
+    }, [t]);
     const form = useForm<T>();
 
     const { register, control, formState: { errors }, saveButtonProps } = form;
@@ -86,7 +119,10 @@ export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
                                     defaultValue={null} // or undefined
                                     rules={{
                                         required: field.required
-                                            ? `${field.label} is required`
+                                            ? getValidationMessage(
+                                                field,
+                                                "required",
+                                            )
                                             : false,
                                         validate: field.validate,
                                     }}
@@ -121,11 +157,23 @@ export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
                         case "number":
                             const reg = register(field.name as Path<T>, {
                                 required: field.required
-                                    ? `${field.label} is required`
+                                    ? getValidationMessage(field, "required")
                                     : false,
                                 valueAsNumber: field.type === "number",
-                                min: field.min,
-                                max: field.max,
+                                min: field.min
+                                    ? getValidationMessage(
+                                        field,
+                                        "min",
+                                        field.min,
+                                    )
+                                    : undefined,
+                                max: field.max
+                                    ? getValidationMessage(
+                                        field,
+                                        "max",
+                                        field.max,
+                                    )
+                                    : undefined,
                                 validate: field.validate,
                             });
                             return (
@@ -167,7 +215,10 @@ export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
                                     defaultValue={null as any}
                                     rules={{
                                         required: field.required
-                                            ? `${field.label} is required`
+                                            ? getValidationMessage(
+                                                field,
+                                                "required",
+                                            )
                                             : false,
                                         validate: field.validate,
                                     }}
@@ -205,7 +256,10 @@ export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
                                     defaultValue={false}
                                     rules={{
                                         required: field.required
-                                            ? `${field.name} is required`
+                                            ? getValidationMessage(
+                                                field,
+                                                "required",
+                                            )
                                             : false,
                                         validate: field.validate,
                                     }}
