@@ -3,11 +3,35 @@
 import { PayoutModelWithRelations } from "@app/payouts/payout.model";
 import { PayslipCell } from "@components/payslip-cell";
 import { Show, ShowField } from "@components/show";
-import { OpenInNew } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
 import { useShow } from "@refinedev/core";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
+
+// Add translations
+myI18n.addResourceBundle("en", "payout/show", {
+  fields: {
+    id: "ID",
+    created_at: "Created At",
+    updated_at: "Updated At",
+    employee_name: "Employee Name",
+    payslip: "Payslip",
+    amount: "Amount",
+  },
+});
+
+myI18n.addResourceBundle("pt", "payout/show", {
+  fields: {
+    id: "ID",
+    created_at: "Criado em",
+    updated_at: "Atualizado em",
+    employee_name: "Nome do Funcionário",
+    payslip: "Comprovante de Pagamento",
+    amount: "Valor",
+  },
+});
 
 export default function PayoutsShow() {
+  const { t } = useTranslation("payout/show");
+
   const { query } = useShow<PayoutModelWithRelations>({
     meta: {
       select: `
@@ -28,32 +52,26 @@ export default function PayoutsShow() {
   const record = data?.data;
 
   const fields: ShowField[] = [
-    { label: "ID", value: record?.id },
-    { label: "Created At", value: record?.created_at, type: "date" },
-    { label: "Updated At", value: record?.updated_at, type: "date" },
+    { label: t("fields.id"), value: record?.id },
+    { label: t("fields.created_at"), value: record?.created_at, type: "date" },
+    { label: t("fields.updated_at"), value: record?.updated_at, type: "date" },
     {
-      label: "Employee Name",
+      label: t("fields.employee_name"),
       value:
         `${record?.payout_proposal_item?.employee?.first_name} ${record?.payout_proposal_item?.employee?.last_name}`,
     },
     {
-      label: "Payslip",
+      label: t("fields.payslip"),
       value: record?.payout_slip_path,
       type: "custom",
-      custom: (value: string) => {
-        return (
-          <PayslipCell
-            path={value}
-            fileName={`Payslip-${record?.payout_proposal_item?.employee?.first_name} ${record?.payout_proposal_item?.employee?.last_name}`}
-          />
-        );
-      },
+      custom: (value: string) => (
+        <PayslipCell
+          path={value}
+          fileName={`Payslip-${record?.payout_proposal_item?.employee?.first_name} ${record?.payout_proposal_item?.employee?.last_name}`}
+        />
+      ),
     },
-    {
-      label: "Amount",
-      value: record?.amount,
-      type: "number",
-    },
+    { label: t("fields.amount"), value: record?.amount, type: "number" },
   ];
 
   return <Show isLoading={isLoading} fields={fields} />;
