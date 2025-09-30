@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
     createContext,
     PropsWithChildren,
@@ -6,6 +8,18 @@ import React, {
     useMemo,
     useState,
 } from "react";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
+
+// Optional: add translations for context-related labels
+myI18n.addResourceBundle("en", "payout-proposal/context", {
+    hourRows: "Hour Rows",
+    selectedContracts: "Selected Contracts",
+});
+
+myI18n.addResourceBundle("pt", "payout-proposal/context", {
+    hourRows: "Linhas de Horas",
+    selectedContracts: "Contratos Selecionados",
+});
 
 interface PayoutProposalContextRow {
     contractId: string;
@@ -38,7 +52,7 @@ export const PayoutProposalProvider: React.FC<PropsWithChildren> = (
             hourRows,
             setHourRows,
         };
-    }, [selectedContracts, setSelectedContracts, hourRows, setHourRows]);
+    }, [selectedContracts, hourRows]);
 
     return (
         <PayoutProposalContext.Provider value={value}>
