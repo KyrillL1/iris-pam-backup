@@ -1,11 +1,11 @@
 "use client";
 
-import { payAdjustmentOptionFactory } from "../../pay-adjustment-option-factory";
 import { Edit, EditFieldConfig } from "@components/edit";
 import { Employee, useFetchEmployees } from "@lib/fetch-employees";
 import { useFetchPayAdjustments } from "@lib/fetch-pay-adjustments";
 import { MenuItem } from "@mui/material";
 import { myI18n, useTranslation } from "@i18n/i18n-provider";
+import { usePayAdjustmentOptionFactory } from "../../pay-adjustment-option-factory";
 
 // Add translation bundle for this component
 myI18n.addResourceBundle("en", "pay-adjustments-edi", {
@@ -75,6 +75,7 @@ export default function PayAdjustmentsToEmployeesEdi() {
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
   const { payAdjustmentIds, mapPayAdjustmentIdToName, payAdjustments } =
     useFetchPayAdjustments();
+  const payAdjustmentOptionFactory = usePayAdjustmentOptionFactory();
 
   const fields: EditFieldConfig[] = [
     {

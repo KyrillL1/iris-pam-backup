@@ -20,11 +20,11 @@ import {
     UseFormWatch,
 } from "react-hook-form";
 import { useFetchPayAdjustments } from "@lib/fetch-pay-adjustments";
-import { payAdjustmentOptionFactory } from "../pay-adjustment-option-factory";
 import { Remove } from "@mui/icons-material";
 import { usePrintPayAdjustmentSubtext } from "./use-print-pay-adjustment-subtext";
 import { DatePicker } from "@mui/x-date-pickers";
 import { myI18n, useTranslation } from "@i18n/i18n-provider";
+import { usePayAdjustmentOptionFactory } from "../pay-adjustment-option-factory";
 
 // Translation bundles
 myI18n.addResourceBundle("en", "pay-adjustment-field", {
@@ -64,6 +64,7 @@ export function useGeneratePayAdjustmentField({
     onRemovePayAdjustmentField,
 }: GeneratePayAdjustmentFieldOptions) {
     const { t } = useTranslation("pay-adjustment-field");
+    const payAdjustmentOptionFactory = usePayAdjustmentOptionFactory();
 
     const { payAdjustmentIds, payAdjustments, mapPayAdjustmentIdToName } =
         useFetchPayAdjustments();
@@ -213,14 +214,12 @@ export function useGeneratePayAdjustmentField({
                                             required: true,
                                             label: t("startDateLabel"),
                                             fullWidth: true,
-                                            error:
-                                                !!(errors as any)[
-                                                    field.startDateName
-                                                ]?.message,
-                                            helperText:
-                                                (errors as any)[
-                                                    field.startDateName
-                                                ]?.message,
+                                            error: !!(errors as any)[
+                                                field.startDateName
+                                            ]?.message,
+                                            helperText: (errors as any)[
+                                                field.startDateName
+                                            ]?.message,
                                         },
                                     }}
                                 />
