@@ -1,8 +1,9 @@
 "use client";
 
+import { useTranslationCommon } from "../../employees.common";
 import { Show, ShowField } from "@components/show";
+import { myI18n } from "@i18n/i18n-provider";
 import { useShow } from "@refinedev/core";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
 
 // Add i18n resources
 myI18n.addResourceBundle("en", "employees/show", {
@@ -10,13 +11,6 @@ myI18n.addResourceBundle("en", "employees/show", {
     id: "ID",
     created_at: "Created At",
     updated_at: "Updated At",
-    first_name: "First Name",
-    last_name: "Last Name",
-    birthdate: "Birthdate",
-    gender: "Gender",
-    household_size: "Household Size",
-    social_security_number: "Social Security Number",
-    quickbooks_name: "QuickBooks Name",
   },
 });
 
@@ -25,18 +19,11 @@ myI18n.addResourceBundle("pt", "employees/show", {
     id: "ID",
     created_at: "Criado em",
     updated_at: "Atualizado em",
-    first_name: "Primeiro Nome",
-    last_name: "Sobrenome",
-    birthdate: "Data de Nascimento",
-    gender: "Gênero",
-    household_size: "Número de Pessoas no Lar",
-    social_security_number: "Número de Segurança Social",
-    quickbooks_name: "Nome no QuickBooks",
   },
 });
 
 export default function EmployeeShow() {
-  const { t } = useTranslation("employees/show");
+  const { t } = useTranslationCommon("employees/show");
   const { query } = useShow({});
   const { data, isLoading } = query;
 

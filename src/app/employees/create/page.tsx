@@ -1,48 +1,10 @@
 "use client";
 
 import { Create, CreateFieldConfig } from "@components/create";
-import { CrudTitle } from "@components/crud-title";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
-import { ListItem, MenuItem, Typography } from "@mui/material";
-
-myI18n.addResourceBundle("en", "employees/create", {
-  fields: {
-    first_name: "First Name",
-    last_name: "Last Name",
-    birthdate: "Birthdate",
-    gender: "Gender",
-    household_size: "Household Size",
-    social_security_number: "Social Security Number",
-    quickbooks_name: "QuickBooks Name",
-  },
-  options: {
-    gender: {
-      FEMALE: "Female",
-      MALE: "Male",
-    },
-  },
-});
-
-myI18n.addResourceBundle("pt", "employees/create", {
-  fields: {
-    first_name: "Primeiro Nome",
-    last_name: "Sobrenome",
-    birthdate: "Data de Nascimento",
-    gender: "Gênero",
-    household_size: "Número de Pessoas no Lar",
-    social_security_number: "Número de Segurança Social",
-    quickbooks_name: "Nome no QuickBooks",
-  },
-  options: {
-    gender: {
-      FEMALE: "Feminino",
-      MALE: "Masculino",
-    },
-  },
-});
+import { useTranslationCommon } from "../employees.common";
 
 export default function EmployeeCreate() {
-  const { t } = useTranslation("employees/create");
+  const { t } = useTranslationCommon();
 
   const fields: CreateFieldConfig[] = [
     {
@@ -68,9 +30,13 @@ export default function EmployeeCreate() {
       label: t("fields.gender"),
       type: "select",
       options: [
-        { value: "FEMALE", label: t("options.gender.FEMALE") },
-        { value: "MALE", label: t("options.gender.MALE") },
+        "MALE",
+        "FEMALE",
       ],
+      mapOptionToLabel: (option: string) => {
+        if (option === "") return "";
+        return t(`options.gender.${option}`);
+      },
       required: true,
     },
     {
