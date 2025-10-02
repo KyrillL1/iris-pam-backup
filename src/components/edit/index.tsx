@@ -100,6 +100,7 @@ export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
             saveButtonProps={saveButtonProps}
             breadcrumb={false}
             title={props.title || <CrudTitle type="EDIT" />}
+            goBack={false}
         >
             <Box
                 component="form"

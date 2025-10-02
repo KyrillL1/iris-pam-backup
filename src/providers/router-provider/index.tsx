@@ -25,11 +25,6 @@ function convertToNumberIfPossible(input: string): number | null {
  * Need to override standard router, so parsing and navigating works with locale prefix in path
  */
 export const routerProvider: RouterProvider = {
-    back() {
-        const { back } = useRouter();
-
-        return back;
-    },
     go() {
         const { push, replace } = useRouter();
         const searchParamsObj = useSearchParams();

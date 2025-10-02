@@ -56,6 +56,7 @@ export const Show: React.FC<ShowProps> = ({ isLoading, fields, ...props }) => {
             isLoading={isLoading}
             breadcrumb={false}
             title={props.title || <CrudTitle type={"SHOW"} />}
+            goBack={false}
         >
             <Stack gap={1}>
                 {fields.map((field, idx) => (

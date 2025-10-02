@@ -173,6 +173,7 @@ export function Create<T extends FieldValues>(
             breadcrumb={false}
             title={props.title ||
                 <CrudTitle type="CREATE" />}
+            goBack={false}
         >
             <Box
                 component="form"
