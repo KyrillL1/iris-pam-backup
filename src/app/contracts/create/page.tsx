@@ -3,70 +3,17 @@
 import { useFetchEmployees } from "@lib/fetch-employees";
 import { Create, CreateFieldConfig } from "@components/create";
 import { useFetchDepartments } from "@lib/fetch-departments";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
-
-// Add translation resources for this page
-myI18n.addResourceBundle("en", "contracts/create", {
-  fields: {
-    employee_id: "Employee",
-    department_id: "Department",
-    job_title: "Job Title",
-    contract_type: "Contract Type",
-    determined: "Determined",
-    calculation_basis: "Calculation Basis",
-    work_percentage: "Work Percentage",
-    start_date: "Start Date",
-    end_date: "End Date",
-    base_salary: "Base Salary",
-  },
-  options: {
-    contract_type: {
-      FREELANCER: "Freelancer",
-      REGULAR: "Regular",
-      TEMPORARY: "Temporary",
-    },
-    calculation_basis: {
-      MONTHLY: "Monthly",
-      HOURLY: "Hourly",
-    },
-  },
-});
-
-myI18n.addResourceBundle("pt", "contracts/create", {
-  fields: {
-    employee_id: "Funcionário",
-    department_id: "Departamento",
-    job_title: "Cargo",
-    contract_type: "Tipo de Contrato",
-    determined: "Determinada",
-    calculation_basis: "Base de Cálculo",
-    work_percentage: "Percentagem de Trabalho",
-    start_date: "Data Início",
-    end_date: "Data Fim",
-    base_salary: "Salário Base",
-  },
-  options: {
-    contract_type: {
-      FREELANCER: "Freelancer",
-      REGULAR: "Regular",
-      TEMPORARY: "Temporário",
-    },
-    calculation_basis: {
-      MONTHLY: "Mensal",
-      HOURLY: "Horária",
-    },
-  },
-});
+import { useTranslationCommon } from "../contracts.common";
 
 export default function ContractCreate() {
-  const { t } = useTranslation("contracts/create");
+  const { t } = useTranslationCommon();
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
   const { departments } = useFetchDepartments();
 
   const fields: CreateFieldConfig[] = [
     {
       name: "employee_id",
-      label: t("fields.employee_id"),
+      label: t("fields.employee_name"),
       type: "select",
       options: employeeIds,
       mapOptionToLabel: mapEmployeeIdToName,
@@ -74,7 +21,7 @@ export default function ContractCreate() {
     },
     {
       name: "department_id",
-      label: t("fields.department_id"),
+      label: t("fields.department_name"),
       type: "select",
       options: departments.map((d) => d.id),
       mapOptionToLabel: (id) =>
@@ -92,10 +39,8 @@ export default function ContractCreate() {
       type: "select",
       options: ["FREELANCER", "REGULAR", "TEMPORARY"],
       required: true,
-      mapOptionToLabel: (option: string) => {
-        if (option === "") return "";
-        return t(`options.contract_type.${option}`);
-      },
+      mapOptionToLabel: (option: string) =>
+        option ? t(`options.contract_type.${option}`) : "",
     },
     {
       name: "determined",
@@ -108,10 +53,8 @@ export default function ContractCreate() {
       type: "select",
       options: ["MONTHLY", "HOURLY"],
       required: true,
-      mapOptionToLabel: (option: string) => {
-        if (option === "") return "";
-        return t(`options.calculation_basis.${option}`);
-      },
+      mapOptionToLabel: (option: string) =>
+        option ? t(`options.calculation_basis.${option}`) : "",
     },
     {
       name: "work_percentage",

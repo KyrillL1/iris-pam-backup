@@ -78,7 +78,7 @@ export function useLocale() {
 }
 
 export function useTranslation(
-    ns?: string,
+    ns?: string | string[],
     options?: UseTranslationOptions<any>,
 ) {
     return useTranslationi18next(ns, options);

@@ -4,63 +4,13 @@ import { List } from "@components/list";
 import { useDataGrid } from "@refinedev/mui";
 import { DataTable, GridColDef } from "@components/data-table";
 import { ContractWithRelations } from "@lib/fetch-contracts";
-import { myI18n, useLocale, useTranslation } from "@i18n/i18n-provider";
-import { useCallback, useMemo } from "react";
-
-myI18n.addResourceBundle("en", "contracts/list", {
-  columns: {
-    employee_name: "Employee",
-    department_name: "Department",
-    job_title: "Job Title",
-    contract_type: "Contract Type",
-    determined: "Determined",
-    work_percentage: "Work %",
-    start_date: "Start Date",
-    end_date: "End Date",
-    calculation_basis: "Calculation",
-    base_salary: "Base Salary",
-  },
-  options: {
-    contract_type: {
-      FREELANCER: "Freelancer",
-      REGULAR: "Regular",
-      TEMPORARY: "Temporary",
-    },
-    calculation_basis: {
-      MONTHLY: "Monthly",
-      HOURLY: "Hourly",
-    },
-  },
-});
-
-myI18n.addResourceBundle("pt", "contracts/list", {
-  columns: {
-    employee_name: "Funcionário",
-    department_name: "Departamento",
-    job_title: "Cargo",
-    contract_type: "Tipo de Contrato",
-    determined: "Determinada",
-    work_percentage: "Trabalho %",
-    start_date: "Data Início",
-    end_date: "Data Fim",
-    calculation_basis: "Cálculo",
-    base_salary: "Salário Base",
-  },
-  options: {
-    contract_type: {
-      FREELANCER: "Freelancer",
-      REGULAR: "Regular",
-      TEMPORARY: "Temporário",
-    },
-    calculation_basis: {
-      MONTHLY: "Mensal",
-      HOURLY: "Horária",
-    },
-  },
-});
+import { useLocale } from "@i18n/i18n-provider";
+import { useMemo } from "react";
+import "./contracts.common";
+import { useTranslationCommon } from "./contracts.common";
 
 export default function ContractList() {
-  const { t } = useTranslation("contracts/list");
+  const { t } = useTranslationCommon();
   const { locale } = useLocale();
 
   const { dataGridProps } = useDataGrid<ContractWithRelations>({
@@ -76,7 +26,7 @@ export default function ContractList() {
   const columns: GridColDef<ContractWithRelations>[] = useMemo(() => [
     {
       field: "employee_name",
-      headerName: t("columns.employee_name"),
+      headerName: t("fields.employee_name"),
       minWidth: 150,
       valueGetter: (_, row) => {
         const e = row.employee;
@@ -85,14 +35,14 @@ export default function ContractList() {
     },
     {
       field: "department_name",
-      headerName: t("columns.department_name"),
+      headerName: t("fields.department_name"),
       minWidth: 150,
       valueGetter: (_, row) => row.department?.name ?? "",
     },
-    { field: "job_title", headerName: t("columns.job_title"), minWidth: 150 },
+    { field: "job_title", headerName: t("fields.job_title"), minWidth: 150 },
     {
       field: "contract_type",
-      headerName: t("columns.contract_type"),
+      headerName: t("fields.contract_type"),
       minWidth: 150,
       valueGetter: (value: string) => {
         if (value === "") return value;
@@ -102,31 +52,31 @@ export default function ContractList() {
     },
     {
       field: "determined",
-      headerName: t("columns.determined"),
+      headerName: t("fields.determined"),
       minWidth: 100,
       type: "boolean",
     },
     {
       field: "work_percentage",
-      headerName: t("columns.work_percentage"),
+      headerName: t("fields.work_percentage"),
       minWidth: 100,
       type: "number",
     },
     {
       field: "start_date",
-      headerName: t("columns.start_date"),
+      headerName: t("fields.start_date"),
       minWidth: 120,
       type: "date",
     },
     {
       field: "end_date",
-      headerName: t("columns.end_date"),
+      headerName: t("fields.end_date"),
       minWidth: 120,
       type: "date",
     },
     {
       field: "calculation_basis",
-      headerName: t("columns.calculation_basis"),
+      headerName: t("fields.calculation_basis"),
       minWidth: 120,
       valueGetter: (value: string) => {
         if (value === "") return value;
@@ -136,7 +86,7 @@ export default function ContractList() {
     },
     {
       field: "base_salary",
-      headerName: t("columns.base_salary"),
+      headerName: t("fields.base_salary"),
       minWidth: 120,
       type: "money",
     },

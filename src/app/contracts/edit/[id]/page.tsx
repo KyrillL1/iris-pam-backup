@@ -1,65 +1,13 @@
 "use client";
 
+import { useTranslationCommon } from "../../contracts.common";
 import { Edit, EditFieldConfig } from "@components/edit";
 import { Contract } from "@lib/fetch-contracts";
 import { useFetchDepartments } from "@lib/fetch-departments";
 import { useFetchEmployees } from "@lib/fetch-employees";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
-
-myI18n.addResourceBundle("en", "contracts/edit", {
-  fields: {
-    employee_id: "Employee",
-    department_id: "Department",
-    job_title: "Job Title",
-    contract_type: "Contract Type",
-    determined: "Determined",
-    work_percentage: "Work Percentage",
-    start_date: "Start Date",
-    end_date: "End Date",
-    calculation_basis: "Calculation Basis",
-    base_salary: "Base Salary",
-  },
-  options: {
-    contract_type: {
-      FREELANCER: "Freelancer",
-      REGULAR: "Regular",
-      TEMPORARY: "Temporary",
-    },
-    calculation_basis: {
-      MONTHLY: "Monthly",
-      HOURLY: "Hourly",
-    },
-  },
-});
-
-myI18n.addResourceBundle("pt", "contracts/edit", {
-  fields: {
-    employee_id: "Funcionário",
-    department_id: "Departamento",
-    job_title: "Cargo",
-    contract_type: "Tipo de Contrato",
-    determined: "Determinada",
-    work_percentage: "Percentagem de Trabalho",
-    start_date: "Data Início",
-    end_date: "Data Fim",
-    calculation_basis: "Base de Cálculo",
-    base_salary: "Salário Base",
-  },
-  options: {
-    contract_type: {
-      FREELANCER: "Freelancer",
-      REGULAR: "Regular",
-      TEMPORARY: "Temporário",
-    },
-    calculation_basis: {
-      MONTHLY: "Mensal",
-      HOURLY: "Horária",
-    },
-  },
-});
 
 export default function ContractEdit() {
-  const { t } = useTranslation("contracts/edit");
+  const { t } = useTranslationCommon();
 
   const { departments } = useFetchDepartments();
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
@@ -67,7 +15,7 @@ export default function ContractEdit() {
   const fields: EditFieldConfig[] = [
     {
       name: "employee_id",
-      label: t("fields.employee_id"),
+      label: t("fields.employee_name"),
       type: "select",
       options: employeeIds,
       mapOptionToLabel: mapEmployeeIdToName,
@@ -75,7 +23,7 @@ export default function ContractEdit() {
     },
     {
       name: "department_id",
-      label: t("fields.department_id"),
+      label: t("fields.department_name"),
       type: "select",
       mapOptionToLabel: (option: string) => {
         return departments.find((d) => d.id === option)?.name || option;

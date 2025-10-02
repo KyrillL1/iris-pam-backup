@@ -3,44 +3,10 @@
 import { Show, ShowField } from "@components/show";
 import { ContractWithRelations } from "@lib/fetch-contracts";
 import { useShow } from "@refinedev/core";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
-
-myI18n.addResourceBundle("en", "contracts/show", {
-  fields: {
-    id: "ID",
-    created_at: "Created At",
-    updated_at: "Updated At",
-    department: "Department",
-    job_title: "Job Title",
-    contract_type: "Contract Type",
-    determined: "Determined",
-    work_percentage: "Work %",
-    start_date: "Start Date",
-    end_date: "End Date",
-    calculation_basis: "Calculation",
-    base_salary: "Base Salary",
-  },
-});
-
-myI18n.addResourceBundle("pt", "contracts/show", {
-  fields: {
-    id: "ID",
-    created_at: "Criado Em",
-    updated_at: "Atualizado Em",
-    department: "Departamento",
-    job_title: "Cargo",
-    contract_type: "Tipo de Contrato",
-    determined: "Determinada",
-    work_percentage: "Trabalho %",
-    start_date: "Data Início",
-    end_date: "Data Fim",
-    calculation_basis: "Cálculo",
-    base_salary: "Salário Base",
-  },
-});
+import { useTranslationCommon } from "@app/contracts/contracts.common";
 
 export default function ContractsShow() {
-  const { t } = useTranslation("contracts/show");
+  const { t } = useTranslationCommon();
 
   const { query } = useShow<ContractWithRelations>({
     meta: {

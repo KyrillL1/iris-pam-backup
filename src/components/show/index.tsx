@@ -2,15 +2,17 @@
 
 import { CrudTitle } from "@components/crud-title";
 import { Stack, Typography } from "@mui/material";
-import { DateTimeField } from "@mui/x-date-pickers";
 import {
     BooleanField,
+    DateField,
+    NumberField,
     Show as RefineShow,
     ShowProps as RefineShowProps,
+    TextFieldComponent,
 } from "@refinedev/mui";
-import { DateField, NumberField, TextFieldComponent } from "@refinedev/mui";
 import { formatMoney } from "@utils/format-money";
 import { JSX } from "react";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
 
 type FieldType =
     | "text"
@@ -33,22 +35,33 @@ export interface ShowProps extends RefineShowProps {
     fields: ShowField[];
 }
 
+// Add translations
+myI18n.addResourceBundle("en", "common/show", {
+    SHOW: "Details",
+});
+
+myI18n.addResourceBundle("pt", "common/show", {
+    SHOW: "Detalhes",
+});
+
 /**
- * Generic component to show any record
+ * Generic component to show any record (with translations)
  */
 export const Show: React.FC<ShowProps> = ({ isLoading, fields, ...props }) => {
+    const { t } = useTranslation("common/show");
+
     return (
         <RefineShow
             {...props}
             isLoading={isLoading}
             breadcrumb={false}
-            title={props.title || <CrudTitle type="SHOW" />}
+            title={props.title || <CrudTitle type={"SHOW"} />}
         >
             <Stack gap={1}>
                 {fields.map((field, idx) => (
                     <div key={idx}>
                         <Typography variant="body1" fontWeight="bold">
-                            {field.label}
+                            {t(field.label)}
                         </Typography>
                         {field.type === "number"
                             ? <NumberField value={field.value} />
