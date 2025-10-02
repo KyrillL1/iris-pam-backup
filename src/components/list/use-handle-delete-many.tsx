@@ -9,8 +9,26 @@ import {
 } from "@mui/material";
 import { useDeleteMany, useResourceParams } from "@refinedev/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
+
+// i18n translations for this component
+myI18n.addResourceBundle("en", "delete-many", {
+    title: "Are you sure?",
+    confirmText: "Confirm Deletion of {{count}} {{resource}}",
+    cancel: "Cancel",
+    delete: "Delete",
+});
+
+myI18n.addResourceBundle("pt", "delete-many", {
+    title: "Tem certeza?",
+    confirmText: "Confirmar exclusão de {{count}} {{resource}}",
+    cancel: "Cancelar",
+    delete: "Excluir",
+});
 
 export function useHandleDeleteMany() {
+    const { t } = useTranslation("delete-many");
+
     const { selected, clearSelected, toggle } = useSelectMultipleContext();
     const { resource: resourceFromParams } = useResourceParams();
     const { mutate: deleteMany, mutation: { isPending, isSuccess } } =
@@ -19,66 +37,57 @@ export function useHandleDeleteMany() {
     const [confirmDeleteManyOpen, setConfirmDeleteManyOpen] = useState(false);
 
     const handleDeleteManyClick = useCallback(() => {
-        if (selected?.length === 0 || !selected) {
-            return;
-        }
+        if (!selected || selected.length === 0) return;
         setConfirmDeleteManyOpen(true);
     }, [selected]);
 
     const handleDeleteManyConfirmed = useCallback(() => {
         setConfirmDeleteManyOpen(false);
 
-        const ids: string[] = selected?.map((item) => {
-            return item.value.id;
-        }) || [];
+        const ids: string[] = selected?.map((item) => item.value.id) || [];
         const resource = resourceFromParams?.name;
+        if (!ids.length || !resource) return;
 
-        if (ids.length === 0 || !resource) {
-            return;
-        }
-
-        deleteMany({ ids, resource }); // How can I ask the user for confirmation here? Like in useDelete a modal pops up
+        deleteMany({ ids, resource });
     }, [selected]);
+
     useEffect(() => {
         if (!isSuccess) return;
-
         clearSelected?.();
         toggle?.();
     }, [isSuccess]);
 
-    const confirmationDialog = useMemo(() => {
-        return (
-            <Dialog
-                open={confirmDeleteManyOpen}
-                onClose={() => setConfirmDeleteManyOpen(false)}
-            >
-                <DialogTitle>
-                    Are you sure?
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText gutterBottom>
-                        Confirm Deletion of {selected?.length}{" "}
-                        {resourceFromParams?.name}
-                    </DialogContentText>
-                    <DialogActions sx={{ width: "100%" }}>
-                        <Button
-                            fullWidth
-                            onClick={() => setConfirmDeleteManyOpen(false)}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            fullWidth
-                            color="error"
-                            onClick={handleDeleteManyConfirmed}
-                        >
-                            Delete
-                        </Button>
-                    </DialogActions>
-                </DialogContent>
-            </Dialog>
-        );
-    }, [confirmDeleteManyOpen]);
+    const confirmationDialog = useMemo(() => (
+        <Dialog
+            open={confirmDeleteManyOpen}
+            onClose={() => setConfirmDeleteManyOpen(false)}
+        >
+            <DialogTitle>{t("title")}</DialogTitle>
+            <DialogContent>
+                <DialogContentText gutterBottom>
+                    {t("confirmText", {
+                        count: selected?.length,
+                        resource: resourceFromParams?.name,
+                    })}
+                </DialogContentText>
+                <DialogActions sx={{ width: "100%" }}>
+                    <Button
+                        fullWidth
+                        onClick={() => setConfirmDeleteManyOpen(false)}
+                    >
+                        {t("cancel")}
+                    </Button>
+                    <Button
+                        fullWidth
+                        color="error"
+                        onClick={handleDeleteManyConfirmed}
+                    >
+                        {t("delete")}
+                    </Button>
+                </DialogActions>
+            </DialogContent>
+        </Dialog>
+    ), [confirmDeleteManyOpen, selected, resourceFromParams]);
 
     return {
         handleDeleteManyClick,
