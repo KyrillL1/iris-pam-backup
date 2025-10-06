@@ -4,74 +4,20 @@ import { Edit, EditFieldConfig } from "@components/edit";
 import { Employee, useFetchEmployees } from "@lib/fetch-employees";
 import { useFetchPayAdjustments } from "@lib/fetch-pay-adjustments";
 import { MenuItem } from "@mui/material";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
+import { myI18n } from "@i18n/i18n-provider";
 import { usePayAdjustmentOptionFactory } from "../../pay-adjustment-option-factory";
+import { useTranslationCommon } from "../../pay-adjustments.common";
 
-// Add translation bundle for this component
-myI18n.addResourceBundle("en", "pay-adjustments-edi", {
-  employee: "Employee",
-  benefitDeduction: "Benefit / Deduction",
+myI18n.addResourceBundle("en", "pay-adjustments-edit", {
   missingItem: "Missing Item",
-  comment: "Comment",
-  userInput: "User Input",
-  startDate: "Start Date",
-  endDate: "End Date",
-  payAdjustmentNames: {
-    NIGHT_SHIFT_BONUS: "Night Shift Bonus",
-    LIFE_RISK_BONUS: "Life Risk Bonus",
-    OTHER_DEDUCTION: "Other Deduction",
-    INSS: "INSS",
-    FLEXIBLE_HOURS_BONUS: "Flexible Hours Bonus",
-    PUBLIC_HOLIDAYS_BONUS: "Public Holidays Bonus",
-    CHRISTMAS_BONUS: "Christmas Bonus",
-    IRPS: "IRPS",
-    LOANS: "Loans",
-    MISSED_WORKDAYS: "Missed Work Days",
-    SINDICATO: "Sindicato",
-    ADVANCES: "Advances",
-    MISSED_WORKHOURS: "Missed Work Hours",
-    CHRONIC_DISEASE_BONUS: "Chronic Disease Bonus",
-    SUPERVISOR_BONUS: "Supervisor Bonus",
-    EXTRA_HOURS: "Extra Hours",
-    SPECIAL_EXTRA_HOURS: "Special Extra Hours",
-    OTHER_BENEFIT: "Other Benefit",
-    SCHOOL_HOURS_ADDITIONAL: "School Hours Additional",
-  },
 });
 
-myI18n.addResourceBundle("pt", "pay-adjustments-edi", {
-  employee: "Funcionário",
-  benefitDeduction: "Benefício / Desconto",
+myI18n.addResourceBundle("pt", "pay-adjustments-edit", {
   missingItem: "Item Ausente",
-  comment: "Comentário",
-  userInput: "Entrada do Usuário",
-  startDate: "Data de Início",
-  endDate: "Data de Fim",
-  payAdjustmentNames: {
-    NIGHT_SHIFT_BONUS: "Bônus Turno Noturno",
-    LIFE_RISK_BONUS: "Bônus Risco de Vida",
-    OTHER_DEDUCTION: "Outro Desconto",
-    INSS: "INSS",
-    FLEXIBLE_HOURS_BONUS: "Bônus Horas Flexíveis",
-    PUBLIC_HOLIDAYS_BONUS: "Bônus Feriados",
-    CHRISTMAS_BONUS: "Bônus Natal",
-    IRPS: "IRPS",
-    LOANS: "Adiantamentos",
-    MISSED_WORK_DAYS: "Dias de Falta",
-    SINDICATO: "Sindicato",
-    ADVANCES: "Adiantamentos",
-    MISSED_WORK_HOURS: "Horas de Falta",
-    CHRONIC_DISEASE_BONUS: "Bônus Doença Crônica",
-    SUPERVISOR_BONUS: "Bônus Supervisor",
-    EXTRA_HOURS: "Horas Extras",
-    SPECIAL_EXTRA_HOURS: "Horas Extras Especiais",
-    OTHER_BENEFIT: "Outro Benefício",
-    SCHOOL_HOURS_ADDITIONAL: "Horas Adicionais Escola",
-  },
 });
 
 export default function PayAdjustmentsToEmployeesEdi() {
-  const { t } = useTranslation("pay-adjustments-edi");
+  const { t } = useTranslationCommon("pay-adjustments-edit");
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
   const { payAdjustmentIds, mapPayAdjustmentIdToName, payAdjustments } =
     useFetchPayAdjustments();
@@ -80,7 +26,7 @@ export default function PayAdjustmentsToEmployeesEdi() {
   const fields: EditFieldConfig[] = [
     {
       name: "employee_id",
-      label: t("employee"),
+      label: t("fields.employee_name"),
       type: "select",
       required: true,
       options: employeeIds,
@@ -88,7 +34,7 @@ export default function PayAdjustmentsToEmployeesEdi() {
     },
     {
       name: "pay_adjustment_id",
-      label: t("benefitDeduction"),
+      label: t("fields.pay_adjustment_id"),
       type: "select",
       required: true,
       options: payAdjustmentIds,
@@ -101,7 +47,7 @@ export default function PayAdjustmentsToEmployeesEdi() {
         const fullPayAdjustment = payAdjustments.find((p) => p.id === id);
 
         if (!fullPayAdjustment) {
-          return <MenuItem key={id} value={id}>{t("missingItem")}</MenuItem>;
+          return <MenuItem key={id} value={id}>{t("pay-adjustments-edit:missingItem")}</MenuItem>;
         }
 
         return (
@@ -113,24 +59,24 @@ export default function PayAdjustmentsToEmployeesEdi() {
     },
     {
       name: "comment",
-      label: t("comment"),
+      label: t("fields.comment"),
       type: "text",
       multiline: true,
     },
     {
       name: "user_input",
-      label: t("userInput"),
+      label: t("fields.user_input"),
       type: "number",
     },
     {
       name: "start_date",
-      label: t("startDate"),
+      label: t("fields.start_date"),
       type: "date",
       required: true,
     },
     {
       name: "end_date",
-      label: t("endDate"),
+      label: t("fields.end_date"),
       type: "date",
     },
   ];
