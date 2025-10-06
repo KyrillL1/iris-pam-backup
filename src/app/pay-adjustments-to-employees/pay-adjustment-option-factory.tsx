@@ -27,7 +27,7 @@ export function usePayAdjustmentOptionFactory() {
             appendix = p.amount ? `- ${formatMoney(p.amount)}` : "";
         } else if (p.adjustment_type === PayAdjustmentType.GS_PERCENTAGE) {
             appendix = `- ${
-                t("defaultPercentage", { percentage: p.percentage })
+                t("pay-adjustment/factory:defaultPercentage", { percentage: p.percentage })
             }`;
         } else if (p.adjustment_type === PayAdjustmentType.FORMULA) {
             appendix = `- ${p.formula}`;

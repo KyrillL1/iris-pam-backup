@@ -30,14 +30,14 @@ export default function EmployeeShow() {
   const record = data?.data;
 
   const fields: ShowField[] = [
-    { label: t("fields.id"), value: record?.id },
+    { label: t("employees/show:fields.id"), value: record?.id },
     {
-      label: t("fields.created_at"),
+      label: t("employees/show:fields.created_at"),
       value: record?.created_at,
       type: "datetime",
     },
     {
-      label: t("fields.updated_at"),
+      label: t("employees/show:fields.updated_at"),
       value: record?.updated_at,
       type: "datetime",
     },

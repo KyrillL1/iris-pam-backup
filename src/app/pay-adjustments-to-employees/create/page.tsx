@@ -8,7 +8,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { payAdjustmentOptionFactory } from "../pay-adjustment-option-factory";
 import { useCallback, useState } from "react";
 import { Create as RefineCreate, ListButton } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
@@ -110,6 +109,7 @@ export default function PayAdjustmentsToEmployeesCreate() {
         onClick: form.handleSubmit((data) => handleFormSave(data)),
         disabled: payAdjustmentFields.length === 0,
       }}
+      goBack={false}
       breadcrumb={false}
       headerButtons={({ defaultButtons }) => (
         <>

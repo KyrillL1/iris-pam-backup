@@ -2,7 +2,7 @@
 
 import { myI18n, useTranslation } from "@i18n/i18n-provider";
 
-myI18n.addResourceBundle("en", "pay-adjustments/common", {
+myI18n.addResourceBundle("en", "payadjustments/common", {
     fields: {
         employee_name: "Employee Name",
         pay_adjustment_id: "Benefit / Deduction Name",
@@ -34,7 +34,7 @@ myI18n.addResourceBundle("en", "pay-adjustments/common", {
     },
 });
 
-myI18n.addResourceBundle("pt", "pay-adjustments/common", {
+myI18n.addResourceBundle("pt", "payadjustments/common", {
     fields: {
         employee_name: "Nome do Funcionário",
         pay_adjustment_id: "Nome do Benefício / Desconto",
@@ -66,9 +66,9 @@ myI18n.addResourceBundle("pt", "pay-adjustments/common", {
     },
 });
 
-export function useTranslationCommon(additionalNs?: string) {
+export function useTranslationCommon(additionalNs: string = "") {
     return useTranslation([
-        "pay-adjustments/common",
-        ...(additionalNs ? [additionalNs] : []),
+        "payadjustments/common",
+        additionalNs,
     ]);
 }

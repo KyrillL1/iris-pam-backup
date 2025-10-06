@@ -3,11 +3,11 @@
 import { Show, ShowField } from "@components/show";
 import { PayAdjustmentsToEmployeesWithRelations } from "@lib/fetch-pay-adjustments";
 import { useShow } from "@refinedev/core";
-import { myI18n } from "@i18n/i18n-provider";
+import { myI18n, useTranslation } from "@i18n/i18n-provider";
 import { useTranslationCommon } from "../../pay-adjustments.common";
 
 // Add translation bundles
-myI18n.addResourceBundle("en", "pay-adjustments/show", {
+myI18n.addResourceBundle("en", "payadjustments/show", {
   id: "ID",
   createdAt: "Created At",
   updatedAt: "Updated At",
@@ -19,7 +19,7 @@ myI18n.addResourceBundle("en", "pay-adjustments/show", {
   none: "-",
 });
 
-myI18n.addResourceBundle("pt", "pay-adjustments/show", {
+myI18n.addResourceBundle("pt", "payadjustments/show", {
   id: "ID",
   createdAt: "Criado em",
   updatedAt: "Atualizado em",
@@ -32,8 +32,7 @@ myI18n.addResourceBundle("pt", "pay-adjustments/show", {
 });
 
 export default function PayAdjustmentsToEmployeesShow() {
-  const { t, i18n } = useTranslationCommon("pay-adjustments/show");
-  // TODO: Fix this view
+  const { t, i18n } = useTranslationCommon("payadjustments/show");
 
   const { query } = useShow<PayAdjustmentsToEmployeesWithRelations>({
     meta: {
@@ -48,25 +47,41 @@ export default function PayAdjustmentsToEmployeesShow() {
   const record = data?.data;
 
   const fields: ShowField[] = [
-    { label: t("id"), value: record?.id },
-    { label: t("createdAt"), value: record?.created_at, type: "datetime" },
-    { label: t("updatedAt"), value: record?.updated_at, type: "datetime" },
+    { label: t("payadjustments/show:id"), value: record?.id },
+    {
+      label: t("payadjustments/show:createdAt"),
+      value: record?.created_at,
+      type: "datetime",
+    },
+    {
+      label: t("payadjustments/show:updatedAt"),
+      value: record?.updated_at,
+      type: "datetime",
+    },
     {
       label: t("fields.employee_name"),
       value: `${record?.employee?.first_name} ${record?.employee?.last_name}`,
     },
     {
-      label: t("type"),
-      value: record?.pay_adjustment?.is_credit ? t("benefit") : t("deduction"),
+      label: t("payadjustments/show:type"),
+      value: record?.pay_adjustment?.is_credit
+        ? t("payadjustments/show:benefit")
+        : t("payadjustments/show:deduction"),
     },
     {
       label: record?.pay_adjustment?.is_credit
-        ? t("benefitName")
-        : t("deductionName"),
+        ? t("payadjustments/show:benefitName")
+        : t("payadjustments/show:deductionName"),
       value: t(`payAdjustmentNames.${record?.pay_adjustment?.name}`),
     },
-    { label: t("fields.comment"), value: record?.comment || t("none") },
-    { label: t("fields.user_input"), value: record?.userInput || t("none") },
+    {
+      label: t("fields.comment"),
+      value: record?.comment || t("payadjustments/show:none"),
+    },
+    {
+      label: t("fields.user_input"),
+      value: record?.userInput || t("payadjustments/show:none"),
+    },
     { label: t("fields.start_date"), value: record?.start_date, type: "date" },
     { label: t("fields.end_date"), value: record?.end_date, type: "date" },
   ];
