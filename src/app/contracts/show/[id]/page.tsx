@@ -21,17 +21,6 @@ export default function ContractsShow() {
   const record = data?.data;
 
   const fields: ShowField[] = [
-    { label: t("fields.id"), value: record?.id },
-    {
-      label: t("fields.created_at"),
-      value: record?.created_at,
-      type: "datetime",
-    },
-    {
-      label: t("fields.updated_at"),
-      value: record?.updated_at,
-      type: "datetime",
-    },
     { label: t("fields.department"), value: record?.department?.name },
     { label: t("fields.job_title"), value: record?.job_title },
     { label: t("fields.contract_type"), value: record?.contract_type },
@@ -55,5 +44,5 @@ export default function ContractsShow() {
     },
   ];
 
-  return <Show isLoading={isLoading} fields={fields} />;
+  return <Show isLoading={isLoading} fields={fields} record={record} />;
 }

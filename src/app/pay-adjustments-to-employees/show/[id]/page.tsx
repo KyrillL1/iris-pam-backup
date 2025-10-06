@@ -8,9 +8,6 @@ import { useTranslationCommon } from "../../pay-adjustments.common";
 
 // Add translation bundles
 myI18n.addResourceBundle("en", "payadjustments/show", {
-  id: "ID",
-  createdAt: "Created At",
-  updatedAt: "Updated At",
   type: "Type",
   benefit: "Benefit",
   deduction: "Deduction",
@@ -20,9 +17,6 @@ myI18n.addResourceBundle("en", "payadjustments/show", {
 });
 
 myI18n.addResourceBundle("pt", "payadjustments/show", {
-  id: "ID",
-  createdAt: "Criado em",
-  updatedAt: "Atualizado em",
   type: "Tipo",
   benefit: "Benefício",
   deduction: "Desconto",
@@ -32,7 +26,7 @@ myI18n.addResourceBundle("pt", "payadjustments/show", {
 });
 
 export default function PayAdjustmentsToEmployeesShow() {
-  const { t, i18n } = useTranslationCommon("payadjustments/show");
+  const { t } = useTranslationCommon("payadjustments/show");
 
   const { query } = useShow<PayAdjustmentsToEmployeesWithRelations>({
     meta: {
@@ -47,17 +41,6 @@ export default function PayAdjustmentsToEmployeesShow() {
   const record = data?.data;
 
   const fields: ShowField[] = [
-    { label: t("payadjustments/show:id"), value: record?.id },
-    {
-      label: t("payadjustments/show:createdAt"),
-      value: record?.created_at,
-      type: "datetime",
-    },
-    {
-      label: t("payadjustments/show:updatedAt"),
-      value: record?.updated_at,
-      type: "datetime",
-    },
     {
       label: t("fields.employee_name"),
       value: `${record?.employee?.first_name} ${record?.employee?.last_name}`,
@@ -86,5 +69,5 @@ export default function PayAdjustmentsToEmployeesShow() {
     { label: t("fields.end_date"), value: record?.end_date, type: "date" },
   ];
 
-  return <Show isLoading={isLoading} fields={fields} />;
+  return <Show isLoading={isLoading} fields={fields} record={record} />;
 }

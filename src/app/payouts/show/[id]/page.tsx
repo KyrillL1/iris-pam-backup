@@ -4,25 +4,7 @@ import { PayoutModelWithRelations } from "@app/payouts/payout.model";
 import { PayslipCell } from "@components/payslip-cell";
 import { Show, ShowField } from "@components/show";
 import { useShow } from "@refinedev/core";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
 import { useTranslationCommon } from "../../payouts.common";
-
-// Add translations
-myI18n.addResourceBundle("en", "payout/show", {
-  fields: {
-    id: "ID",
-    created_at: "Created At",
-    updated_at: "Updated At",
-  },
-});
-
-myI18n.addResourceBundle("pt", "payout/show", {
-  fields: {
-    id: "ID",
-    created_at: "Criado em",
-    updated_at: "Atualizado em",
-  },
-});
 
 export default function PayoutsShow() {
   const { t } = useTranslationCommon("payout/show");
@@ -47,9 +29,6 @@ export default function PayoutsShow() {
   const record = data?.data;
 
   const fields: ShowField[] = [
-    { label: t("payout/show:fields.id"), value: record?.id },
-    { label: t("payout/show:fields.created_at"), value: record?.created_at, type: "date" },
-    { label: t("payout/show:fields.updated_at"), value: record?.updated_at, type: "date" },
     {
       label: t("fields.employee_contract"),
       value:
@@ -69,5 +48,5 @@ export default function PayoutsShow() {
     { label: t("fields.amount"), value: record?.amount, type: "number" },
   ];
 
-  return <Show isLoading={isLoading} fields={fields} />;
+  return <Show isLoading={isLoading} fields={fields} record={record} />;
 }
