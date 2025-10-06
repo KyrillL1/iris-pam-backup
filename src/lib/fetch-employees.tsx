@@ -17,9 +17,11 @@ export interface Employee {
 
 export function useFetchEmployees() {
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchDepartments = async () => {
+            setLoading(true);
             const { data, error } = await supabaseBrowserClient
                 .from<"employees", Employee>("employees")
                 .select("*")
@@ -28,6 +30,7 @@ export function useFetchEmployees() {
             if (!error && data) {
                 setEmployees(data);
             }
+            setLoading(false);
         };
 
         fetchDepartments();
@@ -35,18 +38,26 @@ export function useFetchEmployees() {
 
     const employeeNames = useMemo(() => {
         if (!employees) return;
-        return employees.map(e => `${e.first_name} ${e.last_name} (#${truncateId(e.id)} )`);
-    }, [employees])
+        return employees.map((e) =>
+            `${e.first_name} ${e.last_name} (#${truncateId(e.id)} )`
+        );
+    }, [employees]);
     const employeeIds = useMemo(() => {
         if (!employees) return;
-        return employees.map(e => e.id)
+        return employees.map((e) => e.id);
     }, [employees]);
 
     const mapEmployeeIdToName = (id: string) => {
-        const e = employees.find(e => e.id === id);
+        const e = employees.find((e) => e.id === id);
         if (!e) return id;
-        return `${e.first_name} ${e.last_name} (#${truncateId(e.id)} )`
-    }
+        return `${e.first_name} ${e.last_name} (#${truncateId(e.id)} )`;
+    };
 
-    return { employees, employeeNames, employeeIds, mapEmployeeIdToName }
+    return {
+        employees,
+        employeeNames,
+        employeeIds,
+        mapEmployeeIdToName,
+        loading,
+    };
 }

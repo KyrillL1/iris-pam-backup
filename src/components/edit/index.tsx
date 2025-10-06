@@ -92,7 +92,12 @@ export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
     }, [t]);
     const form = useForm<T>();
 
-    const { register, control, formState: { errors }, saveButtonProps } = form;
+    const {
+        register,
+        control,
+        formState: { errors, isLoading },
+        saveButtonProps,
+    } = form;
 
     return (
         <RefineEdit
@@ -101,6 +106,7 @@ export function Edit<T extends FieldValues>({ fields, ...props }: EditProps) {
             breadcrumb={false}
             title={props.title || <CrudTitle type="EDIT" />}
             goBack={false}
+            isLoading={isLoading || props.isLoading}
         >
             <Box
                 component="form"

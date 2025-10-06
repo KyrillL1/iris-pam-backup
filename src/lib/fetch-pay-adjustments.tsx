@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabaseBrowserClient } from "@utils/supabase/client";
@@ -34,7 +34,8 @@ export interface PayAdjustmentsToEmployees {
     end_date: string | null; // Date
 }
 
-export interface PayAdjustmentsToEmployeesWithRelations extends PayAdjustmentsToEmployees {
+export interface PayAdjustmentsToEmployeesWithRelations
+    extends PayAdjustmentsToEmployees {
     employee?: {
         id: string;
         first_name: string;
@@ -43,16 +44,17 @@ export interface PayAdjustmentsToEmployeesWithRelations extends PayAdjustmentsTo
     pay_adjustment?: {
         id: string;
         name: string;
-        is_credit: boolean
+        is_credit: boolean;
     };
 }
 
-
 export function useFetchPayAdjustments() {
     const [payAdjustments, setPayAdjustments] = useState<PayAdjustments[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetch = async () => {
+            setLoading(true);
             const { data, error } = await supabaseBrowserClient
                 .from("pay_adjustments")
                 .select("*")
@@ -62,47 +64,55 @@ export function useFetchPayAdjustments() {
             if (!error && data) {
                 setPayAdjustments(data);
             }
+            setLoading(false);
         };
 
         fetch();
-
     }, []);
 
     const payAdjustmentIds = useMemo(() => {
-        return payAdjustments.map(p => p.id);
+        return payAdjustments.map((p) => p.id);
     }, [payAdjustments]);
 
     const mapPayAdjustmentIdToName = useCallback((id: string) => {
-        return payAdjustments.find(p => p.id === id)?.name || ""
-    }, [payAdjustments])
+        return payAdjustments.find((p) => p.id === id)?.name || "";
+    }, [payAdjustments]);
 
     return {
         payAdjustments,
         payAdjustmentIds,
         mapPayAdjustmentIdToName,
-    }
+        loading,
+    };
 }
 
 export function useFetchPayAdjustmentsForEmployee() {
     const [
         payAdjustments,
-        setPayAdjustments
+        setPayAdjustments,
     ] = useState<PayAdjustmentsToEmployeesWithRelations[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const fetch = useCallback(async (employeeId: string) => {
+        setLoading(true);
         const { data, error } = await supabaseBrowserClient
             .from("pay_adjustments_to_employees")
-            .select("*, employee:employees(first_name, last_name), pay_adjustment:pay_adjustments(id, is_credit, name)")
+            .select(
+                "*, employee:employees(first_name, last_name), pay_adjustment:pay_adjustments(id, is_credit, name)",
+            )
             .eq("employee_id", employeeId);
 
         if (!error && data) {
             setPayAdjustments(data);
+            setLoading(false);
             return data;
         }
+        setLoading(false);
     }, []);
 
     return {
         fetch,
-        payAdjustments
-    }
+        payAdjustments,
+        loading,
+    };
 }

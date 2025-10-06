@@ -9,7 +9,7 @@ import { useFetchEmployees } from "@lib/fetch-employees";
 export default function ContractEdit() {
   const { t } = useTranslationCommon();
 
-  const { departments } = useFetchDepartments();
+  const { departments, loading } = useFetchDepartments();
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
 
   const fields: EditFieldConfig[] = [
@@ -89,5 +89,5 @@ export default function ContractEdit() {
     },
   ];
 
-  return <Edit<Contract> fields={fields} />;
+  return <Edit<Contract> fields={fields} isLoading={loading}/>;
 }

@@ -5,12 +5,14 @@ export interface DepartmentOption {
     id: string;
     name: string;
 }
-    
+
 export function useFetchDepartments() {
     const [departments, setDepartments] = useState<DepartmentOption[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchDepartments = async () => {
+            setLoading(true);
             const { data, error } = await supabaseBrowserClient
                 .from("departments")
                 .select("id, name")
@@ -19,10 +21,11 @@ export function useFetchDepartments() {
             if (!error && data) {
                 setDepartments(data);
             }
+            setLoading(false);
         };
 
         fetchDepartments();
     }, []);
 
-    return { departments }
+    return { departments, loading };
 }

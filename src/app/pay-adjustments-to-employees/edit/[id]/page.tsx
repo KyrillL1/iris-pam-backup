@@ -7,6 +7,7 @@ import { MenuItem } from "@mui/material";
 import { myI18n } from "@i18n/i18n-provider";
 import { usePayAdjustmentOptionFactory } from "../../pay-adjustment-option-factory";
 import { useTranslationCommon } from "../../pay-adjustments.common";
+import { useMemo } from "react";
 
 myI18n.addResourceBundle("en", "pay-adjustments-edit", {
   missingItem: "Missing Item",
@@ -18,10 +19,18 @@ myI18n.addResourceBundle("pt", "pay-adjustments-edit", {
 
 export default function PayAdjustmentsToEmployeesEdi() {
   const { t } = useTranslationCommon("pay-adjustments-edit");
-  const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
-  const { payAdjustmentIds, mapPayAdjustmentIdToName, payAdjustments } =
-    useFetchPayAdjustments();
+  const { employeeIds, mapEmployeeIdToName, loading: loadingEmployees } =
+    useFetchEmployees();
+  const {
+    payAdjustmentIds,
+    mapPayAdjustmentIdToName,
+    payAdjustments,
+    loading: loadingPA,
+  } = useFetchPayAdjustments();
   const payAdjustmentOptionFactory = usePayAdjustmentOptionFactory();
+  const loading = useMemo(() => {
+    return loadingEmployees || loadingPA;
+  }, [loadingEmployees, loadingPA]);
 
   const fields: EditFieldConfig[] = [
     {
@@ -47,7 +56,11 @@ export default function PayAdjustmentsToEmployeesEdi() {
         const fullPayAdjustment = payAdjustments.find((p) => p.id === id);
 
         if (!fullPayAdjustment) {
-          return <MenuItem key={id} value={id}>{t("pay-adjustments-edit:missingItem")}</MenuItem>;
+          return (
+            <MenuItem key={id} value={id}>
+              {t("pay-adjustments-edit:missingItem")}
+            </MenuItem>
+          );
         }
 
         return (
@@ -81,5 +94,5 @@ export default function PayAdjustmentsToEmployeesEdi() {
     },
   ];
 
-  return <Edit<Employee> fields={fields} />;
+  return <Edit<Employee> fields={fields} isLoading={loading} />;
 }
