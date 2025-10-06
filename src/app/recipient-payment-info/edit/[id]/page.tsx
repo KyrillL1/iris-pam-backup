@@ -4,35 +4,10 @@ import { useRPIFieldValidators } from "@app/recipient-payment-info/use-RPI-field
 import { Edit, EditFieldConfig } from "@components/edit";
 import { Employee, useFetchEmployees } from "@lib/fetch-employees";
 import { MEANS_OF_PAYMENT_OPTIONS } from "@lib/fetch-payout-information";
-import { myI18n, useTranslation } from "@i18n/i18n-provider";
-
-// Add i18n resource bundles
-myI18n.addResourceBundle("en", "rpi/edit", {
-  fields: {
-    employee: "Employee",
-    recipient_name: "Recipient Name",
-    means_of_payment: "Means of Payment",
-    mpesa_number: "MPesa Number",
-    bank_routing_number: "Bank Routing Number",
-    bank_account_number: "Bank Account Number",
-    bank_name: "Bank Name",
-  },
-});
-
-myI18n.addResourceBundle("pt", "rpi/edit", {
-  fields: {
-    employee: "Funcionário",
-    recipient_name: "Nome do Beneficiário",
-    means_of_payment: "Método de Pagamento",
-    mpesa_number: "Número Mpesa",
-    bank_routing_number: "Número de Roteamento Bancário",
-    bank_account_number: "Número da Conta Bancária",
-    bank_name: "Nome do Banco",
-  },
-});
+import { useTranslationCommon } from "../../rpi.common";
 
 export default function RecipientPayoutInformationEdit() {
-  const { t } = useTranslation("rpi/edit");
+  const { t } = useTranslationCommon();
   const { employeeIds, mapEmployeeIdToName } = useFetchEmployees();
   const {
     handleSelectPaymentMeansChange,
@@ -45,7 +20,7 @@ export default function RecipientPayoutInformationEdit() {
   const fields: EditFieldConfig[] = [
     {
       name: "employee_id",
-      label: t("fields.employee"),
+      label: t("fields.employee_id"),
       type: "select",
       required: true,
       options: employeeIds,
