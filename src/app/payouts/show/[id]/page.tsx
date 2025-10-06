@@ -5,6 +5,7 @@ import { PayslipCell } from "@components/payslip-cell";
 import { Show, ShowField } from "@components/show";
 import { useShow } from "@refinedev/core";
 import { myI18n, useTranslation } from "@i18n/i18n-provider";
+import { useTranslationCommon } from "../../payouts.common";
 
 // Add translations
 myI18n.addResourceBundle("en", "payout/show", {
@@ -12,9 +13,6 @@ myI18n.addResourceBundle("en", "payout/show", {
     id: "ID",
     created_at: "Created At",
     updated_at: "Updated At",
-    employee_name: "Employee Name",
-    payslip: "Payslip",
-    amount: "Amount",
   },
 });
 
@@ -23,14 +21,11 @@ myI18n.addResourceBundle("pt", "payout/show", {
     id: "ID",
     created_at: "Criado em",
     updated_at: "Atualizado em",
-    employee_name: "Nome do Funcionário",
-    payslip: "Comprovante de Pagamento",
-    amount: "Valor",
   },
 });
 
 export default function PayoutsShow() {
-  const { t } = useTranslation("payout/show");
+  const { t } = useTranslationCommon("payout/show");
 
   const { query } = useShow<PayoutModelWithRelations>({
     meta: {
@@ -52,11 +47,11 @@ export default function PayoutsShow() {
   const record = data?.data;
 
   const fields: ShowField[] = [
-    { label: t("fields.id"), value: record?.id },
-    { label: t("fields.created_at"), value: record?.created_at, type: "date" },
-    { label: t("fields.updated_at"), value: record?.updated_at, type: "date" },
+    { label: t("payout/show:fields.id"), value: record?.id },
+    { label: t("payout/show:fields.created_at"), value: record?.created_at, type: "date" },
+    { label: t("payout/show:fields.updated_at"), value: record?.updated_at, type: "date" },
     {
-      label: t("fields.employee_name"),
+      label: t("fields.employee_contract"),
       value:
         `${record?.payout_proposal_item?.employee?.first_name} ${record?.payout_proposal_item?.employee?.last_name}`,
     },
